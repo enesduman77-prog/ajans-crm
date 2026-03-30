@@ -65,6 +65,12 @@ public class CompanyController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{companyId}")
+    public ResponseEntity<Void> delete(@PathVariable UUID companyId) {
+        companyService.deleteCompany(companyId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{companyId}/surveys")
     public ResponseEntity<List<SurveyResponse>> getCompanySurveys(@PathVariable UUID companyId) {
         return ResponseEntity.ok(surveyService.getCompanySurveys(companyId));

@@ -22,5 +22,6 @@ public class AuthResponse {
         private String globalRole;
         private String membershipRole;
         private String avatarUrl;
+        private String companyId; // COMPANY_USER için — GA bağlantısı vs.
     }
 }

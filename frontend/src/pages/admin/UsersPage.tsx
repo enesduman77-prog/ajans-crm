@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { adminApi } from '../../api/admin';
 import type { AllUserResponse } from '../../api/admin';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, X, Search, Shield, Briefcase, Building2, ChevronDown } from 'lucide-react';
+import { Users, X, Search, Shield, Briefcase, Building2, ChevronDown, Trash2 } from 'lucide-react';
 
 const ROLE_LABELS: Record<string, string> = {
     ADMIN: 'Yönetici',
@@ -31,6 +31,8 @@ export default function UsersPage() {
     const [newRole, setNewRole] = useState('');
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+    const [deleteConfirm, setDeleteConfirm] = useState<AllUserResponse | null>(null);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         loadUsers();
@@ -66,6 +68,20 @@ export default function UsersPage() {
         setEditingUser(user);
         setNewRole(user.globalRole);
         setError('');
+    };
+
+    const handleDeleteUser = async () => {
+        if (!deleteConfirm) return;
+        setDeleting(true);
+        setError('');
+        try {
+            await adminApi.deleteUser(deleteConfirm.id);
+            setDeleteConfirm(null);
+            loadUsers();
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Kullanıcı silinemedi');
+        }
+        setDeleting(false);
     };
 
     const filtered = users.filter(u => {
@@ -232,13 +248,24 @@ export default function UsersPage() {
                                             </span>
                                         </td>
                                         <td className="p-4">
-                                            <button
-                                                onClick={() => openEditModal(u)}
-                                                className="text-xs bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition-all flex items-center gap-1.5"
-                                            >
-                                                Düzenle
-                                                <ChevronDown className="w-3 h-3" />
-                                            </button>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => openEditModal(u)}
+                                                    className="text-xs bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition-all flex items-center gap-1.5"
+                                                >
+                                                    Düzenle
+                                                    <ChevronDown className="w-3 h-3" />
+                                                </button>
+                                                {u.globalRole !== 'ADMIN' && (
+                                                    <button
+                                                        onClick={() => setDeleteConfirm(u)}
+                                                        className="text-xs bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 hover:text-red-300 p-2 rounded-lg transition-all"
+                                                        title="Kullanıcıyı Sil"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                     </motion.tr>
                                 ))}
@@ -337,6 +364,63 @@ export default function UsersPage() {
                                 >
                                     {saving ? <div className="h-5 w-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : 'Rolü Güncelle'}
                                 </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteConfirm && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
+                        onClick={() => setDeleteConfirm(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0.95 }}
+                            className="glass-panel rounded-2xl w-full max-w-md"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="p-6 border-b border-white/[0.06] flex items-center justify-between">
+                                <h2 className="text-lg font-bold text-red-400">Kullanıcıyı Sil</h2>
+                                <button onClick={() => setDeleteConfirm(null)} className="text-zinc-500 hover:text-white transition-colors">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                            <div className="p-6 space-y-5">
+                                <div className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-xl border border-white/[0.04]">
+                                    <div className="h-10 w-10 rounded-xl bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-300 shrink-0">
+                                        {deleteConfirm.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-medium text-white truncate">{deleteConfirm.fullName}</p>
+                                        <p className="text-[11px] text-zinc-500 truncate">{deleteConfirm.email}</p>
+                                    </div>
+                                </div>
+                                <p className="text-sm text-zinc-400">
+                                    Bu kullanıcı ve tüm ilişkili verileri <span className="text-red-400 font-semibold">kalıcı olarak</span> silinecektir. Bu işlem geri alınamaz.
+                                </p>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => setDeleteConfirm(null)}
+                                        className="flex-1 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-zinc-400 font-medium rounded-xl text-[13px] transition-all"
+                                    >
+                                        İptal
+                                    </button>
+                                    <button
+                                        onClick={handleDeleteUser}
+                                        disabled={deleting}
+                                        className="flex-1 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2 text-[13px] shadow-lg shadow-red-500/20 transition-all disabled:opacity-50"
+                                    >
+                                        {deleting ? <div className="h-5 w-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : 'Evet, Sil'}
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     </motion.div>

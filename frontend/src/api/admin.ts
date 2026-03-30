@@ -20,6 +20,8 @@ export interface CompanyResponse {
     logoUrl: string;
     contractStatus: string;
     memberCount: number;
+    employeeCount: number;
+    staffCount: number;
     taskCount: number;
     createdAt: string;
     members?: MembershipInfo[];
@@ -165,6 +167,7 @@ export const adminApi = {
     getCompany: (id: string) => api.get<CompanyResponse>(`/admin/companies/${id}`).then(r => r.data),
     createCompany: (data: CreateCompanyRequest) => api.post<CompanyResponse>('/admin/companies', data).then(r => r.data),
     updateCompany: (id: string, data: UpdateCompanyRequest) => api.put<CompanyResponse>(`/admin/companies/${id}`, data).then(r => r.data),
+    deleteCompany: (id: string) => api.delete(`/admin/companies/${id}`).then(r => r.data),
 
     // Company employees
     addEmployee: (companyId: string, data: AddEmployeeRequest) =>
@@ -176,6 +179,7 @@ export const adminApi = {
     getStaff: () => api.get<StaffResponse[]>('/admin/staff').then(r => r.data),
     getStaffById: (id: string) => api.get<StaffResponse>(`/admin/staff/${id}`).then(r => r.data),
     createStaff: (data: CreateStaffRequest) => api.post<StaffResponse>('/admin/staff', data).then(r => r.data),
+    deleteStaff: (id: string) => api.delete(`/admin/staff/${id}`).then(r => r.data),
     assignStaff: (staffId: string, companyId: string) =>
         api.post(`/admin/staff/${staffId}/assign/${companyId}`).then(r => r.data),
     unassignStaff: (membershipId: string) =>
@@ -195,4 +199,5 @@ export const adminApi = {
     getAllUsers: () => api.get<AllUserResponse[]>('/admin/users').then(r => r.data),
     updateUserRole: (userId: string, globalRole: string) =>
         api.put(`/admin/users/${userId}/role`, { globalRole }).then(r => r.data),
+    deleteUser: (userId: string) => api.delete(`/admin/users/${userId}`),
 };

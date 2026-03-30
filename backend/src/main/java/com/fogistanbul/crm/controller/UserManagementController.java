@@ -5,6 +5,7 @@ import com.fogistanbul.crm.entity.UserProfile;
 import com.fogistanbul.crm.entity.enums.GlobalRole;
 import com.fogistanbul.crm.repository.CompanyMembershipRepository;
 import com.fogistanbul.crm.repository.UserProfileRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +24,7 @@ public class UserManagementController {
 
     private final UserProfileRepository userProfileRepository;
     private final CompanyMembershipRepository membershipRepository;
+    private final EntityManager entityManager;
 
     @GetMapping
     @Transactional(readOnly = true)
@@ -99,4 +101,55 @@ public class UserManagementController {
     ) {}
 
     public record UpdateRoleRequest(String globalRole) {}
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
+        UserProfile user = userProfileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
+        if (user.getGlobalRole() == GlobalRole.ADMIN) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Admin kullanıcıları silinemez"));
+        }
+
+        // Clean all FK references
+        entityManager.createNativeQuery("DELETE FROM activity_logs WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM approval_requests WHERE requester_id = :uid OR approver_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM company_memberships WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM company_permissions WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM message_read_receipts WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM messages WHERE sender_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM messages WHERE conversation_id IN (SELECT id FROM conversations WHERE user1_id = :uid OR user2_id = :uid)").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM conversations WHERE user1_id = :uid OR user2_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM messages_threads WHERE created_by = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM file_attachments WHERE uploaded_by = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM group_message_reads WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM group_members WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM group_messages WHERE sender_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM meeting_participants WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("UPDATE meetings SET created_by = NULL WHERE created_by = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM notes WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM notification_preferences WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM notifications WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM pr_project_members WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("UPDATE pr_projects SET created_by = NULL WHERE created_by = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM refresh_tokens WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM satisfaction_surveys WHERE submitted_by = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM shoot_participants WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("UPDATE shoots SET created_by = NULL WHERE created_by = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM task_reviews WHERE reviewer_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM time_entries WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("UPDATE tasks SET assigned_to = NULL WHERE assigned_to = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("UPDATE tasks SET created_by = NULL WHERE created_by = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM google_oauth_tokens WHERE user_id = :uid").setParameter("uid", id).executeUpdate();
+        entityManager.flush();
+
+        // Delete person if exists
+        if (user.getPerson() != null) {
+            entityManager.createNativeQuery("DELETE FROM persons WHERE id = :pid").setParameter("pid", user.getPerson().getId()).executeUpdate();
+        }
+
+        userProfileRepository.delete(user);
+        return ResponseEntity.ok(Map.of("message", "Kullanıcı silindi"));
+    }
 }

@@ -19,6 +19,7 @@ import StaffLayout from './layouts/StaffLayout';
 import StaffDashboard from './pages/staff/StaffDashboard';
 import TasksPage from './pages/staff/TasksPage';
 import StaffCompaniesPage from './pages/staff/StaffCompaniesPage';
+import StaffCompanyDetailPage from './pages/staff/StaffCompanyDetailPage';
 import StaffCalendarPage from './pages/staff/StaffCalendarPage';
 import CompletedTasksPage from './pages/staff/CompletedTasksPage';
 import PRProjectsPage from './pages/staff/PRProjectsPage';
@@ -116,6 +117,7 @@ export default function App() {
               <Route path="messaging" element={<MessagingPage />} />
               <Route path="notes" element={<NotesPage />} />
               <Route path="companies" element={<StaffCompaniesPage />} />
+              <Route path="companies/:id" element={<StaffCompanyDetailPage />} />
               <Route path="calendar" element={<StaffCalendarPage />} />
               <Route path="pr" element={<PRProjectsPage />} />
               <Route path="shoots" element={<ShootsPage />} />

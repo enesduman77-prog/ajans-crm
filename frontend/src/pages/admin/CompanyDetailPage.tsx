@@ -175,8 +175,10 @@ export default function CompanyDetailPage() {
                         </div>
                     )}
                     <div className="flex items-center gap-4 text-sm">
-                        <span className="text-zinc-400">Üye:</span>
-                        <span className="text-white font-medium">{company.memberCount}</span>
+                        <span className="text-zinc-400">Çalışan:</span>
+                        <span className="text-white font-medium">{company.employeeCount}</span>
+                        <span className="text-zinc-400">Yetkili:</span>
+                        <span className="text-white font-medium">{company.staffCount}</span>
                         <span className="text-zinc-400">Görev:</span>
                         <span className="text-white font-medium">{company.taskCount}</span>
                     </div>
@@ -284,32 +286,93 @@ export default function CompanyDetailPage() {
                     </div>
                 )}
 
-                {/* Members List */}
-                <div className="space-y-2">
-                    {company.members?.map((member) => (
-                        <div key={member.id}
-                            className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${selectedMember?.id === member.id ? 'bg-white/5 ring-1 ring-orange-500/30' : 'hover:bg-white/[0.02]'}`}
-                            onClick={() => setSelectedMember(selectedMember?.id === member.id ? null : member)}>
-                            <div className="h-9 w-9 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-bold text-zinc-400">
-                                {member.fullName?.charAt(0) || 'U'}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-white truncate">{member.fullName}</p>
-                                <p className="text-xs text-zinc-600 truncate">{member.email}</p>
-                            </div>
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider ${member.membershipRole === 'OWNER' ? 'bg-amber-500/10 text-amber-400' :
-                                member.membershipRole === 'AGENCY_STAFF' ? 'bg-emerald-500/10 text-emerald-400' :
-                                    'bg-zinc-700/50 text-zinc-400'
-                                }`}>
-                                {member.membershipRole === 'OWNER' ? 'Sahip' :
-                                    member.membershipRole === 'AGENCY_STAFF' ? 'Ajans' : 'Çalışan'}
-                            </span>
-                            {selectedMember?.id === member.id ? <ChevronUp className="w-4 h-4 text-zinc-500" /> : <ChevronDown className="w-4 h-4 text-zinc-600" />}
+                {/* Owner */}
+                {company.members?.filter(m => m.membershipRole === 'OWNER').length > 0 && (
+                    <div className="mb-4">
+                        <h4 className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                            Şirket Sahibi
+                        </h4>
+                        <div className="space-y-2">
+                            {company.members?.filter(m => m.membershipRole === 'OWNER').map((member) => (
+                                <div key={member.id}
+                                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${selectedMember?.id === member.id ? 'bg-white/5 ring-1 ring-orange-500/30' : 'hover:bg-white/[0.02]'}`}
+                                    onClick={() => setSelectedMember(selectedMember?.id === member.id ? null : member)}>
+                                    <div className="h-9 w-9 rounded-full bg-amber-500/10 flex items-center justify-center text-sm font-bold text-amber-400">
+                                        {member.fullName?.charAt(0) || 'U'}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-white truncate">{member.fullName}</p>
+                                        <p className="text-xs text-zinc-600 truncate">{member.email}</p>
+                                    </div>
+                                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-amber-500/10 text-amber-400">
+                                        Sahip
+                                    </span>
+                                    {selectedMember?.id === member.id ? <ChevronUp className="w-4 h-4 text-zinc-500" /> : <ChevronDown className="w-4 h-4 text-zinc-600" />}
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                    {(!company.members || company.members.length === 0) && (
-                        <p className="text-zinc-600 text-sm text-center py-4">Henüz üye yok</p>
-                    )}
+                    </div>
+                )}
+
+                {/* Employees (OWNER excluded, EMPLOYEE only) */}
+                <div className="mb-4">
+                    <h4 className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                        Çalışanlar ({company.members?.filter(m => m.membershipRole === 'EMPLOYEE').length || 0})
+                    </h4>
+                    <div className="space-y-2">
+                        {company.members?.filter(m => m.membershipRole === 'EMPLOYEE').map((member) => (
+                            <div key={member.id}
+                                className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${selectedMember?.id === member.id ? 'bg-white/5 ring-1 ring-orange-500/30' : 'hover:bg-white/[0.02]'}`}
+                                onClick={() => setSelectedMember(selectedMember?.id === member.id ? null : member)}>
+                                <div className="h-9 w-9 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-bold text-zinc-400">
+                                    {member.fullName?.charAt(0) || 'U'}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-white truncate">{member.fullName}</p>
+                                    <p className="text-xs text-zinc-600 truncate">{member.email}</p>
+                                </div>
+                                <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-zinc-700/50 text-zinc-400">
+                                    Çalışan
+                                </span>
+                                {selectedMember?.id === member.id ? <ChevronUp className="w-4 h-4 text-zinc-500" /> : <ChevronDown className="w-4 h-4 text-zinc-600" />}
+                            </div>
+                        ))}
+                        {(!company.members || company.members.filter(m => m.membershipRole === 'EMPLOYEE').length === 0) && (
+                            <p className="text-zinc-600 text-sm text-center py-2">Henüz çalışan eklenmemiş</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Agency Staff (Yetkililer) */}
+                <div>
+                    <h4 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                        Yetkililer ({company.members?.filter(m => m.membershipRole === 'AGENCY_STAFF').length || 0})
+                    </h4>
+                    <div className="space-y-2">
+                        {company.members?.filter(m => m.membershipRole === 'AGENCY_STAFF').map((member) => (
+                            <div key={member.id}
+                                className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${selectedMember?.id === member.id ? 'bg-white/5 ring-1 ring-orange-500/30' : 'hover:bg-white/[0.02]'}`}
+                                onClick={() => setSelectedMember(selectedMember?.id === member.id ? null : member)}>
+                                <div className="h-9 w-9 rounded-full bg-emerald-500/10 flex items-center justify-center text-sm font-bold text-emerald-400">
+                                    {member.fullName?.charAt(0) || 'U'}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-white truncate">{member.fullName}</p>
+                                    <p className="text-xs text-zinc-600 truncate">{member.email}</p>
+                                </div>
+                                <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-emerald-500/10 text-emerald-400">
+                                    Ajans Yetkilisi
+                                </span>
+                                {selectedMember?.id === member.id ? <ChevronUp className="w-4 h-4 text-zinc-500" /> : <ChevronDown className="w-4 h-4 text-zinc-600" />}
+                            </div>
+                        ))}
+                        {(!company.members || company.members.filter(m => m.membershipRole === 'AGENCY_STAFF').length === 0) && (
+                            <p className="text-zinc-600 text-sm text-center py-2">Henüz yetkili atanmamış</p>
+                        )}
+                    </div>
                 </div>
             </div>
 

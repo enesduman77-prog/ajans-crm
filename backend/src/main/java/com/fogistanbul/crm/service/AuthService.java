@@ -129,10 +129,12 @@ public class AuthService {
                 String avatarUrl = user.getPerson() != null ? user.getPerson().getAvatarUrl() : null;
 
                 String membershipRole = null;
+                String companyId = null;
                 if (user.getGlobalRole() == com.fogistanbul.crm.entity.enums.GlobalRole.COMPANY_USER) {
                         java.util.List<CompanyMembership> memberships = companyMembershipRepository.findByUserId(user.getId());
                         if (!memberships.isEmpty()) {
                                 membershipRole = memberships.get(0).getMembershipRole().name();
+                                companyId = memberships.get(0).getCompany().getId().toString();
                         }
                 }
 
@@ -143,6 +145,7 @@ public class AuthService {
                                 .globalRole(user.getGlobalRole().name())
                                 .membershipRole(membershipRole)
                                 .avatarUrl(avatarUrl)
+                                .companyId(companyId)
                                 .build();
         }
 

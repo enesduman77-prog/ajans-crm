@@ -17,6 +17,7 @@ import com.fogistanbul.crm.repository.CompanyRepository;
 import com.fogistanbul.crm.repository.PersonRepository;
 import com.fogistanbul.crm.repository.TaskRepository;
 import com.fogistanbul.crm.repository.UserProfileRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class CompanyService {
     private final PasswordEncoder passwordEncoder;
     private final PermissionService permissionService;
     private final GroupMessagingService groupMessagingService;
+    private final EntityManager entityManager;
 
     @Transactional
     public CompanyResponse createCompanyWithOwner(CreateCompanyRequest req) {
@@ -208,9 +210,103 @@ public class CompanyService {
         groupMessagingService.removeMemberFromCompanyGroup(companyId, userId);
     }
 
+    @Transactional
+    public void deleteCompany(UUID companyId) {
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Sirket bulunamadi"));
+
+        // Collect company-only users (not agency staff) to delete after cleanup
+        List<CompanyMembership> memberships = membershipRepository.findByCompanyId(companyId);
+        List<UUID> companyUserIds = memberships.stream()
+                .map(m -> m.getUser())
+                .filter(u -> u.getGlobalRole() == GlobalRole.COMPANY_USER)
+                .map(u -> u.getId())
+                .collect(Collectors.toList());
+
+        // Remove all memberships and their group chat associations
+        for (CompanyMembership m : memberships) {
+            groupMessagingService.removeMemberFromCompanyGroup(companyId, m.getUser().getId());
+        }
+        membershipRepository.deleteAll(memberships);
+
+        // Clean up all FK references for company users before deleting them
+        for (UUID uid : companyUserIds) {
+            entityManager.createNativeQuery("UPDATE tasks SET assigned_to = NULL WHERE assigned_to = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("UPDATE tasks SET created_by = NULL WHERE created_by = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM task_reviews WHERE reviewer_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM time_entries WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM notifications WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM notification_preferences WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM company_permissions WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM activity_logs WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM refresh_tokens WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM group_message_reads WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM group_members WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM group_messages WHERE sender_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM message_read_receipts WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM messages WHERE conversation_id IN (SELECT id FROM conversations WHERE user1_id = :uid OR user2_id = :uid)").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM messages WHERE sender_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM conversations WHERE user1_id = :uid OR user2_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM messages_threads WHERE created_by = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM file_attachments WHERE uploaded_by = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM notes WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM meeting_participants WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("UPDATE meetings SET created_by = NULL WHERE created_by = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM shoot_participants WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("UPDATE shoots SET created_by = NULL WHERE created_by = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM pr_project_members WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("UPDATE pr_projects SET created_by = NULL WHERE created_by = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM approval_requests WHERE requester_id = :uid OR approver_id = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM satisfaction_surveys WHERE submitted_by = :uid").setParameter("uid", uid).executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM company_memberships WHERE user_id = :uid").setParameter("uid", uid).executeUpdate();
+        }
+
+        // Clean up all FK references to this company before deleting
+        // Task child tables first
+        entityManager.createNativeQuery("DELETE FROM task_reviews WHERE task_id IN (SELECT id FROM tasks WHERE company_id = :cid)").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM time_entries WHERE task_id IN (SELECT id FROM tasks WHERE company_id = :cid)").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM tasks WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM time_entries WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        // Shoot child tables
+        entityManager.createNativeQuery("DELETE FROM shoot_participants WHERE shoot_id IN (SELECT id FROM shoots WHERE company_id = :cid)").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM shoots WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        // Meeting child tables
+        entityManager.createNativeQuery("DELETE FROM meeting_participants WHERE meeting_id IN (SELECT id FROM meetings WHERE company_id = :cid)").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM meetings WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        // PR project child tables
+        entityManager.createNativeQuery("DELETE FROM pr_project_phases WHERE project_id IN (SELECT id FROM pr_projects WHERE company_id = :cid)").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM pr_project_members WHERE project_id IN (SELECT id FROM pr_projects WHERE company_id = :cid)").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM pr_projects WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        // Group messaging
+        entityManager.createNativeQuery("DELETE FROM group_message_reads WHERE message_id IN (SELECT id FROM group_messages WHERE group_id IN (SELECT id FROM group_conversations WHERE company_id = :cid))").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM group_messages WHERE group_id IN (SELECT id FROM group_conversations WHERE company_id = :cid)").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM group_members WHERE group_id IN (SELECT id FROM group_conversations WHERE company_id = :cid)").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM group_conversations WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        // Other direct FK tables
+        entityManager.createNativeQuery("DELETE FROM notes WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM messages_threads WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM approval_requests WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM company_permissions WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM satisfaction_surveys WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM google_oauth_tokens WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM persons WHERE company_id = :cid").setParameter("cid", companyId).executeUpdate();
+
+        // Delete company users (COMPANY_USER only, not agency staff)
+        for (UUID uid : companyUserIds) {
+            entityManager.createNativeQuery("DELETE FROM user_profiles WHERE id = :uid").setParameter("uid", uid).executeUpdate();
+        }
+
+        // Delete company via native SQL to avoid Hibernate TransientObjectException
+        entityManager.createNativeQuery("DELETE FROM companies WHERE id = :cid").setParameter("cid", companyId).executeUpdate();
+        entityManager.flush();
+        entityManager.clear();
+    }
+
     private CompanyResponse toResponse(Company company) {
-        long memberCount = membershipRepository.countByCompanyId(company.getId());
+        List<CompanyMembership> memberships = membershipRepository.findByCompanyId(company.getId());
         long taskCount = taskRepository.countByCompanyId(company.getId());
+        int employeeCount = (int) memberships.stream().filter(m -> m.getMembershipRole().name().equals("OWNER") || m.getMembershipRole().name().equals("EMPLOYEE")).count();
+        int staffCount = (int) memberships.stream().filter(m -> m.getMembershipRole().name().equals("AGENCY_STAFF")).count();
 
         return CompanyResponse.builder()
                 .id(company.getId().toString())
@@ -222,7 +318,9 @@ public class CompanyService {
                 .contractStatus(company.getContractStatus() != null ? company.getContractStatus().name() : null)
                 .logoUrl(company.getLogoUrl())
                 .createdAt(company.getCreatedAt())
-                .memberCount((int) memberCount)
+                .memberCount(memberships.size())
+                .employeeCount(employeeCount)
+                .staffCount(staffCount)
                 .taskCount((int) taskCount)
                 .build();
     }
@@ -266,6 +364,8 @@ public class CompanyService {
                 .socialTiktok(company.getSocialTiktok())
                 .createdAt(company.getCreatedAt())
                 .memberCount(memberInfos.size())
+                .employeeCount((int) memberships.stream().filter(m -> m.getMembershipRole().name().equals("OWNER") || m.getMembershipRole().name().equals("EMPLOYEE")).count())
+                .staffCount((int) memberships.stream().filter(m -> m.getMembershipRole().name().equals("AGENCY_STAFF")).count())
                 .taskCount((int) taskCount)
                 .members(memberInfos)
                 .build();

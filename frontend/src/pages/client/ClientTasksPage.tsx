@@ -12,7 +12,8 @@ const PRIORITY_STYLES: Record<string, string> = {
 const STATUS_LABELS: Record<string, string> = {
     TODO: 'Bekliyor',
     IN_PROGRESS: 'Devam Ediyor',
-    REVIEW: 'İnceleniyor',
+    DONE: 'Tamamlandı',
+    OVERDUE: 'Gecikmiş',
 };
 
 export default function ClientTasksPage() {
@@ -56,10 +57,10 @@ export default function ClientTasksPage() {
                                             {task.priority}
                                         </span>
                                         <span className="text-xs text-zinc-600">{STATUS_LABELS[task.status] || task.status}</span>
-                                        {task.dueDate && (
+                                        {task.endDate && (
                                             <span className="flex items-center gap-1 text-xs text-zinc-600">
                                                 <Calendar className="w-3 h-3" />
-                                                {new Date(task.dueDate).toLocaleDateString('tr-TR')}
+                                                {new Date(task.endDate).toLocaleDateString('tr-TR')}
                                             </span>
                                         )}
                                     </div>

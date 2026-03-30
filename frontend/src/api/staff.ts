@@ -4,10 +4,10 @@ import type { CompanyResponse } from './admin';
 // --- Types ---
 export interface TaskResponse {
     id: string;
-    companyId: string;
-    companyName: string;
-    assignedToId: string | null;
-    assignedToName: string | null;
+    companyId: string | null;
+    companyName: string | null;
+    assignedToId: string;
+    assignedToName: string;
     createdById: string;
     createdByName: string;
     title: string;
@@ -15,22 +15,26 @@ export interface TaskResponse {
     category: string;
     priority: string;
     status: string;
-    dueDate: string | null;
-    dueTime: string | null;
+    startDate: string | null;
+    startTime: string | null;
+    endDate: string | null;
+    endTime: string | null;
     completedAt: string | null;
     createdAt: string;
     updatedAt: string;
 }
 
 export interface CreateTaskRequest {
-    companyId: string;
-    assignedToId?: string;
+    companyId?: string;
+    assignedToId: string;
     title: string;
     description?: string;
     category?: string;
     priority?: string;
-    dueDate?: string;
-    dueTime?: string;
+    startDate?: string;
+    startTime?: string;
+    endDate?: string;
+    endTime?: string;
 }
 
 export interface UpdateTaskRequest {
@@ -39,6 +43,20 @@ export interface UpdateTaskRequest {
     status?: string;
     category?: string;
     priority?: string;
+    assignedToId?: string;
+    companyId?: string;
+    startDate?: string;
+    startTime?: string;
+    endDate?: string;
+    endTime?: string;
+}
+
+export interface AssignableUser {
+    id: string;
+    fullName: string;
+    email: string;
+    globalRole: string;
+    avatarUrl: string | null;
 }
 
 export interface PageResponse<T> {
@@ -57,6 +75,15 @@ export interface TaskReviewResponse {
     reviewerName: string;
     score: number;
     comment: string | null;
+    createdAt: string;
+}
+
+export interface TaskNoteResponse {
+    id: string;
+    taskId: string;
+    authorId: string;
+    authorName: string;
+    content: string;
     createdAt: string;
 }
 
@@ -144,6 +171,18 @@ export const staffApi = {
 
     deleteTask: (id: string) =>
         api.delete(`/staff/tasks/${id}`).then(r => r.data),
+
+    getAssignableUsers: (companyId?: string) =>
+        api.get<AssignableUser[]>(`/staff/tasks/assignable-users${companyId ? `?companyId=${companyId}` : ''}`).then(r => r.data),
+
+    getTaskNotes: (taskId: string) =>
+        api.get<TaskNoteResponse[]>(`/staff/tasks/${taskId}/notes`).then(r => r.data),
+
+    addTaskNote: (taskId: string, content: string) =>
+        api.post<TaskNoteResponse>(`/staff/tasks/${taskId}/notes`, { content }).then(r => r.data),
+
+    deleteTaskNote: (noteId: string) =>
+        api.delete(`/staff/tasks/notes/${noteId}`).then(r => r.data),
 
     // Companies (staff-accessible)
     getCompanies: () =>

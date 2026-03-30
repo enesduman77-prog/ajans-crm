@@ -27,7 +27,6 @@ interface KanbanBoardProps {
 const columns = [
     { id: 'TODO', label: 'Yapılacak', color: 'border-zinc-500', bgColor: 'bg-zinc-500/10', textColor: 'text-zinc-400' },
     { id: 'IN_PROGRESS', label: 'Devam Eden', color: 'border-blue-500', bgColor: 'bg-blue-500/10', textColor: 'text-blue-400' },
-    { id: 'REVIEW', label: 'İnceleme', color: 'border-amber-500', bgColor: 'bg-amber-500/10', textColor: 'text-amber-400' },
     { id: 'DONE', label: 'Tamamlanan', color: 'border-emerald-500', bgColor: 'bg-emerald-500/10', textColor: 'text-emerald-400' },
 ];
 
@@ -46,7 +45,7 @@ const priorityLabels: Record<string, string> = {
 };
 
 function TaskCard({ task, isDragging = false }: { task: TaskResponse; isDragging?: boolean }) {
-    const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'DONE';
+    const isOverdue = task.endDate && new Date(task.endDate) < new Date() && task.status !== 'DONE';
     return (
         <div className={`p-3 bg-[#111113] border border-white/[0.06] rounded-xl transition-all ${isDragging ? 'shadow-2xl shadow-black/50 rotate-2 scale-105' : 'hover:border-white/[0.1]'
             }`}>
@@ -74,10 +73,10 @@ function TaskCard({ task, isDragging = false }: { task: TaskResponse; isDragging
                         {task.assignedToName}
                     </span>
                 )}
-                {task.dueDate && (
+                {task.endDate && (
                     <span className={`flex items-center gap-1 ml-auto ${isOverdue ? 'text-red-400' : ''}`}>
                         <Calendar className="w-3 h-3" />
-                        {new Date(task.dueDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
+                        {new Date(task.endDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
                     </span>
                 )}
             </div>

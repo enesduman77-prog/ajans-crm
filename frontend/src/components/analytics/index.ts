@@ -6,3 +6,4 @@ export { default as LineChartCard } from './LineChartCard';
 export { default as MiniTrend } from './MiniTrend';
 export { default as ProgressListCard } from './ProgressListCard';
 export { default as HeatmapCard } from './HeatmapCard';
+export { default as GoogleAnalyticsPanel } from './GoogleAnalyticsPanel';

@@ -1,6 +1,9 @@
 package com.fogistanbul.crm.controller;
 
+import com.fogistanbul.crm.dto.ContactResponse;
+import com.fogistanbul.crm.dto.CreateTaskNoteRequest;
 import com.fogistanbul.crm.dto.CreateTaskRequest;
+import com.fogistanbul.crm.dto.TaskNoteResponse;
 import com.fogistanbul.crm.dto.TaskResponse;
 import com.fogistanbul.crm.dto.UpdateTaskRequest;
 import com.fogistanbul.crm.entity.enums.TaskStatus;
@@ -15,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -81,6 +85,39 @@ public class TaskController {
     public ResponseEntity<Void> delete(@PathVariable UUID id, Authentication auth) {
         UUID userId = (UUID) auth.getPrincipal();
         taskService.deleteTask(id, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/assignable-users")
+    public List<ContactResponse> getAssignableUsers(
+            @RequestParam(required = false) UUID companyId,
+            Authentication auth) {
+        UUID userId = (UUID) auth.getPrincipal();
+        return taskService.getAssignableUsers(userId, companyId);
+    }
+
+    // ─── Task Notes ─────────────────────────────────────────────
+
+    @GetMapping("/{taskId}/notes")
+    public List<TaskNoteResponse> getNotes(@PathVariable UUID taskId, Authentication auth) {
+        UUID userId = (UUID) auth.getPrincipal();
+        return taskService.getTaskNotes(taskId, userId);
+    }
+
+    @PostMapping("/{taskId}/notes")
+    public ResponseEntity<TaskNoteResponse> addNote(
+            @PathVariable UUID taskId,
+            @Valid @RequestBody CreateTaskNoteRequest request,
+            Authentication auth) {
+        UUID userId = (UUID) auth.getPrincipal();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(taskService.addTaskNote(taskId, request, userId));
+    }
+
+    @DeleteMapping("/notes/{noteId}")
+    public ResponseEntity<Void> deleteNote(@PathVariable UUID noteId, Authentication auth) {
+        UUID userId = (UUID) auth.getPrincipal();
+        taskService.deleteTaskNote(noteId, userId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { staffApi } from '../../api/staff';
 import type { CompanyResponse } from '../../api/admin';
 import { motion } from 'framer-motion';
-import { Building2 } from 'lucide-react';
+import { Building2, ChevronRight } from 'lucide-react';
 
 export default function StaffCompaniesPage() {
     const [companies, setCompanies] = useState<CompanyResponse[]>([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         staffApi.getCompanies()
@@ -37,7 +39,8 @@ export default function StaffCompaniesPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.05 }}
-                            className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5 hover:border-emerald-500/20 transition-colors"
+                            onClick={() => navigate(`/staff/companies/${company.id}`)}
+                            className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5 hover:border-emerald-500/20 transition-colors cursor-pointer group"
                         >
                             <div className="flex items-start gap-3">
                                 <div className="h-10 w-10 rounded-xl bg-emerald-900/30 flex items-center justify-center text-emerald-400 font-bold text-sm">
@@ -47,6 +50,7 @@ export default function StaffCompaniesPage() {
                                     <p className="text-white font-semibold text-sm truncate">{company.name}</p>
                                     <p className="text-zinc-600 text-xs mt-0.5">{company.industry || 'Sektör belirtilmemiş'}</p>
                                 </div>
+                                <ChevronRight className="w-4 h-4 text-zinc-700 group-hover:text-emerald-400 transition-colors" />
                             </div>
                             <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center gap-4">
                                 <div className="text-center flex-1">

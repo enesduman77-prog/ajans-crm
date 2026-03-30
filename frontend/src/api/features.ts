@@ -75,10 +75,17 @@ export interface NotificationPreferenceResponse {
 
 export interface PageResponse<T> {
     content: T[];
-    totalElements: number;
-    totalPages: number;
-    number: number;
-    size: number;
+    page: {
+        totalElements: number;
+        totalPages: number;
+        number: number;
+        size: number;
+    };
+    // backward compat — bazı endpointler hâlâ düz alan döndürebilir
+    totalElements?: number;
+    totalPages?: number;
+    number?: number;
+    size?: number;
 }
 
 // --- API ---

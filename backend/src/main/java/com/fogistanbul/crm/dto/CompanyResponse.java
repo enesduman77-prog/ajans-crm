@@ -32,6 +32,8 @@ public class CompanyResponse {
 
     private Instant createdAt;
     private int memberCount;
+    private int employeeCount;
+    private int staffCount;
     private int taskCount;
 
     private List<MembershipInfo> members;

@@ -6,5 +6,6 @@ public enum TaskCategory {
     PAYLASIM,
     SEO,
     TASARIM,
+    TOPLANTI,
     OTHER
 }

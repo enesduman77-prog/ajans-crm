@@ -22,7 +22,7 @@ export default function TimeTrackingPage() {
             staffApi.getAllTasks(0, 100),
         ]).then(([entryData, runningEntry, taskData]) => {
             setEntries(entryData.content);
-            setTotalPages(entryData.totalPages);
+            setTotalPages(entryData.page?.totalPages ?? entryData.totalPages ?? 0);
             setRunning(runningEntry);
             setTasks(taskData.content.filter(t => t.status !== 'DONE'));
         }).catch(() => { })

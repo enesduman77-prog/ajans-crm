@@ -62,7 +62,10 @@ export default function ActivityLogPage() {
             : activityLogApi.getByEntityType(entityTypeFilter, page, 25);
 
         fetchFn
-            .then(data => { setLogs(data.content); setTotalPages(data.totalPages); })
+            .then(data => {
+                setLogs(data.content);
+                setTotalPages(data.page?.totalPages ?? data.totalPages ?? 0);
+            })
             .catch(() => { })
             .finally(() => setLoading(false));
     }, [page, entityTypeFilter]);

@@ -3,7 +3,8 @@ import {
     Instagram, Search, BarChart3, Activity, Share2,
     Heart, MessageCircle, UserPlus, ArrowUpRight
 } from 'lucide-react';
-import { StatCard, AreaChartCard, BarChartCard, DonutChartCard, LineChartCard, MiniTrend, HeatmapCard } from '../../components/analytics';
+import { StatCard, AreaChartCard, BarChartCard, DonutChartCard, LineChartCard, MiniTrend, HeatmapCard, GoogleAnalyticsPanel } from '../../components/analytics';
+import { useAuth } from '../../store/AuthContext';
 
 // Mock data - Faz 6'da gerçek API entegrasyonlarıyla değiştirilecek
 
@@ -74,6 +75,8 @@ const heatmapData = (() => {
 })();
 
 export default function ClientAnalyticsPage() {
+    const { user } = useAuth();
+
     const mainStats = [
         { label: 'Toplam Ziyaretçi', value: '158K', change: '+12.5%', icon: Users, color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
         { label: 'Sayfa Görüntüleme', value: '472K', change: '+8.3%', icon: Eye, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10' },
@@ -203,6 +206,17 @@ export default function ClientAnalyticsPage() {
                     ]}
                 />
             </section>
+
+            {/* ═══ GOOGLE ANALYTICS ═══ */}
+            {user?.companyId && (
+                <section>
+                    <div className="flex items-center gap-2 mb-4">
+                        <Globe className="w-4 h-4 text-blue-400" />
+                        <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Google Analytics</h2>
+                    </div>
+                    <GoogleAnalyticsPanel companyId={user.companyId} />
+                </section>
+            )}
 
             {/* Info Banner */}
             <div className="bg-orange-500/5 border border-orange-500/10 rounded-2xl p-5 flex items-start gap-4">

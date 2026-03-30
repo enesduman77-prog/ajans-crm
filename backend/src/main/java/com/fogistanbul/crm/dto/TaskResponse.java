@@ -25,8 +25,10 @@ public class TaskResponse {
     private TaskCategory category;
     private Priority priority;
     private TaskStatus status;
-    private Instant dueDate;
-    private LocalTime dueTime;
+    private Instant startDate;
+    private LocalTime startTime;
+    private Instant endDate;
+    private LocalTime endTime;
     private Instant completedAt;
     private Instant createdAt;
     private Instant updatedAt;

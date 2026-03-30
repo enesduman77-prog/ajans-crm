@@ -48,4 +48,10 @@ public class StaffController {
         staffService.unassignFromCompany(membershipId);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{staffId}")
+    public ResponseEntity<Void> delete(@PathVariable UUID staffId) {
+        staffService.deleteStaff(staffId);
+        return ResponseEntity.noContent().build();
+    }
 }

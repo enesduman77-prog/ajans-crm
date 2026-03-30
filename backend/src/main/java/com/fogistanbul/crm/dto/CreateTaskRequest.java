@@ -12,9 +12,9 @@ import java.util.UUID;
 
 @Data
 public class CreateTaskRequest {
-    @NotNull(message = "Şirket zorunludur")
     private UUID companyId;
 
+    @NotNull(message = "Atanan kişi zorunludur")
     private UUID assignedToId;
 
     @NotBlank(message = "Görev başlığı zorunludur")
@@ -26,7 +26,11 @@ public class CreateTaskRequest {
 
     private Priority priority;
 
-    private Instant dueDate;
+    private Instant startDate;
 
-    private LocalTime dueTime;
+    private LocalTime startTime;
+
+    private Instant endDate;
+
+    private LocalTime endTime;
 }

@@ -27,6 +27,7 @@ public class GroupMessagingService {
     private final GroupMemberRepository groupMemberRepository;
     private final GroupMessageRepository groupMessageRepository;
     private final GroupMessageReadRepository groupMessageReadRepository;
+    private final CompanyRepository companyRepository;
     private final CompanyMembershipRepository companyMembershipRepository;
     private final UserProfileRepository userProfileRepository;
     private final SimpMessagingTemplate messagingTemplate;
@@ -65,12 +66,18 @@ public class GroupMessagingService {
      */
     @Transactional
     public void addMemberToCompanyGroup(UUID companyId, UUID userId) {
-        groupConversationRepository.findByCompanyId(companyId).ifPresent(group -> {
-            UserProfile user = userProfileRepository.findById(userId).orElse(null);
-            if (user != null) {
-                addMemberIfNotExists(group, user);
-            }
-        });
+        UserProfile user = userProfileRepository.findById(userId).orElse(null);
+        if (user == null) return;
+
+        GroupConversation group = groupConversationRepository.findByCompanyId(companyId).orElse(null);
+        if (group == null) {
+            // Create the group if it doesn't exist yet
+            Company company = companyRepository.findById(companyId).orElse(null);
+            if (company == null) return;
+            group = createCompanyGroup(company, user);
+        } else {
+            addMemberIfNotExists(group, user);
+        }
     }
 
     /**

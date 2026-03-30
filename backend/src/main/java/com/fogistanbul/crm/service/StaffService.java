@@ -6,6 +6,7 @@ import com.fogistanbul.crm.entity.*;
 import com.fogistanbul.crm.entity.enums.GlobalRole;
 import com.fogistanbul.crm.entity.enums.MembershipRole;
 import com.fogistanbul.crm.repository.*;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class StaffService {
     private final CompanyMembershipRepository membershipRepository;
     private final PasswordEncoder passwordEncoder;
     private final GroupMessagingService groupMessagingService;
+    private final EntityManager entityManager;
 
     // FOG İstanbul (Agency) şirket ID'si
     private static final UUID AGENCY_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
@@ -125,6 +127,59 @@ public class StaffService {
 
         // Remove staff from company group chat
         groupMessagingService.removeMemberFromCompanyGroup(companyId, userId);
+    }
+
+    @Transactional
+    public void deleteStaff(UUID staffId) {
+        UserProfile user = userProfileRepository.findById(staffId)
+                .orElseThrow(() -> new RuntimeException("Çalışan bulunamadı"));
+        if (user.getGlobalRole() != GlobalRole.AGENCY_STAFF) {
+            throw new RuntimeException("Bu kullanıcı bir ajans çalışanı değil");
+        }
+
+        // Remove all company memberships
+        List<CompanyMembership> memberships = membershipRepository.findByUserId(staffId);
+        for (CompanyMembership m : memberships) {
+            groupMessagingService.removeMemberFromCompanyGroup(m.getCompany().getId(), staffId);
+        }
+        membershipRepository.deleteAll(memberships);
+
+        // Clean up all FK references to this user (29 FK constraints on user_profiles)
+        entityManager.createNativeQuery("UPDATE tasks SET assigned_to = NULL WHERE assigned_to = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("UPDATE tasks SET created_by = NULL WHERE created_by = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM task_reviews WHERE reviewer_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM time_entries WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM notifications WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM notification_preferences WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM company_permissions WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM activity_logs WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM refresh_tokens WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM group_message_reads WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM group_members WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM group_messages WHERE sender_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM message_read_receipts WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM messages WHERE conversation_id IN (SELECT id FROM conversations WHERE user1_id = :uid OR user2_id = :uid)").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM messages WHERE sender_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM conversations WHERE user1_id = :uid OR user2_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM messages_threads WHERE created_by = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM file_attachments WHERE uploaded_by = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM notes WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM meeting_participants WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("UPDATE meetings SET created_by = NULL WHERE created_by = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM shoot_participants WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("UPDATE shoots SET created_by = NULL WHERE created_by = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM pr_project_members WHERE user_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("UPDATE pr_projects SET created_by = NULL WHERE created_by = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM approval_requests WHERE requester_id = :uid OR approver_id = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM satisfaction_surveys WHERE submitted_by = :uid").setParameter("uid", staffId).executeUpdate();
+        entityManager.flush();
+
+        // Delete user profile and person
+        Person person = user.getPerson();
+        userProfileRepository.delete(user);
+        if (person != null) {
+            personRepository.delete(person);
+        }
     }
 
     private StaffResponse toResponse(UserProfile user) {

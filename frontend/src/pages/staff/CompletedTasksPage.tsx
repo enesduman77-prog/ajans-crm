@@ -43,7 +43,8 @@ export default function CompletedTasksPage() {
                             <div className="flex-1 min-w-0">
                                 <p className="text-white/80 font-medium text-sm line-through">{task.title}</p>
                                 <div className="flex items-center gap-3 mt-1">
-                                    <span className="text-zinc-600 text-xs">{task.companyName}</span>
+                                    {task.companyName && <span className="text-zinc-600 text-xs">{task.companyName}</span>}
+                                    {task.assignedToName && <span className="text-zinc-700 text-xs">{task.assignedToName}</span>}
                                     {task.completedAt && (
                                         <span className="text-zinc-700 text-[10px]">
                                             {new Date(task.completedAt).toLocaleDateString('tr-TR')}

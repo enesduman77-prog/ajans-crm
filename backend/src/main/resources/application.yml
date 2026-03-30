@@ -60,6 +60,16 @@ app:
   cloudinary:
     url: ${CLOUDINARY_URL:}
 
+  google-analytics:
+    enabled: true
+
+  google-oauth:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+    redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/api/oauth/google/callback}
+
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+
   file:
     upload-dir: ${FILE_UPLOAD_DIR:uploads}
 

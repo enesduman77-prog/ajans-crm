@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { adminApi } from '../../api/admin';
 import type { StaffResponse, CreateStaffRequest, CompanyResponse } from '../../api/admin';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, X, Building2 } from 'lucide-react';
+import { Users, Plus, X, Building2, Trash2 } from 'lucide-react';
 
 export default function StaffPage() {
     const [staff, setStaff] = useState<StaffResponse[]>([]);
@@ -16,6 +16,7 @@ export default function StaffPage() {
         fullName: '', email: '', password: '', phone: '', position: '', department: '', initialCompanyId: ''
     });
     const [openAssignId, setOpenAssignId] = useState<string | null>(null);
+    const [deleteConfirm, setDeleteConfirm] = useState<StaffResponse | null>(null);
     const assignDropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -94,6 +95,17 @@ export default function StaffPage() {
         }
     };
 
+    const handleDelete = async () => {
+        if (!deleteConfirm) return;
+        try {
+            await adminApi.deleteStaff(deleteConfirm.id);
+            setDeleteConfirm(null);
+            loadData();
+        } catch (err: any) {
+            alert(err.response?.data?.message || 'Çalışan silinemedi');
+        }
+    };
+
     const updateField = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
 
     return (
@@ -119,13 +131,14 @@ export default function StaffPage() {
                     <p className="text-zinc-600 text-sm mt-1">İlk çalışanınızı ekleyerek başlayın.</p>
                 </div>
             ) : (
-                <div className="glass-panel rounded-2xl overflow-hidden">
+                <div className="glass-panel rounded-2xl overflow-visible">
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-white/[0.06]">
                                 <th className="text-left p-4 text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Çalışan</th>
                                 <th className="text-left p-4 text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Pozisyon</th>
                                 <th className="text-left p-4 text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Atandığı Şirketler</th>
+                                <th className="p-4 w-10"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -203,6 +216,15 @@ export default function StaffPage() {
                                                 )}
                                             </div>
                                         </td>
+                                        <td className="p-4">
+                                            <button
+                                                onClick={() => setDeleteConfirm(s)}
+                                                className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-colors"
+                                                title="Çalışanı Sil"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </td>
                                     </motion.tr>
                                 );
                             })}
@@ -258,6 +280,54 @@ export default function StaffPage() {
                                     {saving ? <div className="h-5 w-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : 'Çalışanı Oluştur'}
                                 </button>
                             </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteConfirm && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
+                        onClick={() => setDeleteConfirm(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0.95 }}
+                            className="glass-panel rounded-2xl w-full max-w-sm p-6"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+                                    <Trash2 className="w-5 h-5 text-red-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-white font-bold text-sm">Çalışanı Sil</h3>
+                                    <p className="text-zinc-500 text-xs">Bu işlem geri alınamaz</p>
+                                </div>
+                            </div>
+                            <p className="text-zinc-400 text-sm mb-6">
+                                <span className="text-white font-medium">{deleteConfirm.fullName}</span> adlı çalışanı silmek istediğinize emin misiniz? Tüm şirket atamaları da kaldırılacaktır.
+                            </p>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setDeleteConfirm(null)}
+                                    className="flex-1 py-2.5 rounded-xl border border-white/[0.06] text-zinc-400 hover:text-white text-sm font-medium transition-colors"
+                                >
+                                    İptal
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    className="flex-1 py-2.5 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 text-sm font-medium transition-colors"
+                                >
+                                    Sil
+                                </button>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}

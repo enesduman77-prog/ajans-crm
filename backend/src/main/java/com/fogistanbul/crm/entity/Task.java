@@ -24,11 +24,11 @@ public class Task {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", nullable = false)
+    @JoinColumn(name = "company_id")
     private Company company;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_to")
+    @JoinColumn(name = "assigned_to", nullable = false)
     private UserProfile assignedTo;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -53,11 +53,17 @@ public class Task {
     @Builder.Default
     private TaskStatus status = TaskStatus.TODO;
 
-    @Column(name = "due_date")
-    private Instant dueDate;
+    @Column(name = "start_date")
+    private Instant startDate;
 
-    @Column(name = "due_time")
-    private LocalTime dueTime;
+    @Column(name = "start_time")
+    private LocalTime startTime;
+
+    @Column(name = "end_date")
+    private Instant endDate;
+
+    @Column(name = "end_time")
+    private LocalTime endTime;
 
     @Column(name = "completed_at")
     private Instant completedAt;

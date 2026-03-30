@@ -12,6 +12,7 @@ export interface UserInfo {
     globalRole: 'ADMIN' | 'AGENCY_STAFF' | 'COMPANY_USER';
     membershipRole: 'OWNER' | 'EMPLOYEE' | 'AGENCY_STAFF' | null;
     avatarUrl: string | null;
+    companyId: string | null;
 }
 
 export const authApi = {

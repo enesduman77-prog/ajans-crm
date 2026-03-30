@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { adminApi } from '../../api/admin';
 import type { CompanyResponse, CreateCompanyRequest, UpdateCompanyRequest } from '../../api/admin';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Building2, Plus, Users, ListTodo, X, Pencil } from 'lucide-react';
+import { Building2, Plus, Users, ListTodo, X, Pencil, Trash2, Briefcase, Shield } from 'lucide-react';
 
 export default function CompaniesPage() {
     const [companies, setCompanies] = useState<CompanyResponse[]>([]);
@@ -12,6 +12,7 @@ export default function CompaniesPage() {
     const [error, setError] = useState('');
 
     const [editingCompany, setEditingCompany] = useState<CompanyResponse | null>(null);
+    const [deleteConfirm, setDeleteConfirm] = useState<CompanyResponse | null>(null);
     const [editForm, setEditForm] = useState<UpdateCompanyRequest>({ name: '' });
     const [editSaving, setEditSaving] = useState(false);
     const [editError, setEditError] = useState('');
@@ -124,6 +125,23 @@ export default function CompaniesPage() {
 
     const updateEditField = (field: string, value: string | number) => setEditForm(prev => ({ ...prev, [field]: value }));
 
+    const openDelete = (e: React.MouseEvent, company: CompanyResponse) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDeleteConfirm(company);
+    };
+
+    const handleDelete = async () => {
+        if (!deleteConfirm) return;
+        try {
+            await adminApi.deleteCompany(deleteConfirm.id);
+            setDeleteConfirm(null);
+            loadCompanies();
+        } catch (err: any) {
+            alert(err.response?.data?.message || 'Şirket silinemedi');
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -177,6 +195,12 @@ export default function CompaniesPage() {
                                     >
                                         <Pencil className="w-3.5 h-3.5" />
                                     </button>
+                                    <button
+                                        onClick={e => openDelete(e, company)}
+                                        className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/10 text-zinc-500 hover:text-red-400 transition-all"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
                                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${company.contractStatus === 'ACTIVE'
                                         ? 'bg-emerald-500/10 text-emerald-400'
                                         : 'bg-[#18181b] text-zinc-500'
@@ -191,7 +215,10 @@ export default function CompaniesPage() {
 
                             <div className="flex items-center gap-4 mt-4 pt-4 border-t border-white/[0.06]">
                                 <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-                                    <Users className="w-3.5 h-3.5" /> {company.memberCount} Üye
+                                    <Users className="w-3.5 h-3.5" /> {company.employeeCount} Çalışan
+                                </div>
+                                <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+                                    <Shield className="w-3.5 h-3.5" /> {company.staffCount} Yetkili
                                 </div>
                                 <div className="flex items-center gap-1.5 text-xs text-zinc-500">
                                     <ListTodo className="w-3.5 h-3.5" /> {company.taskCount} Görev
@@ -355,6 +382,54 @@ export default function CompaniesPage() {
                                     {editSaving ? <div className="h-5 w-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : 'Değişiklikleri Kaydet'}
                                 </button>
                             </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteConfirm && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
+                        onClick={() => setDeleteConfirm(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0.95 }}
+                            className="glass-panel rounded-2xl w-full max-w-sm p-6"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+                                    <Trash2 className="w-5 h-5 text-red-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-white font-bold text-sm">Şirketi Sil</h3>
+                                    <p className="text-zinc-500 text-xs">Bu işlem geri alınamaz</p>
+                                </div>
+                            </div>
+                            <p className="text-zinc-400 text-sm mb-6">
+                                <span className="text-white font-medium">{deleteConfirm.name}</span> şirketini silmek istediğinize emin misiniz? Şirkete ait tüm görevler ve üyelikler de silinecektir.
+                            </p>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setDeleteConfirm(null)}
+                                    className="flex-1 py-2.5 rounded-xl border border-white/[0.06] text-zinc-400 hover:text-white text-sm font-medium transition-colors"
+                                >
+                                    İptal
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    className="flex-1 py-2.5 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 text-sm font-medium transition-colors"
+                                >
+                                    Sil
+                                </button>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}

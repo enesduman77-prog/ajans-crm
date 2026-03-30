@@ -108,12 +108,17 @@ public class CalendarExportController {
         }
 
         for (Task t : tasks) {
-            if (t.getDueDate() == null) {
+            if (t.getStartDate() == null && t.getEndDate() == null) {
                 continue;
             }
             sb.append("BEGIN:VEVENT\r\n");
             sb.append("UID:task-").append(t.getId()).append("@fogistanbul.com\r\n");
-            sb.append("DTSTART:").append(ICAL_DT.format(t.getDueDate())).append("\r\n");
+            if (t.getStartDate() != null) {
+                sb.append("DTSTART:").append(ICAL_DT.format(t.getStartDate())).append("\r\n");
+            }
+            if (t.getEndDate() != null) {
+                sb.append("DTEND:").append(ICAL_DT.format(t.getEndDate())).append("\r\n");
+            }
             sb.append("SUMMARY:Task ").append(escapeIcal(t.getTitle())).append("\r\n");
             if (t.getDescription() != null) {
                 sb.append("DESCRIPTION:").append(escapeIcal(t.getDescription())).append("\r\n");
