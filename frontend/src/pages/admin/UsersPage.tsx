@@ -18,7 +18,7 @@ const MEMBERSHIP_LABELS: Record<string, string> = {
 
 const ROLE_COLORS: Record<string, string> = {
     ADMIN: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-    AGENCY_STAFF: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    AGENCY_STAFF: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
     COMPANY_USER: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
 };
 
@@ -111,7 +111,7 @@ export default function UsersPage() {
                 {[
                     { key: 'ALL', label: 'Toplam', count: roleCounts.ALL, color: 'text-white', bg: 'bg-white/[0.04]' },
                     { key: 'ADMIN', label: 'Yönetici', count: roleCounts.ADMIN, color: 'text-orange-400', bg: 'bg-orange-500/[0.06]' },
-                    { key: 'AGENCY_STAFF', label: 'Ajans Çalışanı', count: roleCounts.AGENCY_STAFF, color: 'text-emerald-400', bg: 'bg-emerald-500/[0.06]' },
+                    { key: 'AGENCY_STAFF', label: 'Ajans Çalışanı', count: roleCounts.AGENCY_STAFF, color: 'text-pink-400', bg: 'bg-pink-500/[0.06]' },
                     { key: 'COMPANY_USER', label: 'Şirket Kullanıcısı', count: roleCounts.COMPANY_USER, color: 'text-blue-400', bg: 'bg-blue-500/[0.06]' },
                 ].map(stat => (
                     <button
@@ -135,7 +135,7 @@ export default function UsersPage() {
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     placeholder="İsim veya email ile ara..."
-                    className="w-full pl-11 pr-4 py-3 bg-[#111113] border border-white/[0.06] rounded-xl text-sm text-white placeholder-zinc-600 outline-none focus:border-orange-500/30 transition-colors"
+                    className="w-full pl-11 pr-4 py-3 bg-[#0C0C0E] border border-white/[0.06] rounded-xl text-sm text-white placeholder-zinc-600 outline-none focus:border-orange-500/30 transition-colors"
                 />
             </div>
 

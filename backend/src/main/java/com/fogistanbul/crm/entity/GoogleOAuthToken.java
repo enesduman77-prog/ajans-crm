@@ -39,6 +39,9 @@ public class GoogleOAuthToken {
     @Column(name = "ga_property_id", length = 50)
     private String gaPropertyId;
 
+    @Column(name = "sc_site_url")
+    private String scSiteUrl;
+
     @Column(name = "connected_at", nullable = false, updatable = false)
     @Builder.Default
     private Instant connectedAt = Instant.now();

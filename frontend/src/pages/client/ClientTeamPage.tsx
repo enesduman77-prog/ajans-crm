@@ -46,14 +46,14 @@ export default function ClientTeamPage() {
             {/* Agency Staff Section */}
             <section className="space-y-4">
                 <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                        <Shield className="w-4 h-4 text-emerald-400" />
+                    <div className="h-8 w-8 rounded-lg bg-pink-500/10 flex items-center justify-center">
+                        <Shield className="w-4 h-4 text-pink-400" />
                     </div>
                     <div>
                         <h2 className="text-lg font-bold text-white">Ajans Ekibi</h2>
                         <p className="text-xs text-zinc-500">Şirketinize atanmış ajans çalışanları</p>
                     </div>
-                    <span className="ml-auto text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-lg font-medium">
+                    <span className="ml-auto text-xs bg-pink-500/10 text-pink-400 px-2.5 py-1 rounded-lg font-medium">
                         {agencyStaff.length} kişi
                     </span>
                 </div>
@@ -66,7 +66,7 @@ export default function ClientTeamPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         {agencyStaff.map((member, i) => (
-                            <MemberCard key={member.id} member={member} index={i} accent="emerald" />
+                            <MemberCard key={member.id} member={member} index={i} accent="pink" />
                         ))}
                     </div>
                 )}
@@ -104,11 +104,11 @@ export default function ClientTeamPage() {
     );
 }
 
-function MemberCard({ member, index, accent }: { member: TeamMemberResponse; index: number; accent: 'emerald' | 'blue' }) {
+function MemberCard({ member, index, accent }: { member: TeamMemberResponse; index: number; accent: 'pink' | 'blue' }) {
     const accentStyles = {
-        emerald: {
-            badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-            avatar: 'bg-emerald-500/10 text-emerald-400',
+        pink: {
+            badge: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+            avatar: 'bg-pink-500/10 text-pink-400',
         },
         blue: {
             badge: 'bg-blue-500/10 text-blue-400 border-blue-500/20',

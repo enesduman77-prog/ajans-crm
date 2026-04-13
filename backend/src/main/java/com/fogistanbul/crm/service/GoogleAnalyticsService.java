@@ -27,8 +27,8 @@ import java.util.UUID;
 public class GoogleAnalyticsService {
 
     private static final Logger log = LoggerFactory.getLogger(GoogleAnalyticsService.class);
-    private static final String DATE_RANGE_START = "30daysAgo";
-    private static final String DATE_RANGE_END   = "today";
+    private static final String DEFAULT_START = "30daysAgo";
+    private static final String DEFAULT_END   = "today";
 
     private final GoogleOAuthService oAuthService;
 
@@ -40,7 +40,9 @@ public class GoogleAnalyticsService {
                 && oAuthService.getPropertyId(companyId).isPresent();
     }
 
-    public GaOverviewResponse getOverview(UUID companyId) {
+    public GaOverviewResponse getOverview(UUID companyId, String startDate, String endDate) {
+        String rangeStart = (startDate != null && !startDate.isBlank()) ? startDate : DEFAULT_START;
+        String rangeEnd   = (endDate != null && !endDate.isBlank()) ? endDate : DEFAULT_END;
         if (!oAuthService.isConnected(companyId)) {
             return GaOverviewResponse.disabled();
         }
@@ -62,11 +64,12 @@ public class GoogleAnalyticsService {
 
         try (BetaAnalyticsDataClient client = buildClient(accessToken)) {
             String property = "properties/" + propertyId;
+            DateRange dr = dateRange(rangeStart, rangeEnd);
 
             // 1. Temel metrikler
             RunReportResponse overview = client.runReport(RunReportRequest.newBuilder()
                     .setProperty(property)
-                    .addDateRanges(dateRange())
+                    .addDateRanges(dr)
                     .addMetrics(metric("sessions"))
                     .addMetrics(metric("totalUsers"))
                     .addMetrics(metric("newUsers"))
@@ -91,7 +94,7 @@ public class GoogleAnalyticsService {
             // 2. GÃ¼nlÃ¼k trend
             RunReportResponse dailyReport = client.runReport(RunReportRequest.newBuilder()
                     .setProperty(property)
-                    .addDateRanges(dateRange())
+                    .addDateRanges(dr)
                     .addDimensions(dimension("date"))
                     .addMetrics(metric("sessions"))
                     .addMetrics(metric("totalUsers"))
@@ -112,7 +115,7 @@ public class GoogleAnalyticsService {
             // 3. Trafik kaynaklarÄ±
             RunReportResponse sourcesReport = client.runReport(RunReportRequest.newBuilder()
                     .setProperty(property)
-                    .addDateRanges(dateRange())
+                    .addDateRanges(dr)
                     .addDimensions(dimension("sessionDefaultChannelGroup"))
                     .addMetrics(metric("sessions"))
                     .addOrderBys(orderByMetricDesc("sessions"))
@@ -128,7 +131,7 @@ public class GoogleAnalyticsService {
             // 4. En Ã§ok ziyaret edilen sayfalar
             RunReportResponse pagesReport = client.runReport(RunReportRequest.newBuilder()
                     .setProperty(property)
-                    .addDateRanges(dateRange())
+                    .addDateRanges(dr)
                     .addDimensions(dimension("pagePath"))
                     .addMetrics(metric("screenPageViews"))
                     .addOrderBys(orderByMetricDesc("screenPageViews"))
@@ -144,7 +147,7 @@ public class GoogleAnalyticsService {
             // 5. Ãœlkelere gÃ¶re
             RunReportResponse countriesReport = client.runReport(RunReportRequest.newBuilder()
                     .setProperty(property)
-                    .addDateRanges(dateRange())
+                    .addDateRanges(dr)
                     .addDimensions(dimension("country"))
                     .addMetrics(metric("sessions"))
                     .addOrderBys(orderByMetricDesc("sessions"))
@@ -194,8 +197,8 @@ public class GoogleAnalyticsService {
         return BetaAnalyticsDataClient.create(settings);
     }
 
-    private DateRange dateRange() {
-        return DateRange.newBuilder().setStartDate(DATE_RANGE_START).setEndDate(DATE_RANGE_END).build();
+    private DateRange dateRange(String start, String end) {
+        return DateRange.newBuilder().setStartDate(start).setEndDate(end).build();
     }
 
     private Metric metric(String name) {

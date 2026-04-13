@@ -7,15 +7,20 @@ import com.fogistanbul.crm.dto.TaskNoteResponse;
 import com.fogistanbul.crm.dto.TaskResponse;
 import com.fogistanbul.crm.dto.UpdateTaskRequest;
 import com.fogistanbul.crm.entity.Company;
+import com.fogistanbul.crm.entity.PrProject;
+import com.fogistanbul.crm.entity.PrProjectPhase;
 import com.fogistanbul.crm.entity.Task;
 import com.fogistanbul.crm.entity.TaskNote;
 import com.fogistanbul.crm.entity.UserProfile;
 import com.fogistanbul.crm.entity.enums.GlobalRole;
 import com.fogistanbul.crm.entity.enums.Priority;
+import com.fogistanbul.crm.entity.enums.PrProjectStatus;
 import com.fogistanbul.crm.entity.enums.TaskCategory;
 import com.fogistanbul.crm.entity.enums.TaskStatus;
 import com.fogistanbul.crm.repository.CompanyMembershipRepository;
 import com.fogistanbul.crm.repository.CompanyRepository;
+import com.fogistanbul.crm.repository.PrProjectPhaseRepository;
+import com.fogistanbul.crm.repository.PrProjectRepository;
 import com.fogistanbul.crm.repository.TaskNoteRepository;
 import com.fogistanbul.crm.repository.TaskRepository;
 import com.fogistanbul.crm.repository.UserProfileRepository;
@@ -42,6 +47,8 @@ public class TaskService {
     private final CompanyRepository companyRepository;
     private final UserProfileRepository userProfileRepository;
     private final CompanyMembershipRepository membershipRepository;
+    private final PrProjectPhaseRepository phaseRepository;
+    private final PrProjectRepository prProjectRepository;
 
     @Transactional
     public TaskResponse createTask(CreateTaskRequest req, UUID createdById) {
@@ -72,7 +79,6 @@ public class TaskService {
                 .title(req.getTitle())
                 .description(req.getDescription())
                 .category(req.getCategory() != null ? req.getCategory() : TaskCategory.OTHER)
-                .priority(req.getPriority() != null ? req.getPriority() : Priority.MEDIUM)
                 .startDate(req.getStartDate())
                 .startTime(req.getStartTime())
                 .endDate(req.getEndDate())
@@ -166,15 +172,14 @@ public class TaskService {
             task.setStatus(req.getStatus());
             if (req.getStatus() == TaskStatus.DONE) {
                 task.setCompletedAt(Instant.now());
+                // Auto-complete linked PR project phase
+                completeLinkedPhase(task);
             } else {
                 task.setCompletedAt(null);
             }
         }
         if (req.getCategory() != null) {
             task.setCategory(TaskCategory.valueOf(req.getCategory()));
-        }
-        if (req.getPriority() != null) {
-            task.setPriority(Priority.valueOf(req.getPriority()));
         }
         if (req.getAssignedToId() != null) {
             UserProfile assignee = getUserOrThrow(req.getAssignedToId());
@@ -223,6 +228,41 @@ public class TaskService {
         }
     }
 
+    private void completeLinkedPhase(Task task) {
+        phaseRepository.findByTaskId(task.getId()).ifPresent(phase -> {
+            if (Boolean.TRUE.equals(phase.getIsCompleted())) return;
+
+            phase.setIsCompleted(true);
+            phase.setCompletedAt(Instant.now());
+            phase.setStatus("COMPLETED");
+            phaseRepository.save(phase);
+
+            PrProject project = phase.getProject();
+            List<PrProjectPhase> allPhases = phaseRepository.findByProjectIdOrderByPhaseNumber(project.getId());
+            long completedCount = allPhases.stream().filter(PrProjectPhase::getIsCompleted).count();
+
+            java.math.BigDecimal progress = java.math.BigDecimal.valueOf(completedCount)
+                    .multiply(java.math.BigDecimal.valueOf(100))
+                    .divide(java.math.BigDecimal.valueOf(allPhases.size()), 2, java.math.RoundingMode.HALF_UP);
+            project.setProgressPercent(progress);
+
+            int nextPhase = allPhases.stream()
+                    .filter(p -> !p.getIsCompleted())
+                    .mapToInt(PrProjectPhase::getPhaseNumber)
+                    .min()
+                    .orElse(project.getTotalPhases());
+            project.setCurrentPhase(nextPhase);
+
+            if (completedCount == allPhases.size()) {
+                project.setStatus(PrProjectStatus.COMPLETED);
+            }
+
+            prProjectRepository.save(project);
+            log.info("Phase '{}' auto-completed via task '{}', project progress: {}%",
+                    phase.getName(), task.getTitle(), progress);
+        });
+    }
+
     @Transactional(readOnly = true)
     public List<ContactResponse> getAssignableUsers(UUID userId, UUID companyId) {
         UserProfile user = getUserOrThrow(userId);
@@ -253,7 +293,9 @@ public class TaskService {
             var companyMemberIds = membershipRepository.findByCompanyId(companyId)
                     .stream().map(m -> m.getUser().getId()).collect(Collectors.toSet());
             users = users.stream()
-                    .filter(u -> companyMemberIds.contains(u.getId()) || u.getGlobalRole() == GlobalRole.ADMIN)
+                    .filter(u -> companyMemberIds.contains(u.getId())
+                            || u.getGlobalRole() == GlobalRole.ADMIN
+                            || u.getGlobalRole() == GlobalRole.AGENCY_STAFF)
                     .collect(Collectors.toList());
         }
 
@@ -289,7 +331,6 @@ public class TaskService {
                 .title(task.getTitle())
                 .description(task.getDescription())
                 .category(task.getCategory())
-                .priority(task.getPriority())
                 .status(task.getStatus())
                 .startDate(task.getStartDate())
                 .startTime(task.getStartTime())

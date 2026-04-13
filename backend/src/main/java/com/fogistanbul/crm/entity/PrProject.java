@@ -23,7 +23,7 @@ public class PrProject {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", nullable = false)
+    @JoinColumn(name = "company_id")
     private Company company;
 
     @Column(nullable = false)
@@ -51,6 +51,19 @@ public class PrProject {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     private UserProfile createdBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "responsible_id")
+    private UserProfile responsible;
+
+    @Column(name = "start_date")
+    private Instant startDate;
+
+    @Column(name = "end_date")
+    private Instant endDate;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

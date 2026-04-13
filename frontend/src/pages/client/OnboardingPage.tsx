@@ -22,7 +22,7 @@ const steps = [
         title: 'Ekibinizi Tanıyın',
         description: 'Size atanmış ekip üyelerimizi tanıyın.',
         icon: Users,
-        color: 'text-emerald-400',
+        color: 'text-pink-400',
     },
     {
         id: 'preferences',
@@ -73,7 +73,7 @@ export default function OnboardingPage() {
                                 <button
                                     onClick={() => setCurrent(i)}
                                     className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${isDone
-                                            ? 'bg-emerald-500 border-emerald-500'
+                                            ? 'bg-pink-500 border-pink-500'
                                             : isCurrent
                                                 ? 'border-orange-500 bg-orange-500/10'
                                                 : 'border-white/[0.1] bg-white/[0.02]'
@@ -86,7 +86,7 @@ export default function OnboardingPage() {
                                     )}
                                 </button>
                                 {i < steps.length - 1 && (
-                                    <div className={`w-8 sm:w-12 h-0.5 mx-1 ${isDone ? 'bg-emerald-500' : 'bg-white/[0.06]'}`} />
+                                    <div className={`w-8 sm:w-12 h-0.5 mx-1 ${isDone ? 'bg-pink-500' : 'bg-white/[0.06]'}`} />
                                 )}
                             </div>
                         );
@@ -115,10 +115,10 @@ export default function OnboardingPage() {
                         <div className="p-6 bg-white/[0.02] border border-white/[0.06] rounded-2xl text-left space-y-3">
                             <p className="text-[13px] text-zinc-400">Bu rehber sizi aşağıdaki konularda yönlendirecek:</p>
                             <ul className="space-y-2 text-[13px] text-zinc-300">
-                                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-400" /> Şirket bilgilerinizi doğrulama</li>
-                                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-400" /> Ekibinizi tanıma</li>
-                                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-400" /> Bildirim tercihlerini ayarlama</li>
-                                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-400" /> Panel kullanımına başlama</li>
+                                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-pink-400" /> Şirket bilgilerinizi doğrulama</li>
+                                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-pink-400" /> Ekibinizi tanıma</li>
+                                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-pink-400" /> Bildirim tercihlerini ayarlama</li>
+                                <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-pink-400" /> Panel kullanımına başlama</li>
                             </ul>
                         </div>
                     )}
@@ -143,8 +143,8 @@ export default function OnboardingPage() {
                                 Size atanmış ekip üyelerimiz görevlerinizi yönetir, toplantılarınızı planlar
                                 ve içerik üretimi süreçlerinizde size destek olur.
                             </p>
-                            <div className="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
-                                <p className="text-[12px] text-emerald-400">
+                            <div className="p-3 bg-pink-500/5 border border-pink-500/10 rounded-xl">
+                                <p className="text-[12px] text-pink-400">
                                     💡 Mesajlaşma bölümünden ekip üyelerinizle doğrudan iletişim kurabilirsiniz.
                                 </p>
                             </div>
@@ -167,7 +167,7 @@ export default function OnboardingPage() {
                                             <p className="text-[13px] text-white">{item.label}</p>
                                             <p className="text-[10px] text-zinc-600">{item.desc}</p>
                                         </div>
-                                        <div className="w-8 h-5 bg-emerald-500 rounded-full relative">
+                                        <div className="w-8 h-5 bg-pink-500 rounded-full relative">
                                             <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full" />
                                         </div>
                                     </div>
@@ -225,7 +225,7 @@ export default function OnboardingPage() {
                 ) : (
                     <a
                         href="/client"
-                        className="flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-colors"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-sm font-medium transition-colors"
                     >
                         <Rocket className="w-4 h-4" />
                         Panele Git

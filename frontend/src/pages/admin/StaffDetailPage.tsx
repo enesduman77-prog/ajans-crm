@@ -82,7 +82,7 @@ export default function StaffDetailPage() {
             {/* Info Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Contact */}
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5 space-y-3">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5 space-y-3">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Kişisel Bilgiler</h3>
                     <div className="space-y-2">
                         <div className="flex items-center gap-2 text-sm">
@@ -113,7 +113,7 @@ export default function StaffDetailPage() {
                 </div>
 
                 {/* Stats */}
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-3">İstatistikler</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="bg-[#18181b]/50 rounded-xl p-4 text-center">
@@ -121,7 +121,7 @@ export default function StaffDetailPage() {
                             <p className="text-xs text-zinc-500 mt-1">Atandığı Şirket</p>
                         </div>
                         <div className="bg-[#18181b]/50 rounded-xl p-4 text-center">
-                            <p className="text-2xl font-bold text-emerald-400">{staff.globalRole === 'AGENCY_STAFF' ? 'Aktif' : '-'}</p>
+                            <p className="text-2xl font-bold text-pink-400">{staff.globalRole === 'AGENCY_STAFF' ? 'Aktif' : '-'}</p>
                             <p className="text-xs text-zinc-500 mt-1">Durum</p>
                         </div>
                     </div>
@@ -129,7 +129,7 @@ export default function StaffDetailPage() {
             </div>
 
             {/* Assigned Companies */}
-            <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
                         <Building2 className="w-4 h-4" />
@@ -147,7 +147,7 @@ export default function StaffDetailPage() {
                     <div className="mb-4 p-4 bg-[#18181b]/60 rounded-xl border border-white/[0.06] flex items-center gap-3">
                         <select value={selectedCompanyId}
                             onChange={e => setSelectedCompanyId(e.target.value)}
-                            className="flex-1 bg-[#111113] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white focus:border-orange-500/50 focus:outline-none">
+                            className="flex-1 bg-[#0C0C0E] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white focus:border-orange-500/50 focus:outline-none">
                             <option value="">Şirket seçin...</option>
                             {availableCompanies.map(c => (
                                 <option key={c.id} value={c.id}>{c.name}</option>

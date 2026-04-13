@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 import {
     PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
@@ -53,7 +53,7 @@ export default function DonutChartCard({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-[#111113] border border-white/[0.06] rounded-2xl p-6"
+            className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-6"
         >
             <div className="flex items-center gap-2 mb-4">
                 <Icon className={`w-5 h-5 ${iconColor}`} />

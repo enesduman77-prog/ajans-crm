@@ -178,7 +178,7 @@ export default function CompaniesPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.05 }}
-                            className="bg-[#111113] border border-white/[0.06] p-5 rounded-2xl hover:border-white/[0.08] transition-all group cursor-pointer"
+                            className="bg-[#0C0C0E] border border-white/[0.06] p-5 rounded-2xl hover:border-white/[0.08] transition-all group cursor-pointer"
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div className="h-12 w-12 rounded-xl bg-[#18181b] flex items-center justify-center border border-white/[0.06]">
@@ -202,7 +202,7 @@ export default function CompaniesPage() {
                                         <Trash2 className="w-3.5 h-3.5" />
                                     </button>
                                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${company.contractStatus === 'ACTIVE'
-                                        ? 'bg-emerald-500/10 text-emerald-400'
+                                        ? 'bg-pink-500/10 text-pink-400'
                                         : 'bg-[#18181b] text-zinc-500'
                                         }`}>
                                         {company.contractStatus === 'ACTIVE' ? 'Aktif' : company.contractStatus}
@@ -246,7 +246,7 @@ export default function CompaniesPage() {
                             className="glass-panel rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto"
                             onClick={e => e.stopPropagation()}
                         >
-                            <div className="p-6 border-b border-white/[0.06] flex items-center justify-between sticky top-0 bg-[#111113] backdrop-blur z-10 rounded-t-2xl">
+                            <div className="p-6 border-b border-white/[0.06] flex items-center justify-between sticky top-0 bg-[#0C0C0E] backdrop-blur z-10 rounded-t-2xl">
                                 <h2 className="text-lg font-bold text-white">Yeni Şirket Oluştur</h2>
                                 <button onClick={() => setShowForm(false)} className="text-zinc-500 hover:text-white transition-colors">
                                     <X className="w-5 h-5" />
@@ -333,7 +333,7 @@ export default function CompaniesPage() {
                             className="glass-panel rounded-2xl w-full max-w-xl max-h-[90vh] overflow-auto"
                             onClick={e => e.stopPropagation()}
                         >
-                            <div className="p-6 border-b border-white/[0.06] flex items-center justify-between sticky top-0 bg-[#111113] backdrop-blur z-10 rounded-t-2xl">
+                            <div className="p-6 border-b border-white/[0.06] flex items-center justify-between sticky top-0 bg-[#0C0C0E] backdrop-blur z-10 rounded-t-2xl">
                                 <h2 className="text-lg font-bold text-white">Şirketi Düzenle</h2>
                                 <button onClick={() => setEditingCompany(null)} className="text-zinc-500 hover:text-white transition-colors">
                                     <X className="w-5 h-5" />

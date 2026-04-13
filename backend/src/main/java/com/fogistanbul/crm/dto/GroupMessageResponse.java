@@ -17,6 +17,7 @@ public class GroupMessageResponse {
     private String senderId;
     private String senderName;
     private String senderAvatarUrl;
+    private String senderGlobalRole;
     private String content;
     private Instant createdAt;
 }

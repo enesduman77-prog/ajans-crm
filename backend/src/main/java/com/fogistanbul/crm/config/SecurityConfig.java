@@ -18,6 +18,7 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
@@ -61,6 +62,8 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/api/oauth/google/callback").permitAll()
+                        .requestMatchers("/api/oauth/instagram/callback").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/settings/avatar/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/staff/**").hasAnyRole("ADMIN", "AGENCY_STAFF")
                         .requestMatchers("/api/client/**").hasAnyRole("ADMIN", "COMPANY_USER")

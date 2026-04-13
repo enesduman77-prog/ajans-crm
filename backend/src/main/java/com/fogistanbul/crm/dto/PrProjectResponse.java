@@ -22,6 +22,11 @@ public class PrProjectResponse {
     private String status;
     private UUID createdById;
     private String createdByName;
+    private UUID responsibleId;
+    private String responsibleName;
+    private Instant startDate;
+    private Instant endDate;
+    private String notes;
     private List<PhaseInfo> phases;
     private List<MemberInfo> members;
     private Instant createdAt;
@@ -34,6 +39,24 @@ public class PrProjectResponse {
         private String name;
         private Boolean isCompleted;
         private Instant completedAt;
+        private UUID assignedToId;
+        private String assignedToName;
+        private UUID taskId;
+        private Instant startDate;
+        private Instant endDate;
+        private String notes;
+        private String status;
+        private List<PhaseNoteInfo> phaseNotes;
+    }
+
+    @Data
+    @Builder
+    public static class PhaseNoteInfo {
+        private UUID id;
+        private UUID authorId;
+        private String authorName;
+        private String content;
+        private Instant createdAt;
     }
 
     @Data

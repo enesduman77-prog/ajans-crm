@@ -27,35 +27,17 @@ interface KanbanBoardProps {
 const columns = [
     { id: 'TODO', label: 'Yapılacak', color: 'border-zinc-500', bgColor: 'bg-zinc-500/10', textColor: 'text-zinc-400' },
     { id: 'IN_PROGRESS', label: 'Devam Eden', color: 'border-blue-500', bgColor: 'bg-blue-500/10', textColor: 'text-blue-400' },
-    { id: 'DONE', label: 'Tamamlanan', color: 'border-emerald-500', bgColor: 'bg-emerald-500/10', textColor: 'text-emerald-400' },
+    { id: 'DONE', label: 'Tamamlanan', color: 'border-pink-500', bgColor: 'bg-pink-500/10', textColor: 'text-pink-400' },
 ];
 
-const priorityColors: Record<string, string> = {
-    CRITICAL: 'bg-red-500/20 text-red-400',
-    HIGH: 'bg-orange-500/20 text-orange-400',
-    MEDIUM: 'bg-yellow-500/20 text-yellow-400',
-    LOW: 'bg-zinc-500/20 text-zinc-400',
-};
-
-const priorityLabels: Record<string, string> = {
-    CRITICAL: 'Kritik',
-    HIGH: 'Yüksek',
-    MEDIUM: 'Orta',
-    LOW: 'Düşük',
-};
 
 function TaskCard({ task, isDragging = false }: { task: TaskResponse; isDragging?: boolean }) {
     const isOverdue = task.endDate && new Date(task.endDate) < new Date() && task.status !== 'DONE';
     return (
-        <div className={`p-3 bg-[#111113] border border-white/[0.06] rounded-xl transition-all ${isDragging ? 'shadow-2xl shadow-black/50 rotate-2 scale-105' : 'hover:border-white/[0.1]'
+        <div className={`p-3 bg-[#0C0C0E] border border-white/[0.06] rounded-xl transition-all ${isDragging ? 'shadow-2xl shadow-black/50 rotate-2 scale-105' : 'hover:border-white/[0.1]'
             }`}>
             <div className="flex items-start justify-between gap-2 mb-2">
                 <h4 className="text-[13px] font-medium text-white leading-snug flex-1">{task.title}</h4>
-                {task.priority && (
-                    <span className={`text-[9px] font-bold rounded px-1.5 py-0.5 shrink-0 ${priorityColors[task.priority] || ''}`}>
-                        {priorityLabels[task.priority] || task.priority}
-                    </span>
-                )}
             </div>
             {task.description && (
                 <p className="text-[11px] text-zinc-600 line-clamp-2 mb-2">{task.description}</p>

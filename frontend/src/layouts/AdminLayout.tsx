@@ -7,7 +7,7 @@ import GlobalSearch from '../components/GlobalSearch';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import {
-    LayoutDashboard, Building2, Users, LogOut, Shield, MessageSquare, Zap, Menu, X, BarChart3, Activity, Search, Settings, UserCog
+    LayoutDashboard, Building2, Users, LogOut, Shield, MessageSquare, Zap, Menu, X, BarChart3, Activity, Search, Settings, UserCog, RefreshCw
 } from 'lucide-react';
 
 const navItems = [
@@ -17,6 +17,7 @@ const navItems = [
     { to: '/admin/staff', icon: Users, label: 'Çalışanlar' },
     { to: '/admin/users', icon: UserCog, label: 'Kullanıcılar' },
     { to: '/admin/messaging', icon: MessageSquare, label: 'Mesajlar' },
+    { to: '/admin/routines', icon: RefreshCw, label: 'Rutin Görevler' },
     { to: '/admin/activity-log', icon: Activity, label: 'Aktivite Günlüğü' },
     { to: '/admin/settings', icon: Settings, label: 'Ayarlar' },
 ];
@@ -29,7 +30,7 @@ export default function AdminLayout() {
     return (
         <div className="flex min-h-dvh bg-transparent">
             {/* Mobile Top Bar */}
-            <div className="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-3 bg-[#111113] border-b border-white/[0.06] md:hidden">
+            <div className="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-3 bg-[#0C0C0E] border-b border-white/[0.06] md:hidden">
                 <button onClick={() => setSidebarOpen(true)} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-zinc-400">
                     <Menu className="w-5 h-5" />
                 </button>
@@ -48,7 +49,7 @@ export default function AdminLayout() {
 
             {/* Sidebar */}
             <aside className={`
-                fixed inset-y-0 left-0 z-50 w-[260px] bg-[#111113] border-r border-white/[0.06] flex flex-col
+                fixed inset-y-0 left-0 z-50 w-[260px] bg-[#0C0C0E] border-r border-white/[0.06] flex flex-col
                 transform transition-transform duration-200 ease-out
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
                 md:sticky md:top-0 md:h-dvh md:translate-x-0 md:z-auto

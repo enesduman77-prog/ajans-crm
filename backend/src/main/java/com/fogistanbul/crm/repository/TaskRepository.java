@@ -43,4 +43,22 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     @Modifying
     @Query("UPDATE Task t SET t.status = 'OVERDUE' WHERE t.status NOT IN ('DONE', 'OVERDUE') AND t.endDate < :now")
     int markOverdueTasks(@Param("now") Instant now);
+
+    boolean existsByRoutineIdAndRoutinePeriodKey(UUID routineId, String routinePeriodKey);
+
+    boolean existsByRoutineIdAndRoutinePeriodKeyAndAssignedToId(UUID routineId, String routinePeriodKey, UUID assignedToId);
+
+    // ─── Staff Analytics ───
+
+    long countByAssignedToIdAndStatus(UUID userId, TaskStatus status);
+
+    long countByAssignedToId(UUID userId);
+
+    @Query("SELECT t FROM Task t WHERE t.assignedTo.id = :userId AND t.status = 'DONE' AND t.completedAt >= :from AND t.completedAt <= :to")
+    List<Task> findCompletedByUserInRange(@Param("userId") UUID userId, @Param("from") Instant from, @Param("to") Instant to);
+
+    @Query("SELECT t FROM Task t WHERE t.assignedTo.id = :userId AND t.createdAt >= :from AND t.createdAt <= :to")
+    List<Task> findCreatedForUserInRange(@Param("userId") UUID userId, @Param("from") Instant from, @Param("to") Instant to);
+
+    List<Task> findByAssignedToIdAndStatusNot(UUID userId, TaskStatus status);
 }

@@ -5,7 +5,7 @@ import { searchApi, type SearchResult } from '../api/features';
 
 const typeConfig: Record<string, { icon: typeof Building2; color: string; label: string }> = {
     COMPANY: { icon: Building2, color: 'text-orange-400', label: 'Şirket' },
-    TASK: { icon: ClipboardList, color: 'text-emerald-400', label: 'Görev' },
+    TASK: { icon: ClipboardList, color: 'text-pink-400', label: 'Görev' },
     STAFF: { icon: Users, color: 'text-blue-400', label: 'Personel' },
     NOTE: { icon: FileText, color: 'text-purple-400', label: 'Not' },
 };
@@ -91,7 +91,7 @@ export default function GlobalSearch() {
         <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh]" onClick={() => setOpen(false)}>
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
             <div
-                className="relative w-full max-w-[560px] bg-[#111113] border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/50 overflow-hidden"
+                className="relative w-full max-w-[560px] bg-[#0C0C0E] border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/50 overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Search Input */}

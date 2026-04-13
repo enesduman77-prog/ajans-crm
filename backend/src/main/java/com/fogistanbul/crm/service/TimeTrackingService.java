@@ -47,7 +47,9 @@ public class TimeTrackingService {
 
         Task task = taskRepository.findById(request.getTaskId())
                 .orElseThrow(() -> new RuntimeException("Gorev bulunamadi"));
-        ensureCompanyAccess(user, task.getCompany().getId());
+        if (task.getCompany() != null) {
+            ensureCompanyAccess(user, task.getCompany().getId());
+        }
 
         TimeEntry entry = TimeEntry.builder()
                 .user(user)

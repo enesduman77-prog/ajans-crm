@@ -21,11 +21,21 @@ public class CreateShootRequest {
     private Instant shootDate;
     private LocalTime shootTime;
     private String location;
+    private UUID photographerId;
+    private String notes;
     private List<ShootParticipantRequest> participants;
+    private List<EquipmentRequest> equipment;
 
     @Data
     public static class ShootParticipantRequest {
         private UUID userId;
         private String roleInShoot;
+    }
+
+    @Data
+    public static class EquipmentRequest {
+        private String name;
+        private Integer quantity;
+        private String notes;
     }
 }

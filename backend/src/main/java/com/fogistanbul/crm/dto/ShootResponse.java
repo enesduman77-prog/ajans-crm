@@ -20,9 +20,13 @@ public class ShootResponse {
     private LocalTime shootTime;
     private String location;
     private String status;
+    private UUID photographerId;
+    private String photographerName;
+    private String notes;
     private UUID createdById;
     private String createdByName;
     private List<ParticipantInfo> participants;
+    private List<EquipmentInfo> equipment;
     private Instant createdAt;
 
     @Data
@@ -31,5 +35,14 @@ public class ShootResponse {
         private UUID userId;
         private String fullName;
         private String roleInShoot;
+    }
+
+    @Data
+    @Builder
+    public static class EquipmentInfo {
+        private UUID id;
+        private String name;
+        private Integer quantity;
+        private String notes;
     }
 }

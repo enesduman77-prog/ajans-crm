@@ -22,6 +22,7 @@ public class MeetingResponse {
     private UUID createdById;
     private String createdByName;
     private List<ParticipantInfo> participants;
+    private List<NoteInfo> notes;
     private Instant createdAt;
 
     @Data
@@ -30,5 +31,15 @@ public class MeetingResponse {
         private UUID userId;
         private String fullName;
         private String email;
+        private boolean noteSubmitted;
+    }
+
+    @Data
+    @Builder
+    public static class NoteInfo {
+        private UUID userId;
+        private String fullName;
+        private String content;
+        private Instant createdAt;
     }
 }

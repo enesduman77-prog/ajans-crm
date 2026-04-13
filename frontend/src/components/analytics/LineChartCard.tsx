@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer
@@ -39,7 +39,7 @@ export default function LineChartCard({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-[#111113] border border-white/[0.06] rounded-2xl p-6"
+            className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-6"
         >
             <div className="flex items-center gap-2 mb-6">
                 <Icon className={`w-5 h-5 ${iconColor}`} />
@@ -58,8 +58,8 @@ export default function LineChartCard({
                             dataKey={line.dataKey}
                             stroke={line.color}
                             strokeWidth={2}
-                            dot={{ r: 3, fill: line.color, stroke: '#111113', strokeWidth: 2 }}
-                            activeDot={{ r: 5, fill: line.color, stroke: '#111113', strokeWidth: 2 }}
+                            dot={{ r: 3, fill: line.color, stroke: '#0C0C0E', strokeWidth: 2 }}
+                            activeDot={{ r: 5, fill: line.color, stroke: '#0C0C0E', strokeWidth: 2 }}
                             name={line.name || line.dataKey}
                         />
                     ))}

@@ -25,7 +25,7 @@ export default function CompletedTasksPage() {
             {loading ? (
                 <div className="text-center py-20 text-zinc-600">Yükleniyor...</div>
             ) : tasks.length === 0 ? (
-                <div className="text-center py-20 bg-[#111113]/80 border border-white/[0.06] rounded-2xl">
+                <div className="text-center py-20 bg-[#0C0C0E]/80 border border-white/[0.06] rounded-2xl">
                     <Star className="w-10 h-10 text-zinc-700 mx-auto mb-3" />
                     <p className="text-zinc-500">Henüz tamamlanan görev yok.</p>
                 </div>
@@ -37,9 +37,9 @@ export default function CompletedTasksPage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.03 }}
-                            className="bg-[#111113] border border-white/[0.06] rounded-xl p-4 flex items-center gap-4"
+                            className="bg-[#0C0C0E] border border-white/[0.06] rounded-xl p-4 flex items-center gap-4"
                         >
-                            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                            <CheckCircle2 className="w-5 h-5 text-pink-500 shrink-0" />
                             <div className="flex-1 min-w-0">
                                 <p className="text-white/80 font-medium text-sm line-through">{task.title}</p>
                                 <div className="flex items-center gap-3 mt-1">
@@ -52,7 +52,7 @@ export default function CompletedTasksPage() {
                                     )}
                                 </div>
                             </div>
-                            <span className="px-2 py-1 rounded-lg text-[9px] font-bold uppercase bg-emerald-900/30 text-emerald-400">
+                            <span className="px-2 py-1 rounded-lg text-[9px] font-bold uppercase bg-pink-900/30 text-pink-400">
                                 Tamamlandı
                             </span>
                         </motion.div>

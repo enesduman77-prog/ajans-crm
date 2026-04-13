@@ -1,6 +1,7 @@
 package com.fogistanbul.crm.controller;
 
 import com.fogistanbul.crm.dto.CreateMeetingRequest;
+import com.fogistanbul.crm.dto.MeetingNoteRequest;
 import com.fogistanbul.crm.dto.MeetingResponse;
 import com.fogistanbul.crm.service.MeetingService;
 import jakarta.validation.Valid;
@@ -68,5 +69,24 @@ public class MeetingController {
         String role = auth.getAuthorities().iterator().next().getAuthority();
         meetingService.deleteMeeting(id, userId, role);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/complete")
+    public MeetingResponse completeMeeting(
+            @PathVariable UUID id,
+            @Valid @RequestBody MeetingNoteRequest noteRequest,
+            Authentication auth) {
+        UUID userId = (UUID) auth.getPrincipal();
+        String role = auth.getAuthorities().iterator().next().getAuthority();
+        return meetingService.completeMeeting(id, noteRequest, userId, role);
+    }
+
+    @PostMapping("/{id}/notes")
+    public MeetingResponse addNote(
+            @PathVariable UUID id,
+            @Valid @RequestBody MeetingNoteRequest noteRequest,
+            Authentication auth) {
+        UUID userId = (UUID) auth.getPrincipal();
+        return meetingService.addMeetingNote(id, noteRequest, userId);
     }
 }

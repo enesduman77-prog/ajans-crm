@@ -2,6 +2,7 @@ package com.fogistanbul.crm.controller;
 
 import com.fogistanbul.crm.dto.CreatePrProjectRequest;
 import com.fogistanbul.crm.dto.PrProjectResponse;
+import com.fogistanbul.crm.dto.UpdatePrProjectRequest;
 import com.fogistanbul.crm.service.PrProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,15 @@ public class PrProjectController {
         return prProjectService.getProjectById(id, userId);
     }
 
+    @PutMapping("/{id}")
+    public PrProjectResponse update(
+            @PathVariable UUID id,
+            @RequestBody UpdatePrProjectRequest request,
+            Authentication auth) {
+        UUID userId = (UUID) auth.getPrincipal();
+        return prProjectService.updateProject(id, request, userId);
+    }
+
     @PostMapping("/{projectId}/phases/{phaseId}/complete")
     public PrProjectResponse completePhase(
             @PathVariable UUID projectId,
@@ -59,6 +69,20 @@ public class PrProjectController {
             Authentication auth) {
         UUID userId = (UUID) auth.getPrincipal();
         return prProjectService.completePhase(projectId, phaseId, userId);
+    }
+
+    @PostMapping("/{projectId}/phases/{phaseId}/notes")
+    public PrProjectResponse addPhaseNote(
+            @PathVariable UUID projectId,
+            @PathVariable UUID phaseId,
+            @RequestBody java.util.Map<String, String> body,
+            Authentication auth) {
+        UUID userId = (UUID) auth.getPrincipal();
+        String content = body.get("content");
+        if (content == null || content.isBlank()) {
+            throw new RuntimeException("Not icerigi bos olamaz");
+        }
+        return prProjectService.addPhaseNote(projectId, phaseId, content, userId);
     }
 
     @DeleteMapping("/{id}")

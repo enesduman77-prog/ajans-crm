@@ -45,6 +45,13 @@ public class Shoot {
     private ShootStatus status = ShootStatus.PLANNED;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "photographer_id")
+    private UserProfile photographer;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     private UserProfile createdBy;
 

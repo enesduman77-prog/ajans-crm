@@ -34,8 +34,10 @@ public class GoogleAnalyticsController {
 
     /** GA4 verilerini getir */
     @GetMapping("/overview")
-    public GaOverviewResponse overview(@RequestParam UUID companyId) {
-        return googleAnalyticsService.getOverview(companyId);
+    public GaOverviewResponse overview(@RequestParam UUID companyId,
+                                       @RequestParam(required = false) String startDate,
+                                       @RequestParam(required = false) String endDate) {
+        return googleAnalyticsService.getOverview(companyId, startDate, endDate);
     }
 
     /** GA4 Property ID'yi kaydet */

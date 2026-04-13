@@ -38,6 +38,9 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-http://localhost:8080/api/oauth/google/callback}
       - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - INSTAGRAM_APP_ID=${INSTAGRAM_APP_ID:-}
+      - INSTAGRAM_APP_SECRET=${INSTAGRAM_APP_SECRET:-}
+      - INSTAGRAM_REDIRECT_URI=${INSTAGRAM_REDIRECT_URI:-http://localhost:8080/api/oauth/instagram/callback}
     volumes:
       - ./backend:/app
       - /app/target

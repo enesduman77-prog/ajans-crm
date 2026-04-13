@@ -200,4 +200,66 @@ export const adminApi = {
     updateUserRole: (userId: string, globalRole: string) =>
         api.put(`/admin/users/${userId}/role`, { globalRole }).then(r => r.data),
     deleteUser: (userId: string) => api.delete(`/admin/users/${userId}`),
+
+    // Routines
+    getRoutines: (page = 0, size = 50) =>
+        api.get<PageResponse<AdminRoutineResponse>>(`/admin/routines?page=${page}&size=${size}`).then(r => r.data),
+    getRoutine: (id: string) =>
+        api.get<AdminRoutineResponse>(`/admin/routines/${id}`).then(r => r.data),
+    createRoutine: (data: CreateRoutineRequest) =>
+        api.post<AdminRoutineResponse>('/admin/routines', data).then(r => r.data),
+    updateRoutine: (id: string, data: UpdateRoutineRequest) =>
+        api.put<AdminRoutineResponse>(`/admin/routines/${id}`, data).then(r => r.data),
+    deleteRoutine: (id: string) =>
+        api.delete(`/admin/routines/${id}`).then(r => r.data),
 };
+
+// --- Routine Types ---
+export interface AdminRoutineResponse {
+    id: string;
+    title: string;
+    description: string | null;
+    frequency: 'DAILY' | 'WEEKLY' | 'MONTHLY';
+    dayOfWeek: number | null;
+    dayOfMonth: number | null;
+    executionTime: string | null;
+    assignedToId: string | null;
+    assignedToName: string;
+    category: string;
+    isActive: boolean;
+    createdById: string;
+    createdByName: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateRoutineRequest {
+    title: string;
+    description?: string;
+    frequency: 'DAILY' | 'WEEKLY' | 'MONTHLY';
+    dayOfWeek?: number;
+    dayOfMonth?: number;
+    executionTime?: string;
+    assignedToId?: string;
+    category?: string;
+}
+
+export interface UpdateRoutineRequest {
+    title?: string;
+    description?: string;
+    frequency?: 'DAILY' | 'WEEKLY' | 'MONTHLY';
+    dayOfWeek?: number;
+    dayOfMonth?: number;
+    executionTime?: string;
+    assignedToId?: string;
+    category?: string;
+    isActive?: boolean;
+}
+
+export interface PageResponse<T> {
+    content: T[];
+    totalElements: number;
+    totalPages: number;
+    number: number;
+    size: number;
+}

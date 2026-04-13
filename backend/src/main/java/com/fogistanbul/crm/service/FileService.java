@@ -17,6 +17,8 @@ import com.fogistanbul.crm.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -146,6 +148,36 @@ public class FileService {
 
         fileAttachmentRepository.delete(attachment);
         log.info("File deleted: {} by user {}", attachment.getOriginalName(), userId);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<FileAttachmentResponse> getCompanyMedia(UUID companyId, String filter, int page, int size, UUID userId) {
+        UserProfile user = getUserOrThrow(userId);
+        if (user.getGlobalRole() != GlobalRole.ADMIN) {
+            ensureCompanyMembership(userId, companyId);
+        }
+
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<FileAttachment> result;
+
+        if (filter != null && !filter.isBlank()) {
+            result = fileAttachmentRepository.findByEntityTypeAndEntityIdAndContentTypeStartingWithOrderByCreatedAtDesc(
+                    "COMPANY", companyId, filter, pageable);
+        } else {
+            result = fileAttachmentRepository.findByEntityTypeAndEntityIdOrderByCreatedAtDesc(
+                    "COMPANY", companyId, pageable);
+        }
+
+        return result.map(this::toResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.Map<UUID, Long> getCompanyMediaCounts() {
+        java.util.Map<UUID, Long> counts = new java.util.HashMap<>();
+        for (Object[] row : fileAttachmentRepository.countByCompanyGrouped()) {
+            counts.put((UUID) row[0], (Long) row[1]);
+        }
+        return counts;
     }
 
     private String normalizeEntityType(String entityType) {

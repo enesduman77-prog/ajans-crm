@@ -10,7 +10,6 @@ import java.util.UUID;
 
 @Data
 public class CreateMeetingRequest {
-    @NotNull
     private UUID companyId;
 
     @NotBlank

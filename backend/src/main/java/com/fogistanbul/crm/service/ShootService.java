@@ -4,12 +4,14 @@ import com.fogistanbul.crm.dto.CreateShootRequest;
 import com.fogistanbul.crm.dto.ShootResponse;
 import com.fogistanbul.crm.entity.Company;
 import com.fogistanbul.crm.entity.Shoot;
+import com.fogistanbul.crm.entity.ShootEquipment;
 import com.fogistanbul.crm.entity.ShootParticipant;
 import com.fogistanbul.crm.entity.UserProfile;
 import com.fogistanbul.crm.entity.enums.GlobalRole;
 import com.fogistanbul.crm.entity.enums.ShootStatus;
 import com.fogistanbul.crm.repository.CompanyMembershipRepository;
 import com.fogistanbul.crm.repository.CompanyRepository;
+import com.fogistanbul.crm.repository.ShootEquipmentRepository;
 import com.fogistanbul.crm.repository.ShootParticipantRepository;
 import com.fogistanbul.crm.repository.ShootRepository;
 import com.fogistanbul.crm.repository.UserProfileRepository;
@@ -30,6 +32,7 @@ public class ShootService {
 
     private final ShootRepository shootRepository;
     private final ShootParticipantRepository participantRepository;
+    private final ShootEquipmentRepository equipmentRepository;
     private final CompanyRepository companyRepository;
     private final UserProfileRepository userProfileRepository;
     private final CompanyMembershipRepository membershipRepository;
@@ -48,8 +51,15 @@ public class ShootService {
                 .shootDate(req.getShootDate())
                 .shootTime(req.getShootTime())
                 .location(req.getLocation())
+                .notes(req.getNotes())
                 .createdBy(creator)
                 .build();
+
+        if (req.getPhotographerId() != null) {
+            UserProfile photographer = userProfileRepository.findById(req.getPhotographerId()).orElse(null);
+            shoot.setPhotographer(photographer);
+        }
+
         shoot = shootRepository.save(shoot);
 
         if (req.getParticipants() != null) {
@@ -61,6 +71,19 @@ public class ShootService {
                             .shoot(shoot)
                             .user(user)
                             .roleInShoot(pr.getRoleInShoot())
+                            .build());
+                }
+            }
+        }
+
+        if (req.getEquipment() != null) {
+            for (CreateShootRequest.EquipmentRequest eq : req.getEquipment()) {
+                if (eq.getName() != null && !eq.getName().isBlank()) {
+                    equipmentRepository.save(ShootEquipment.builder()
+                            .shoot(shoot)
+                            .name(eq.getName())
+                            .quantity(eq.getQuantity() != null ? eq.getQuantity() : 1)
+                            .notes(eq.getNotes())
                             .build());
                 }
             }
@@ -138,6 +161,7 @@ public class ShootService {
 
     private ShootResponse toResponse(Shoot shoot) {
         var participants = participantRepository.findByShootId(shoot.getId());
+        var equipmentList = equipmentRepository.findByShootId(shoot.getId());
         return ShootResponse.builder()
                 .id(shoot.getId())
                 .companyId(shoot.getCompany().getId())
@@ -148,6 +172,13 @@ public class ShootService {
                 .shootTime(shoot.getShootTime())
                 .location(shoot.getLocation())
                 .status(shoot.getStatus().name())
+                .photographerId(shoot.getPhotographer() != null ? shoot.getPhotographer().getId() : null)
+                .photographerName(shoot.getPhotographer() != null
+                        ? (shoot.getPhotographer().getPerson() != null
+                                ? shoot.getPhotographer().getPerson().getFullName()
+                                : shoot.getPhotographer().getEmail())
+                        : null)
+                .notes(shoot.getNotes())
                 .createdById(shoot.getCreatedBy().getId())
                 .createdByName(shoot.getCreatedBy().getPerson() != null
                         ? shoot.getCreatedBy().getPerson().getFullName()
@@ -156,6 +187,12 @@ public class ShootService {
                         .userId(p.getUser().getId())
                         .fullName(p.getUser().getPerson() != null ? p.getUser().getPerson().getFullName() : p.getUser().getEmail())
                         .roleInShoot(p.getRoleInShoot())
+                        .build()).toList())
+                .equipment(equipmentList.stream().map(e -> ShootResponse.EquipmentInfo.builder()
+                        .id(e.getId())
+                        .name(e.getName())
+                        .quantity(e.getQuantity())
+                        .notes(e.getNotes())
                         .build()).toList())
                 .createdAt(shoot.getCreatedAt())
                 .build();

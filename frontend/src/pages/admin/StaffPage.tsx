@@ -154,7 +154,7 @@ export default function StaffPage() {
                                     >
                                         <td className="p-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="h-9 w-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-xs font-bold flex-shrink-0">
+                                                <div className="h-9 w-9 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 text-xs font-bold flex-shrink-0">
                                                     {s.fullName.split(' ').map(n => n[0]).join('').slice(0, 2)}
                                                 </div>
                                                 <div>

@@ -49,16 +49,16 @@ export default function TimeTracker() {
     if (!running) return null;
 
     return (
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-pink-500/10 border border-pink-500/20 rounded-xl">
             <div className="relative flex items-center justify-center w-5 h-5">
-                <Timer className="w-4 h-4 text-emerald-400" />
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                <Timer className="w-4 h-4 text-pink-400" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-pink-500 rounded-full animate-pulse" />
             </div>
             <div className="flex flex-col">
-                <span className="text-[10px] text-emerald-400/70 leading-tight truncate max-w-[120px]">
+                <span className="text-[10px] text-pink-400/70 leading-tight truncate max-w-[120px]">
                     {running.taskTitle || 'Görev'}
                 </span>
-                <span className="text-[13px] font-mono font-bold text-emerald-400 leading-tight">
+                <span className="text-[13px] font-mono font-bold text-pink-400 leading-tight">
                     {formatTime(elapsed)}
                 </span>
             </div>

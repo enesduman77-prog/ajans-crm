@@ -24,11 +24,13 @@ import StaffCalendarPage from './pages/staff/StaffCalendarPage';
 import CompletedTasksPage from './pages/staff/CompletedTasksPage';
 import PRProjectsPage from './pages/staff/PRProjectsPage';
 import ShootsPage from './pages/staff/ShootsPage';
+import MeetingsPage from './pages/staff/MeetingsPage';
 import MessagingPage from './pages/staff/MessagingPage';
 import StaffAnalyticsPage from './pages/staff/StaffAnalyticsPage';
 import KanbanPage from './pages/staff/KanbanPage';
 import TimeTrackingPage from './pages/staff/TimeTrackingPage';
 import NotesPage from './pages/staff/NotesPage';
+import StaffMediaLibraryPage from './pages/staff/StaffMediaLibraryPage';
 
 // Client
 import ClientLayout from './layouts/ClientLayout';
@@ -41,12 +43,17 @@ import ClientSettingsPage from './pages/client/ClientSettingsPage';
 import ClientMessagingPage from './pages/client/ClientMessagingPage';
 import SurveyPage from './pages/client/SurveyPage';
 import ClientAnalyticsPage from './pages/client/ClientAnalyticsPage';
+import GoogleAnalyticsDetailPage from './pages/client/GoogleAnalyticsDetailPage';
+import SearchConsoleDetailPage from './pages/client/SearchConsoleDetailPage';
+import InstagramDetailPage from './pages/client/InstagramDetailPage';
 import ClientTeamPage from './pages/client/ClientTeamPage';
+import ClientShootsPage from './pages/client/ClientShootsPage';
 
 // New feature pages
 import ActivityLogPage from './pages/admin/ActivityLogPage';
 import OnboardingPage from './pages/client/OnboardingPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+import RoutineManagementPage from './pages/admin/RoutineManagementPage';
 import StaffSettingsPage from './pages/staff/StaffSettingsPage';
 
 const queryClient = new QueryClient({
@@ -97,6 +104,7 @@ export default function App() {
               <Route path="users" element={<UsersPage />} />
               <Route path="messaging" element={<MessagingPage />} />
               <Route path="activity-log" element={<ActivityLogPage />} />
+              <Route path="routines" element={<RoutineManagementPage />} />
               <Route path="settings" element={<AdminSettingsPage />} />
             </Route>
 
@@ -121,6 +129,8 @@ export default function App() {
               <Route path="calendar" element={<StaffCalendarPage />} />
               <Route path="pr" element={<PRProjectsPage />} />
               <Route path="shoots" element={<ShootsPage />} />
+              <Route path="meetings" element={<MeetingsPage />} />
+              <Route path="media" element={<StaffMediaLibraryPage />} />
               <Route path="completed" element={<CompletedTasksPage />} />
               <Route path="settings" element={<StaffSettingsPage />} />
             </Route>
@@ -136,6 +146,9 @@ export default function App() {
             >
               <Route index element={<ClientDashboard />} />
               <Route path="analytics" element={<ClientAnalyticsPage />} />
+              <Route path="google-analytics" element={<GoogleAnalyticsDetailPage />} />
+              <Route path="search-console" element={<SearchConsoleDetailPage />} />
+              <Route path="instagram" element={<InstagramDetailPage />} />
               <Route path="media" element={<MediaLibraryPage />} />
               <Route path="tasks" element={<ClientTasksPage />} />
               <Route path="completed" element={<ClientCompletedPage />} />
@@ -144,6 +157,7 @@ export default function App() {
               <Route path="team" element={<ProtectedRoute membershipRoles={['OWNER']}><ClientTeamPage /></ProtectedRoute>} />
               <Route path="surveys" element={<ProtectedRoute membershipRoles={['OWNER']}><SurveyPage /></ProtectedRoute>} />
               <Route path="onboarding" element={<ProtectedRoute membershipRoles={['OWNER']}><OnboardingPage /></ProtectedRoute>} />
+              <Route path="shoots" element={<ClientShootsPage />} />
               <Route path="settings" element={<ClientSettingsPage />} />
             </Route>
 

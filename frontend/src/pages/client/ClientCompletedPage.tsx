@@ -62,7 +62,7 @@ export default function ClientCompletedPage() {
                     <div className="animate-spin h-8 w-8 border-2 border-blue-400 border-t-transparent rounded-full" />
                 </div>
             ) : completedTasks.length === 0 ? (
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-12 text-center">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-12 text-center">
                     <CheckCircle2 className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
                     <h3 className="text-lg font-semibold text-white">Tamamlanan görev yok</h3>
                     <p className="text-sm text-zinc-500 mt-1">Tamamlanan görevler burada listelenecek</p>
@@ -75,10 +75,10 @@ export default function ClientCompletedPage() {
                         const avgScore = alreadyReviewed ? reviews.reduce((s, r) => s + r.score, 0) / reviews.length : 0;
 
                         return (
-                            <div key={task.id} className="bg-[#111113] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.02] transition-colors">
+                            <div key={task.id} className="bg-[#0C0C0E] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.02] transition-colors">
                                 <div className="flex items-start gap-3">
-                                    <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                                    <div className="h-8 w-8 rounded-lg bg-pink-500/10 flex items-center justify-center">
+                                        <CheckCircle2 className="w-4 h-4 text-pink-400" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h3 className="text-sm font-medium text-white">{task.title}</h3>
@@ -94,7 +94,7 @@ export default function ClientCompletedPage() {
                                         </div>
                                     </div>
                                     {alreadyReviewed ? (
-                                        <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-medium">
+                                        <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-pink-500/10 text-pink-400 text-xs font-medium">
                                             <Star className="w-3 h-3 fill-current" />
                                             {avgScore.toFixed(1)}
                                         </div>
@@ -115,7 +115,7 @@ export default function ClientCompletedPage() {
             <AnimatePresence>
                 {reviewTarget && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-                        <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-[#111113] border border-white/[0.08] rounded-2xl p-6 w-full max-w-sm space-y-5">
+                        <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-[#0C0C0E] border border-white/[0.08] rounded-2xl p-6 w-full max-w-sm space-y-5">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-lg font-bold text-white">Görevi Puanla</h2>
                                 <button onClick={() => setReviewTarget(null)} className="text-zinc-500 hover:text-white"><X className="w-5 h-5" /></button>

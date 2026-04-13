@@ -28,10 +28,10 @@ export default function SettingsPage({ accentColor = 'blue' }: Props) {
             icon: 'text-orange-400',
             focus: 'focus:border-orange-500/30',
         },
-        emerald: {
-            btn: 'bg-emerald-500 hover:bg-emerald-600',
-            icon: 'text-emerald-400',
-            focus: 'focus:border-emerald-500/30',
+        pink: {
+            btn: 'bg-pink-500 hover:bg-pink-600',
+            icon: 'text-pink-400',
+            focus: 'focus:border-pink-500/30',
         },
     };
     const accent = accentClasses[accentColor] || accentClasses.blue;
@@ -71,7 +71,7 @@ export default function SettingsPage({ accentColor = 'blue' }: Props) {
             </div>
 
             {/* Profile */}
-            <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                 <div className="flex items-center gap-2 mb-4">
                     <User className={`w-4 h-4 ${accent.icon}`} />
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Profil Bilgileri</h3>
@@ -90,7 +90,7 @@ export default function SettingsPage({ accentColor = 'blue' }: Props) {
                     </div>
                 </div>
                 <div className="flex items-center justify-end gap-3 mt-4">
-                    {profileMsg && <span className="flex items-center gap-1 text-emerald-400 text-xs"><CheckCircle2 className="w-3 h-3" />{profileMsg}</span>}
+                    {profileMsg && <span className="flex items-center gap-1 text-pink-400 text-xs"><CheckCircle2 className="w-3 h-3" />{profileMsg}</span>}
                     <button onClick={() => profileMutation.mutate()} disabled={profileMutation.isPending || !fullName.trim()}
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-semibold disabled:opacity-50 transition-colors ${accent.btn}`}>
                         <Save className="w-4 h-4" />
@@ -100,7 +100,7 @@ export default function SettingsPage({ accentColor = 'blue' }: Props) {
             </div>
 
             {/* Password */}
-            <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                 <div className="flex items-center gap-2 mb-4">
                     <Lock className={`w-4 h-4 ${accent.icon}`} />
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Şifre Değiştir</h3>
@@ -119,7 +119,7 @@ export default function SettingsPage({ accentColor = 'blue' }: Props) {
                     </div>
                 </div>
                 <div className="flex items-center justify-end gap-3 mt-4">
-                    {passwordMsg && <span className="flex items-center gap-1 text-emerald-400 text-xs"><CheckCircle2 className="w-3 h-3" />{passwordMsg}</span>}
+                    {passwordMsg && <span className="flex items-center gap-1 text-pink-400 text-xs"><CheckCircle2 className="w-3 h-3" />{passwordMsg}</span>}
                     {passwordError && <span className="flex items-center gap-1 text-red-400 text-xs"><AlertCircle className="w-3 h-3" />{passwordError}</span>}
                     <button onClick={() => passwordMutation.mutate()} disabled={passwordMutation.isPending || !currentPassword || !newPassword || newPassword.length < 6}
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-semibold disabled:opacity-50 transition-colors ${accent.btn}`}>

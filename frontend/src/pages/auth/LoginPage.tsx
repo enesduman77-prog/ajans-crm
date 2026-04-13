@@ -44,7 +44,7 @@ export default function LoginPage() {
 
     return (
         <div className="relative min-h-screen w-full bg-[#09090b] dark-gradient flex items-center justify-center p-6">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-orange-500/5 rounded-full blur-[120px]" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-pink-500/5 rounded-full blur-[120px]" />
 
             <AnimatePresence>
                 {isReady && (
@@ -61,7 +61,7 @@ export default function LoginPage() {
                                 transition={{ delay: 0.1 }}
                                 className="flex items-center justify-center"
                             >
-                                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-2xl shadow-orange-500/25 mb-2">
+                                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-pink-500 to-amber-600 flex items-center justify-center shadow-2xl shadow-pink-500/25 mb-2">
                                     <Zap className="w-6 h-6 text-white" />
                                 </div>
                             </motion.div>
@@ -77,7 +77,7 @@ export default function LoginPage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="bg-[#111113] border border-white/[0.06] p-7 rounded-2xl"
+                            className="bg-[#0C0C0E] border border-white/[0.06] p-7 rounded-2xl"
                         >
                             <div className="mb-6">
                                 <h2 className="text-lg font-semibold text-white">Giris Yap</h2>
@@ -102,12 +102,12 @@ export default function LoginPage() {
                                 <div className="space-y-1.5">
                                     <label className="text-[11px] font-medium text-zinc-400 ml-0.5">E-Posta</label>
                                     <div className="relative group">
-                                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-orange-400 transition-colors" />
+                                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-pink-400 transition-colors" />
                                         <input
                                             type="email"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.06] rounded-xl text-[13px] text-white outline-none focus:border-orange-500/30 focus:bg-white/[0.05] transition-all placeholder:text-zinc-700"
+                                            className="w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.06] rounded-xl text-[13px] text-white outline-none focus:border-pink-500/30 focus:bg-white/[0.05] transition-all placeholder:text-zinc-700"
                                             placeholder="admin@fogistanbul.com"
                                             required
                                         />
@@ -117,12 +117,12 @@ export default function LoginPage() {
                                 <div className="space-y-1.5">
                                     <label className="text-[11px] font-medium text-zinc-400 ml-0.5">Sifre</label>
                                     <div className="relative group">
-                                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-orange-400 transition-colors" />
+                                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-pink-400 transition-colors" />
                                         <input
                                             type={showPassword ? 'text' : 'password'}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full pl-10 pr-10 py-2.5 bg-white/[0.03] border border-white/[0.06] rounded-xl text-[13px] text-white outline-none focus:border-orange-500/30 focus:bg-white/[0.05] transition-all placeholder:text-zinc-700"
+                                            className="w-full pl-10 pr-10 py-2.5 bg-white/[0.03] border border-white/[0.06] rounded-xl text-[13px] text-white outline-none focus:border-pink-500/30 focus:bg-white/[0.05] transition-all placeholder:text-zinc-700"
                                             placeholder="********"
                                             required
                                         />
@@ -139,7 +139,7 @@ export default function LoginPage() {
                                 <div className="flex items-center justify-between py-1 px-0.5">
                                     <label className="flex items-center gap-2 cursor-pointer group">
                                         <div className="relative flex items-center">
-                                            <input type="checkbox" className="peer appearance-none w-4 h-4 border border-white/10 rounded bg-white/[0.03] checked:bg-orange-500 checked:border-orange-500 transition-all" />
+                                            <input type="checkbox" className="peer appearance-none w-4 h-4 border border-white/10 rounded bg-white/[0.03] checked:bg-pink-500 checked:border-pink-500 transition-all" />
                                             <User className="absolute w-2.5 h-2.5 left-[3px] text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
                                         </div>
                                         <span className="text-zinc-500 text-[11px] group-hover:text-zinc-400 transition-colors">Beni Hatirla</span>
@@ -149,7 +149,7 @@ export default function LoginPage() {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full py-2.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2 text-[13px] transition-all shadow-lg shadow-orange-500/20 disabled:opacity-50"
+                                    className="w-full py-2.5 bg-gradient-to-r from-pink-500 to-amber-600 hover:from-pink-600 hover:to-amber-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2 text-[13px] transition-all shadow-lg shadow-pink-500/20 disabled:opacity-50"
                                 >
                                     {loading ? (
                                         <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />

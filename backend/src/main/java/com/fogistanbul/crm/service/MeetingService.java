@@ -1,15 +1,18 @@
 package com.fogistanbul.crm.service;
 
 import com.fogistanbul.crm.dto.CreateMeetingRequest;
+import com.fogistanbul.crm.dto.MeetingNoteRequest;
 import com.fogistanbul.crm.dto.MeetingResponse;
 import com.fogistanbul.crm.entity.Company;
 import com.fogistanbul.crm.entity.Meeting;
+import com.fogistanbul.crm.entity.MeetingNote;
 import com.fogistanbul.crm.entity.MeetingParticipant;
 import com.fogistanbul.crm.entity.UserProfile;
 import com.fogistanbul.crm.entity.enums.GlobalRole;
 import com.fogistanbul.crm.entity.enums.MeetingStatus;
 import com.fogistanbul.crm.repository.CompanyMembershipRepository;
 import com.fogistanbul.crm.repository.CompanyRepository;
+import com.fogistanbul.crm.repository.MeetingNoteRepository;
 import com.fogistanbul.crm.repository.MeetingParticipantRepository;
 import com.fogistanbul.crm.repository.MeetingRepository;
 import com.fogistanbul.crm.repository.UserProfileRepository;
@@ -30,16 +33,22 @@ public class MeetingService {
 
     private final MeetingRepository meetingRepository;
     private final MeetingParticipantRepository participantRepository;
+    private final MeetingNoteRepository meetingNoteRepository;
     private final CompanyRepository companyRepository;
     private final UserProfileRepository userProfileRepository;
     private final CompanyMembershipRepository membershipRepository;
 
     @Transactional
     public MeetingResponse createMeeting(CreateMeetingRequest req, UUID createdById) {
-        Company company = companyRepository.findById(req.getCompanyId())
-                .orElseThrow(() -> new RuntimeException("Sirket bulunamadi"));
+        Company company = null;
+        if (req.getCompanyId() != null) {
+            company = companyRepository.findById(req.getCompanyId())
+                    .orElseThrow(() -> new RuntimeException("Sirket bulunamadi"));
+        }
         UserProfile creator = getUserOrThrow(createdById);
-        ensureCompanyAccess(creator, company.getId());
+        if (company != null) {
+            ensureCompanyAccess(creator, company.getId());
+        }
 
         Meeting meeting = Meeting.builder()
                 .company(company)
@@ -56,7 +65,6 @@ public class MeetingService {
             for (UUID participantId : req.getParticipantIds()) {
                 UserProfile participant = userProfileRepository.findById(participantId).orElse(null);
                 if (participant != null) {
-                    ensureCompanyAccess(participant, company.getId());
                     participantRepository.save(MeetingParticipant.builder()
                             .meeting(meeting)
                             .user(participant)
@@ -65,14 +73,15 @@ public class MeetingService {
             }
         }
 
-        log.info("Meeting created: {} for company {}", meeting.getTitle(), company.getName());
+        log.info("Meeting created: {}{}", meeting.getTitle(),
+                company != null ? " for company " + company.getName() : " (agency internal)");
         return toResponse(meeting);
     }
 
     @Transactional(readOnly = true)
     public Page<MeetingResponse> getAllMeetings(Pageable pageable, UUID userId) {
         UserProfile user = getUserOrThrow(userId);
-        if (user.getGlobalRole() == GlobalRole.ADMIN) {
+        if (user.getGlobalRole() == GlobalRole.ADMIN || user.getGlobalRole() == GlobalRole.AGENCY_STAFF) {
             return meetingRepository.findAll(pageable).map(this::toResponse);
         }
 
@@ -93,7 +102,9 @@ public class MeetingService {
     public MeetingResponse getMeetingById(UUID meetingId, UUID userId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Toplanti bulunamadi"));
-        ensureCompanyAccess(getUserOrThrow(userId), meeting.getCompany().getId());
+        if (meeting.getCompany() != null) {
+            ensureCompanyAccess(getUserOrThrow(userId), meeting.getCompany().getId());
+        }
         return toResponse(meeting);
     }
 
@@ -101,7 +112,9 @@ public class MeetingService {
     public MeetingResponse updateStatus(UUID meetingId, String status, UUID userId, String role) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Toplanti bulunamadi"));
-        ensureCompanyAccess(getUserOrThrow(userId), meeting.getCompany().getId());
+        if (meeting.getCompany() != null) {
+            ensureCompanyAccess(getUserOrThrow(userId), meeting.getCompany().getId());
+        }
         if (!"ROLE_ADMIN".equals(role) && !meeting.getCreatedBy().getId().equals(userId)) {
             throw new RuntimeException("Bu toplantiyi guncelleme yetkiniz yok");
         }
@@ -111,10 +124,70 @@ public class MeetingService {
     }
 
     @Transactional
+    public MeetingResponse completeMeeting(UUID meetingId, MeetingNoteRequest noteReq, UUID userId, String role) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Toplanti bulunamadi"));
+        if (meeting.getCompany() != null) {
+            ensureCompanyAccess(getUserOrThrow(userId), meeting.getCompany().getId());
+        }
+
+        // Only creator or admin can complete the meeting
+        if (!"ROLE_ADMIN".equals(role) && !meeting.getCreatedBy().getId().equals(userId)) {
+            throw new RuntimeException("Bu toplantiyi tamamlama yetkiniz yok");
+        }
+
+        meeting.setStatus(MeetingStatus.COMPLETED);
+        meeting = meetingRepository.save(meeting);
+
+        // Save the completing user's notes
+        saveNote(meeting, userId, noteReq.getContent());
+
+        log.info("Meeting completed: {} by user {}", meeting.getTitle(), userId);
+        return toResponse(meeting);
+    }
+
+    @Transactional
+    public MeetingResponse addMeetingNote(UUID meetingId, MeetingNoteRequest noteReq, UUID userId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Toplanti bulunamadi"));
+        if (meeting.getCompany() != null) {
+            ensureCompanyAccess(getUserOrThrow(userId), meeting.getCompany().getId());
+        }
+
+        // Only participants or creator can add notes
+        boolean isParticipant = participantRepository.findByMeetingId(meetingId)
+                .stream().anyMatch(p -> p.getUser().getId().equals(userId));
+        boolean isCreator = meeting.getCreatedBy().getId().equals(userId);
+        if (!isParticipant && !isCreator) {
+            throw new RuntimeException("Bu toplantiya not ekleme yetkiniz yok");
+        }
+
+        saveNote(meeting, userId, noteReq.getContent());
+        return toResponse(meeting);
+    }
+
+    private void saveNote(Meeting meeting, UUID userId, String content) {
+        UserProfile user = getUserOrThrow(userId);
+        MeetingNote existing = meetingNoteRepository.findByMeetingIdAndUserId(meeting.getId(), userId).orElse(null);
+        if (existing != null) {
+            existing.setContent(content);
+            meetingNoteRepository.save(existing);
+        } else {
+            meetingNoteRepository.save(MeetingNote.builder()
+                    .meeting(meeting)
+                    .user(user)
+                    .content(content)
+                    .build());
+        }
+    }
+
+    @Transactional
     public void deleteMeeting(UUID meetingId, UUID userId, String role) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Toplanti bulunamadi"));
-        ensureCompanyAccess(getUserOrThrow(userId), meeting.getCompany().getId());
+        if (meeting.getCompany() != null) {
+            ensureCompanyAccess(getUserOrThrow(userId), meeting.getCompany().getId());
+        }
         if (!"ROLE_ADMIN".equals(role) && !meeting.getCreatedBy().getId().equals(userId)) {
             throw new RuntimeException("Bu toplantiyi silme yetkiniz yok");
         }
@@ -137,10 +210,13 @@ public class MeetingService {
 
     private MeetingResponse toResponse(Meeting meeting) {
         List<MeetingParticipant> participants = participantRepository.findByMeetingId(meeting.getId());
+        List<MeetingNote> notes = meetingNoteRepository.findByMeetingId(meeting.getId());
+        var noteUserIds = notes.stream().map(n -> n.getUser().getId()).toList();
+
         return MeetingResponse.builder()
                 .id(meeting.getId())
-                .companyId(meeting.getCompany().getId())
-                .companyName(meeting.getCompany().getName())
+                .companyId(meeting.getCompany() != null ? meeting.getCompany().getId() : null)
+                .companyName(meeting.getCompany() != null ? meeting.getCompany().getName() : null)
                 .title(meeting.getTitle())
                 .description(meeting.getDescription())
                 .meetingDate(meeting.getMeetingDate())
@@ -155,6 +231,13 @@ public class MeetingService {
                         .userId(p.getUser().getId())
                         .fullName(p.getUser().getPerson() != null ? p.getUser().getPerson().getFullName() : p.getUser().getEmail())
                         .email(p.getUser().getEmail())
+                        .noteSubmitted(noteUserIds.contains(p.getUser().getId()))
+                        .build()).toList())
+                .notes(notes.stream().map(n -> MeetingResponse.NoteInfo.builder()
+                        .userId(n.getUser().getId())
+                        .fullName(n.getUser().getPerson() != null ? n.getUser().getPerson().getFullName() : n.getUser().getEmail())
+                        .content(n.getContent())
+                        .createdAt(n.getCreatedAt())
                         .build()).toList())
                 .createdAt(meeting.getCreatedAt())
                 .build();

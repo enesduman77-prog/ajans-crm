@@ -52,7 +52,7 @@ export default function NotificationBell({ accentColor = 'orange' }: Props) {
 
     const colorMap: Record<string, string> = {
         orange: 'bg-orange-500',
-        emerald: 'bg-emerald-500',
+        pink: 'bg-pink-500',
         blue: 'bg-blue-500',
     };
 
@@ -71,7 +71,7 @@ export default function NotificationBell({ accentColor = 'orange' }: Props) {
             </button>
 
             {open && (
-                <div className="absolute right-0 top-full mt-2 w-[380px] bg-[#111113] border border-white/[0.06] rounded-2xl shadow-2xl shadow-black/40 z-50 overflow-hidden">
+                <div className="absolute right-0 top-full mt-2 w-[380px] bg-[#0C0C0E] border border-white/[0.06] rounded-2xl shadow-2xl shadow-black/40 z-50 overflow-hidden">
                     <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
                         <h3 className="text-sm font-bold text-white">Bildirimler</h3>
                         {unreadCount > 0 && (

@@ -4,7 +4,7 @@ import { staffApi, type TaskResponse, type PageResponse, type TaskNoteResponse }
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Calendar as CalendarIcon, ChevronLeft, ChevronRight,
-    AlertTriangle, Clock, User, Building2, X, MessageSquare, Send, Trash2, Tag, Flag, ChevronRight as ChevronRightIcon
+    Clock, User, Building2, X, MessageSquare, Send, Trash2, Tag, Flag, ChevronRight as ChevronRightIcon
 } from 'lucide-react';
 
 const DAYS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
@@ -12,13 +12,6 @@ const MONTHS = [
     'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
     'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
 ];
-
-const PRIORITY_DOT: Record<string, string> = {
-    URGENT: 'bg-red-500',
-    HIGH: 'bg-red-500',
-    MEDIUM: 'bg-amber-500',
-    LOW: 'bg-emerald-500',
-};
 
 const CATEGORY_ICON: Record<string, string> = {
     TOPLANTI: '📅',
@@ -30,18 +23,21 @@ const CATEGORY_ICON: Record<string, string> = {
     OTHER: '📌',
 };
 
+const CATEGORY_DOT: Record<string, string> = {
+    TOPLANTI: 'bg-cyan-500',
+    REELS: 'bg-pink-500',
+    BLOG: 'bg-amber-500',
+    PAYLASIM: 'bg-violet-500',
+    SEO: 'bg-green-500',
+    TASARIM: 'bg-blue-500',
+    OTHER: 'bg-zinc-500',
+};
+
 const statusBadge: Record<string, { bg: string; text: string; label: string }> = {
     TODO: { bg: 'bg-zinc-800', text: 'text-zinc-400', label: 'Bekliyor' },
     IN_PROGRESS: { bg: 'bg-blue-900/30', text: 'text-blue-400', label: 'Devam Ediyor' },
-    DONE: { bg: 'bg-emerald-900/30', text: 'text-emerald-400', label: 'Tamamlandı' },
+    DONE: { bg: 'bg-pink-900/30', text: 'text-pink-400', label: 'Tamamlandı' },
     OVERDUE: { bg: 'bg-red-900/30', text: 'text-red-400', label: 'Gecikmiş' },
-};
-
-const priorityBadge: Record<string, { bg: string; text: string; label: string }> = {
-    LOW: { bg: 'bg-zinc-800', text: 'text-zinc-400', label: 'Düşük' },
-    MEDIUM: { bg: 'bg-blue-900/30', text: 'text-blue-400', label: 'Orta' },
-    HIGH: { bg: 'bg-amber-900/30', text: 'text-amber-400', label: 'Yüksek' },
-    URGENT: { bg: 'bg-red-900/30', text: 'text-red-400', label: 'Acil' },
 };
 
 const categoryLabels: Record<string, string> = {
@@ -50,7 +46,7 @@ const categoryLabels: Record<string, string> = {
 };
 
 function getRemainingTime(task: TaskResponse): { text: string; color: string } | null {
-    if (task.status === 'DONE') return { text: 'Tamamlandı', color: 'text-emerald-400' };
+    if (task.status === 'DONE') return { text: 'Tamamlandı', color: 'text-pink-400' };
     const endDate = task.endDate;
     if (!endDate) return null;
     let end: Date;
@@ -319,8 +315,8 @@ export default function StaffCalendarPage() {
                             <button key={f} onClick={() => handleQuickFilter(f)}
                                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                                     isActive
-                                        ? 'bg-emerald-500 text-white'
-                                        : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                                        ? 'bg-pink-500 text-white'
+                                        : 'bg-pink-500/10 text-pink-400 hover:bg-pink-500/20'
                                 }`}>
                                 {label}
                             </button>
@@ -330,7 +326,7 @@ export default function StaffCalendarPage() {
             </div>
 
             {/* Calendar */}
-            <div className="bg-[#111113] border border-white/[0.06] rounded-2xl overflow-hidden">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl overflow-hidden">
                 {/* Month navigation */}
                 <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
                     <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors">
@@ -367,13 +363,13 @@ export default function StaffCalendarPage() {
                                 <button key={i}
                                     onClick={() => handleDateClick(key, isSelected)}
                                     className={`relative p-2 min-h-[72px] border-b border-r border-white/[0.03] text-left transition-all ${!currentMonth ? 'opacity-30' :
-                                        isSelected ? 'bg-emerald-500/10' :
-                                            isInRange ? 'bg-emerald-500/5' :
+                                        isSelected ? 'bg-pink-500/10' :
+                                            isInRange ? 'bg-pink-500/5' :
                                                 isToday ? 'bg-white/[0.03]' :
                                                     'hover:bg-white/[0.02]'
                                         }`}>
-                                    <span className={`text-xs font-medium ${isToday ? 'bg-emerald-500 text-white px-1.5 py-0.5 rounded-md' :
-                                        isSelected ? 'text-emerald-400' :
+                                    <span className={`text-xs font-medium ${isToday ? 'bg-pink-500 text-white px-1.5 py-0.5 rounded-md' :
+                                        isSelected ? 'text-pink-400' :
                                             currentMonth ? 'text-zinc-400' : 'text-zinc-700'
                                         }`}>
                                         {date.getDate()}
@@ -384,8 +380,8 @@ export default function StaffCalendarPage() {
                                         <div className="flex gap-0.5 mt-1 flex-wrap">
                                             {tasks.slice(0, 3).map((task, ti) => (
                                                 <div key={ti}
-                                                    className={`h-1.5 w-1.5 rounded-full ${PRIORITY_DOT[task.priority] || 'bg-zinc-600'}`}
-                                                    title={task.title} />
+                                                    className={`h-1.5 w-1.5 rounded-full ${CATEGORY_DOT[task.category] || 'bg-zinc-500'}`}
+                                                    title={`${categoryLabels[task.category] || task.category}: ${task.title}`} />
                                             ))}
                                             {tasks.length > 3 && (
                                                 <span className="text-[8px] text-zinc-600 ml-0.5">+{tasks.length - 3}</span>
@@ -401,12 +397,12 @@ export default function StaffCalendarPage() {
 
             {/* Filtered tasks */}
             {(selectedDate || quickFilter !== 'none') && (
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                     <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
                             <CalendarIcon className="w-4 h-4" />
                             {filterLabel}
-                            <span className="text-emerald-400 normal-case">({filteredTasks.length} görev)</span>
+                            <span className="text-pink-400 normal-case">({filteredTasks.length} görev)</span>
                         </h3>
                     </div>
 
@@ -418,12 +414,16 @@ export default function StaffCalendarPage() {
                                 <div key={task.id}
                                     onClick={() => openDetail(task)}
                                     className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.02] transition-colors cursor-pointer">
-                                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center text-sm ${task.priority === 'HIGH' || task.priority === 'URGENT' ? 'bg-red-500/10 text-red-400' :
-                                        task.priority === 'MEDIUM' ? 'bg-amber-500/10 text-amber-400' :
-                                            'bg-emerald-500/10 text-emerald-400'
-                                        }`}>
-                                        {task.priority === 'HIGH' || task.priority === 'URGENT' ? <AlertTriangle className="w-4 h-4" /> :
-                                         <span>{CATEGORY_ICON[task.category] || '📌'}</span>}
+                                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center text-sm ${
+                                        task.category === 'REELS' ? 'bg-pink-500/10 text-pink-400' :
+                                        task.category === 'BLOG' ? 'bg-amber-500/10 text-amber-400' :
+                                        task.category === 'PAYLASIM' ? 'bg-violet-500/10 text-violet-400' :
+                                        task.category === 'SEO' ? 'bg-green-500/10 text-green-400' :
+                                        task.category === 'TASARIM' ? 'bg-blue-500/10 text-blue-400' :
+                                        task.category === 'TOPLANTI' ? 'bg-cyan-500/10 text-cyan-400' :
+                                        'bg-zinc-500/10 text-zinc-400'
+                                    }`}>
+                                        <span>{CATEGORY_ICON[task.category] || '📌'}</span>
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2">
@@ -436,7 +436,7 @@ export default function StaffCalendarPage() {
                                         </div>
                                         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                                             {quickFilter !== 'none' && !selectedDate && task.startDate && (
-                                                <span className="text-[10px] text-emerald-400/70 flex items-center gap-0.5">
+                                                <span className="text-[10px] text-pink-400/70 flex items-center gap-0.5">
                                                     <CalendarIcon className="w-2.5 h-2.5" />
                                                     {new Date(task.startDate + 'T00:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
                                                     {task.endDate && task.endDate !== task.startDate && (' – ' + new Date(task.endDate + 'T00:00:00').toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }))}
@@ -457,7 +457,7 @@ export default function StaffCalendarPage() {
                                             )}
                                         </div>
                                     </div>
-                                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${task.status === 'DONE' ? 'bg-emerald-500/10 text-emerald-400' :
+                                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${task.status === 'DONE' ? 'bg-pink-500/10 text-pink-400' :
                                         task.status === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-400' :
                                             'bg-[#18181b] text-zinc-500'
                                         }`}>
@@ -471,15 +471,27 @@ export default function StaffCalendarPage() {
             )}
 
             {/* Legend */}
-            <div className="flex items-center gap-4 text-xs text-zinc-600">
+            <div className="flex items-center gap-4 text-xs text-zinc-600 flex-wrap">
                 <div className="flex items-center gap-1.5">
-                    <div className="h-2 w-2 rounded-full bg-red-500" /> Yüksek/Acil
+                    <div className="h-2 w-2 rounded-full bg-pink-500" /> Reels
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <div className="h-2 w-2 rounded-full bg-amber-500" /> Orta
+                    <div className="h-2 w-2 rounded-full bg-amber-500" /> Blog
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <div className="h-2 w-2 rounded-full bg-emerald-500" /> Düşük
+                    <div className="h-2 w-2 rounded-full bg-violet-500" /> Paylaşım
+                </div>
+                <div className="flex items-center gap-1.5">
+                    <div className="h-2 w-2 rounded-full bg-green-500" /> SEO
+                </div>
+                <div className="flex items-center gap-1.5">
+                    <div className="h-2 w-2 rounded-full bg-blue-500" /> Tasarım
+                </div>
+                <div className="flex items-center gap-1.5">
+                    <div className="h-2 w-2 rounded-full bg-cyan-500" /> Toplantı
+                </div>
+                <div className="flex items-center gap-1.5">
+                    <div className="h-2 w-2 rounded-full bg-zinc-500" /> Diğer
                 </div>
             </div>
 
@@ -501,9 +513,6 @@ export default function StaffCalendarPage() {
                                         <span className={`text-[9px] px-2 py-0.5 rounded-md font-bold uppercase ${(statusBadge[selectedTask.status] || statusBadge.TODO).bg} ${(statusBadge[selectedTask.status] || statusBadge.TODO).text}`}>
                                             {(statusBadge[selectedTask.status] || statusBadge.TODO).label}
                                         </span>
-                                        <span className={`text-[9px] px-2 py-0.5 rounded-md font-bold uppercase ${(priorityBadge[selectedTask.priority] || priorityBadge.MEDIUM).bg} ${(priorityBadge[selectedTask.priority] || priorityBadge.MEDIUM).text}`}>
-                                            {(priorityBadge[selectedTask.priority] || priorityBadge.MEDIUM).label}
-                                        </span>
                                     </div>
                                     <button onClick={() => setSelectedTask(null)} className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-white/5 transition-colors">
                                         <X className="w-5 h-5" />
@@ -522,26 +531,26 @@ export default function StaffCalendarPage() {
                                 )}
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-[#111113] rounded-xl p-3 border border-white/[0.04]">
+                                    <div className="bg-[#0C0C0E] rounded-xl p-3 border border-white/[0.04]">
                                         <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-1.5 flex items-center gap-1"><User className="w-3 h-3" /> Atanan</p>
                                         <p className="text-sm text-white font-medium">{selectedTask.assignedToName}</p>
                                     </div>
-                                    <div className="bg-[#111113] rounded-xl p-3 border border-white/[0.04]">
+                                    <div className="bg-[#0C0C0E] rounded-xl p-3 border border-white/[0.04]">
                                         <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-1.5 flex items-center gap-1"><Building2 className="w-3 h-3" /> Şirket</p>
                                         <p className="text-sm text-white font-medium">{selectedTask.companyName || 'Ajans İçi'}</p>
                                     </div>
-                                    <div className="bg-[#111113] rounded-xl p-3 border border-white/[0.04]">
+                                    <div className="bg-[#0C0C0E] rounded-xl p-3 border border-white/[0.04]">
                                         <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-1.5 flex items-center gap-1"><Tag className="w-3 h-3" /> Kategori</p>
                                         <p className="text-sm text-white font-medium">{categoryLabels[selectedTask.category] || selectedTask.category}</p>
                                     </div>
-                                    <div className="bg-[#111113] rounded-xl p-3 border border-white/[0.04]">
+                                    <div className="bg-[#0C0C0E] rounded-xl p-3 border border-white/[0.04]">
                                         <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-1.5 flex items-center gap-1"><Flag className="w-3 h-3" /> Oluşturan</p>
                                         <p className="text-sm text-white font-medium">{selectedTask.createdByName}</p>
                                     </div>
                                 </div>
 
                                 {(selectedTask.startDate || selectedTask.endDate) && (
-                                    <div className="bg-[#111113] rounded-xl p-3 border border-white/[0.04]">
+                                    <div className="bg-[#0C0C0E] rounded-xl p-3 border border-white/[0.04]">
                                         <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-2 flex items-center gap-1"><CalendarIcon className="w-3 h-3" /> Tarih & Saat</p>
                                         <div className="flex items-center gap-3">
                                             {selectedTask.startDate && (
@@ -574,7 +583,7 @@ export default function StaffCalendarPage() {
                                     const rem = getRemainingTime(selectedTask);
                                     if (!rem) return null;
                                     return (
-                                        <div className={`rounded-xl p-3 border ${rem.color === 'text-red-400' ? 'bg-red-500/5 border-red-500/20' : rem.color === 'text-amber-400' ? 'bg-amber-500/5 border-amber-500/20' : rem.color === 'text-emerald-400' ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-white/[0.02] border-white/[0.04]'}`}>
+                                        <div className={`rounded-xl p-3 border ${rem.color === 'text-red-400' ? 'bg-red-500/5 border-red-500/20' : rem.color === 'text-amber-400' ? 'bg-amber-500/5 border-amber-500/20' : rem.color === 'text-pink-400' ? 'bg-pink-500/5 border-pink-500/20' : 'bg-white/[0.02] border-white/[0.04]'}`}>
                                             <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-1 flex items-center gap-1"><Clock className="w-3 h-3" /> Kalan Süre</p>
                                             <p className={`text-sm font-bold ${rem.color}`}>⏱ {rem.text}</p>
                                         </div>
@@ -590,7 +599,7 @@ export default function StaffCalendarPage() {
                                 {/* Notes Section */}
                                 <div className="border-t border-white/[0.06] pt-5">
                                     <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-3">
-                                        <MessageSquare className="w-4 h-4 text-emerald-400" /> Notlar
+                                        <MessageSquare className="w-4 h-4 text-pink-400" /> Notlar
                                         {notes.length > 0 && <span className="text-[10px] text-zinc-600 bg-white/[0.04] rounded-full px-2 py-0.5">{notes.length}</span>}
                                     </h3>
 
@@ -600,19 +609,19 @@ export default function StaffCalendarPage() {
                                             onChange={e => setNoteText(e.target.value)}
                                             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAddNote(); } }}
                                             placeholder="Not ekle..."
-                                            className="flex-1 px-3 py-2 bg-[#18181b]/60 border border-white/[0.06] rounded-xl text-sm text-white outline-none focus:border-emerald-500/50 transition-colors"
+                                            className="flex-1 px-3 py-2 bg-[#18181b]/60 border border-white/[0.06] rounded-xl text-sm text-white outline-none focus:border-pink-500/50 transition-colors"
                                         />
                                         <button onClick={handleAddNote} disabled={noteLoading || !noteText.trim()}
-                                            className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-colors disabled:opacity-30">
+                                            className="px-3 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded-xl transition-colors disabled:opacity-30">
                                             <Send className="w-4 h-4" />
                                         </button>
                                     </div>
 
                                     <div className="space-y-2">
                                         {notes.map(note => (
-                                            <div key={note.id} className="bg-[#111113] border border-white/[0.04] rounded-xl p-3 group/note">
+                                            <div key={note.id} className="bg-[#0C0C0E] border border-white/[0.04] rounded-xl p-3 group/note">
                                                 <div className="flex items-center justify-between mb-1">
-                                                    <span className="text-[11px] font-semibold text-emerald-400">{note.authorName}</span>
+                                                    <span className="text-[11px] font-semibold text-pink-400">{note.authorName}</span>
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-[10px] text-zinc-700">
                                                             {new Date(note.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}

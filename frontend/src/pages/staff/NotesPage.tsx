@@ -78,7 +78,7 @@ export default function NotesPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-6 h-6 text-emerald-400 animate-spin" />
+                <Loader2 className="w-6 h-6 text-pink-400 animate-spin" />
             </div>
         );
     }
@@ -88,14 +88,14 @@ export default function NotesPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                        <FileText className="w-6 h-6 text-emerald-400" />
+                        <FileText className="w-6 h-6 text-pink-400" />
                         Notlar
                     </h1>
                     <p className="text-sm text-zinc-500 mt-1">Markdown destekli not defteri</p>
                 </div>
                 <button
                     onClick={() => setShowForm(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-sm font-medium transition-colors"
                 >
                     <Plus className="w-4 h-4" />
                     Yeni Not
@@ -110,13 +110,13 @@ export default function NotesPage() {
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         placeholder="Notlarda ara..."
-                        className="w-full pl-9 pr-3 py-2 bg-white/[0.04] border border-white/[0.06] rounded-xl text-sm text-white outline-none focus:border-emerald-500/40 placeholder:text-zinc-700"
+                        className="w-full pl-9 pr-3 py-2 bg-white/[0.04] border border-white/[0.06] rounded-xl text-sm text-white outline-none focus:border-pink-500/40 placeholder:text-zinc-700"
                     />
                 </div>
                 <select
                     value={companyFilter}
                     onChange={e => setCompanyFilter(e.target.value)}
-                    className="px-3 py-2 bg-white/[0.04] border border-white/[0.06] rounded-xl text-sm text-white outline-none focus:border-emerald-500/40"
+                    className="px-3 py-2 bg-white/[0.04] border border-white/[0.06] rounded-xl text-sm text-white outline-none focus:border-pink-500/40"
                 >
                     <option value="">Tüm Şirketler</option>
                     {companies.map(c => (
@@ -161,7 +161,7 @@ export default function NotesPage() {
                             <button
                                 onClick={createNote}
                                 disabled={!content.trim()}
-                                className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-30 text-white rounded-xl text-sm font-medium transition-colors"
+                                className="px-4 py-2 bg-pink-500 hover:bg-pink-600 disabled:opacity-30 text-white rounded-xl text-sm font-medium transition-colors"
                             >
                                 Kaydet
                             </button>
@@ -211,7 +211,7 @@ export default function NotesPage() {
                                 {isLong && (
                                     <button
                                         onClick={() => toggleExpand(note.id)}
-                                        className="flex items-center gap-1 mt-2 text-[11px] text-emerald-400 hover:text-emerald-300 transition-colors"
+                                        className="flex items-center gap-1 mt-2 text-[11px] text-pink-400 hover:text-pink-300 transition-colors"
                                     >
                                         {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                                         {expanded ? 'Daralt' : 'Devamını oku'}

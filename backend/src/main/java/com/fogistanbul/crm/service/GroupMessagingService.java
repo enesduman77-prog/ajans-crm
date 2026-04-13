@@ -238,6 +238,7 @@ public class GroupMessagingService {
                 .senderAvatarUrl(message.getSender().getPerson() != null
                         ? message.getSender().getPerson().getAvatarUrl()
                         : null)
+                .senderGlobalRole(message.getSender().getGlobalRole().name())
                 .content(message.getContent())
                 .createdAt(message.getCreatedAt())
                 .build();

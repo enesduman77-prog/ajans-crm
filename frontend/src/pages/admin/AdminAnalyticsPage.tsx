@@ -47,7 +47,7 @@ const staffPerformance = [
 export default function AdminAnalyticsPage() {
     const stats = [
         { label: 'Toplam Şirket', value: 12, change: '+2', icon: Building2, color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
-        { label: 'Aktif Çalışan', value: 8, change: '+1', icon: Users, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10' },
+        { label: 'Aktif Çalışan', value: 8, change: '+1', icon: Users, color: 'text-pink-400', bgColor: 'bg-pink-500/10' },
         { label: 'Aylık Görev', value: 85, change: '+12%', icon: ListTodo, color: 'text-amber-400', bgColor: 'bg-amber-500/10' },
         { label: 'Tamamlanma Oranı', value: '%89', change: '+3%', icon: CheckCircle2, color: 'text-green-400', bgColor: 'bg-green-500/10' },
         { label: 'Ortalama Süre', value: '2.4g', change: '-0.3g', icon: Clock, color: 'text-cyan-400', bgColor: 'bg-cyan-500/10' },
@@ -62,8 +62,8 @@ export default function AdminAnalyticsPage() {
                     <h1 className="text-2xl font-bold text-white tracking-tight">Analitik</h1>
                     <p className="text-zinc-500 text-[13px] mt-1">Ajans performansı ve iş analitiği</p>
                 </div>
-                <div className="flex items-center gap-2 bg-[#111113] border border-white/[0.06] rounded-xl px-3 py-2">
-                    <Activity className="w-4 h-4 text-emerald-400" />
+                <div className="flex items-center gap-2 bg-[#0C0C0E] border border-white/[0.06] rounded-xl px-3 py-2">
+                    <Activity className="w-4 h-4 text-pink-400" />
                     <span className="text-xs text-zinc-400">Son 30 Gün</span>
                 </div>
             </div>

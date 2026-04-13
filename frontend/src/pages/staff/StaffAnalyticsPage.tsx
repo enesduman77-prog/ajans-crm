@@ -1,51 +1,36 @@
+import { useQuery } from '@tanstack/react-query';
+import { staffApi } from '../../api/staff';
+import type { StaffAnalyticsResponse } from '../../api/staff';
 import {
     ListTodo, CheckCircle2, Clock, TrendingUp,
-    Activity, Target, Flame, Timer, BarChart3
+    Activity, Target, Flame, Timer, BarChart3, AlertTriangle
 } from 'lucide-react';
 import { StatCard, AreaChartCard, DonutChartCard, BarChartCard, ProgressListCard } from '../../components/analytics';
 
-// Mock data - backend API entegrasyonunda gerçek verilerle değiştirilecek
-const weeklyTasks = [
-    { name: 'Pzt', tamamlanan: 5, yeni: 3 },
-    { name: 'Sal', tamamlanan: 4, yeni: 6 },
-    { name: 'Çar', tamamlanan: 7, yeni: 4 },
-    { name: 'Per', tamamlanan: 3, yeni: 5 },
-    { name: 'Cum', tamamlanan: 8, yeni: 2 },
-    { name: 'Cmt', tamamlanan: 2, yeni: 1 },
-    { name: 'Paz', tamamlanan: 1, yeni: 0 },
-];
-
-const tasksByPriority = [
-    { name: 'Kritik', value: 4, color: '#ef4444' },
-    { name: 'Yüksek', value: 8, color: '#f97316' },
-    { name: 'Normal', value: 15, color: '#3b82f6' },
-    { name: 'Düşük', value: 6, color: '#6b7280' },
-];
-
-const monthlyHours = [
-    { name: 'Oca', saat: 142 },
-    { name: 'Şub', saat: 156 },
-    { name: 'Mar', saat: 168 },
-    { name: 'Nis', saat: 148 },
-    { name: 'May', saat: 175 },
-    { name: 'Haz', saat: 162 },
-];
-
-const companyTasks = [
-    { label: 'ABC Tech', value: 12, max: 15, color: '#3b82f6' },
-    { label: 'XYZ Media', value: 8, max: 12, color: '#f97316' },
-    { label: 'Delta Corp', value: 5, max: 6, color: '#10b981' },
-    { label: 'Mega Dijital', value: 9, max: 14, color: '#8b5cf6' },
-];
-
 export default function StaffAnalyticsPage() {
+    const { data, isLoading } = useQuery<StaffAnalyticsResponse>({
+        queryKey: ['staff-analytics'],
+        queryFn: () => staffApi.getMyAnalytics(),
+    });
+
+    if (isLoading || !data) {
+        return (
+            <div className="flex items-center justify-center py-20">
+                <div className="animate-spin h-6 w-6 border-2 border-pink-400 border-t-transparent rounded-full" />
+            </div>
+        );
+    }
+
+    const hoursThisMonth = Math.floor(data.totalMinutesThisMonth / 60);
+    const minsThisMonth = data.totalMinutesThisMonth % 60;
+
     const stats = [
-        { label: 'Aktif Görevler', value: 18, change: '+3', icon: ListTodo, color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
-        { label: 'Bu Hafta Tamamlanan', value: 12, change: '+4', icon: CheckCircle2, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10' },
-        { label: 'Bekleyen', value: 5, icon: Clock, color: 'text-amber-400', bgColor: 'bg-amber-500/10' },
-        { label: 'Tamamlanma Oranı', value: '%87', change: '+2%', icon: TrendingUp, color: 'text-green-400', bgColor: 'bg-green-500/10' },
-        { label: 'Ortalama Süre', value: '1.8g', change: '-0.5g', icon: Timer, color: 'text-cyan-400', bgColor: 'bg-cyan-500/10' },
-        { label: 'Verimlilik Puanı', value: '92', change: '+7', icon: Flame, color: 'text-orange-400', bgColor: 'bg-orange-500/10' },
+        { label: 'Aktif Görevler', value: data.activeTasks, icon: ListTodo, color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
+        { label: 'Bu Hafta Tamamlanan', value: data.completedThisWeek, icon: CheckCircle2, color: 'text-pink-400', bgColor: 'bg-pink-500/10' },
+        { label: 'Bekleyen', value: data.pendingTasks, icon: Clock, color: 'text-amber-400', bgColor: 'bg-amber-500/10' },
+        { label: 'Tamamlanma Oranı', value: `%${data.completionRate}`, icon: TrendingUp, color: 'text-green-400', bgColor: 'bg-green-500/10' },
+        { label: 'Bu Ay Çalışma', value: `${hoursThisMonth}s ${minsThisMonth}d`, icon: Timer, color: 'text-cyan-400', bgColor: 'bg-cyan-500/10' },
+        { label: 'Geciken', value: data.overdueTasks, icon: AlertTriangle, color: 'text-red-400', bgColor: 'bg-red-500/10' },
     ];
 
     return (
@@ -56,9 +41,9 @@ export default function StaffAnalyticsPage() {
                     <h1 className="text-2xl font-bold text-white tracking-tight">Performansım</h1>
                     <p className="text-zinc-500 text-[13px] mt-1">Kişisel iş analitiği ve performans metrikleri</p>
                 </div>
-                <div className="flex items-center gap-2 bg-[#111113] border border-white/[0.06] rounded-xl px-3 py-2">
-                    <Activity className="w-4 h-4 text-emerald-400" />
-                    <span className="text-xs text-zinc-400">Bu Ay</span>
+                <div className="flex items-center gap-2 bg-[#0C0C0E] border border-white/[0.06] rounded-xl px-3 py-2">
+                    <Activity className="w-4 h-4 text-pink-400" />
+                    <span className="text-xs text-zinc-400">Güncel Veriler</span>
                 </div>
             </div>
 
@@ -75,7 +60,7 @@ export default function StaffAnalyticsPage() {
                     <AreaChartCard
                         title="Haftalık Görev Akışı"
                         icon={TrendingUp}
-                        data={weeklyTasks}
+                        data={data.weeklyFlow}
                         dataKey="tamamlanan"
                         secondaryDataKey="yeni"
                         color="#10b981"
@@ -83,13 +68,10 @@ export default function StaffAnalyticsPage() {
                         gradientId="staffWeekly"
                     />
                 </div>
-                <DonutChartCard
-                    title="Öncelik Dağılımı"
-                    icon={Target}
-                    data={tasksByPriority}
-                    centerLabel="Toplam"
-                    centerValue={tasksByPriority.reduce((a, b) => a + b.value, 0)}
-                />
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5 flex flex-col items-center justify-center">
+                    <Target className="w-8 h-8 text-zinc-700 mb-2" />
+                    <p className="text-sm text-zinc-500">Kategori bilgisi</p>
+                </div>
             </div>
 
             {/* Charts Row 2 */}
@@ -98,16 +80,23 @@ export default function StaffAnalyticsPage() {
                     title="Aylık Çalışma Saatleri"
                     icon={BarChart3}
                     iconColor="text-cyan-400"
-                    data={monthlyHours}
+                    data={data.monthlyHours}
                     dataKey="saat"
                     color="#06b6d4"
                 />
-                <ProgressListCard
-                    title="Şirket Bazlı Görevler"
-                    icon={Target}
-                    iconColor="text-purple-400"
-                    items={companyTasks}
-                />
+                {data.companyTasks.length > 0 ? (
+                    <ProgressListCard
+                        title="Şirket Bazlı Görevler"
+                        icon={Target}
+                        iconColor="text-purple-400"
+                        items={data.companyTasks}
+                    />
+                ) : (
+                    <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5 flex flex-col items-center justify-center">
+                        <Flame className="w-8 h-8 text-zinc-700 mb-2" />
+                        <p className="text-sm text-zinc-500">Henüz şirket bazlı görev yok</p>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -29,7 +29,7 @@ public class GoogleOAuthService {
 
     private static final String AUTH_URL      = "https://accounts.google.com/o/oauth2/v2/auth";
     private static final String TOKEN_URL     = "https://oauth2.googleapis.com/token";
-    private static final String SCOPE         = "https://www.googleapis.com/auth/analytics.readonly";
+    private static final String SCOPE         = "https://www.googleapis.com/auth/analytics.readonly https://www.googleapis.com/auth/webmasters.readonly";
 
     @Value("${app.google-oauth.client-id}")
     private String clientId;
@@ -125,12 +125,27 @@ public class GoogleOAuthService {
         });
     }
 
+    // ─── Search Console Site URL güncelle ──────────────────────────────────────
+
+    @Transactional
+    public void saveSiteUrl(UUID companyId, String siteUrl) {
+        tokenRepository.findByCompanyId(companyId).ifPresent(token -> {
+            token.setScSiteUrl(siteUrl);
+            tokenRepository.save(token);
+        });
+    }
+
+    public Optional<String> getSiteUrl(UUID companyId) {
+        return tokenRepository.findByCompanyId(companyId)
+                .map(GoogleOAuthToken::getScSiteUrl);
+    }
+
     // ─── Bağlantıyı kes ──────────────────────────────────────────────────────
 
     @Transactional
     public void disconnect(UUID companyId) {
         tokenRepository.deleteByCompanyId(companyId);
-        log.info("GA bağlantısı kaldırıldı, company={}", companyId);
+        log.info("Google bağlantısı kaldırıldı, company={}", companyId);
     }
 
     // ─── Bağlantı durumu ─────────────────────────────────────────────────────
@@ -142,6 +157,12 @@ public class GoogleOAuthService {
     public Optional<String> getPropertyId(UUID companyId) {
         return tokenRepository.findByCompanyId(companyId)
                 .map(GoogleOAuthToken::getGaPropertyId);
+    }
+
+    public boolean hasScScope(UUID companyId) {
+        return tokenRepository.findByCompanyId(companyId)
+                .map(token -> token.getScope() != null && token.getScope().contains("webmasters"))
+                .orElse(false);
     }
 
     // ─── Yardımcı: token exchange ─────────────────────────────────────────────

@@ -69,7 +69,6 @@
     "task": {
         "title": "Görev Başlığı",
         "status": "Durum",
-        "priority": "Öncelik",
         "category": "Kategori",
         "assignee": "Atanan",
         "dueDate": "Son Tarih",

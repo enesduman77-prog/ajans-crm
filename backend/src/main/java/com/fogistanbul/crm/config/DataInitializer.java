@@ -153,7 +153,6 @@ public class DataInitializer implements CommandLineRunner {
                                                                         .title("Sistem Kontrolü")
                                                                         .description("Yeni CRM sisteminin genel kontrollerini yap.")
                                                                         .category(TaskCategory.OTHER)
-                                                                        .priority(Priority.HIGH)
                                                                         .status(TaskStatus.TODO)
                                                                         .build());
 
@@ -164,7 +163,6 @@ public class DataInitializer implements CommandLineRunner {
                                                                         .title("Müşteri Listesi Güncelleme")
                                                                         .description("Veri aktarımı yapılacak.")
                                                                         .category(TaskCategory.OTHER)
-                                                                        .priority(Priority.MEDIUM)
                                                                         .status(TaskStatus.IN_PROGRESS)
                                                                         .build());
                                                         log.info("Sample tasks created.");

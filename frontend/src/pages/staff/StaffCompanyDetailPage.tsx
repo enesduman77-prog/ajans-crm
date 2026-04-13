@@ -24,7 +24,7 @@ export default function StaffCompanyDetailPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin h-8 w-8 border-2 border-emerald-500 border-t-transparent rounded-full" />
+                <div className="animate-spin h-8 w-8 border-2 border-pink-500 border-t-transparent rounded-full" />
             </div>
         );
     }
@@ -41,14 +41,14 @@ export default function StaffCompanyDetailPage() {
                 </button>
                 <div className="flex-1">
                     <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                            <Building2 className="w-6 h-6 text-emerald-400" />
+                        <div className="h-12 w-12 rounded-xl bg-pink-500/10 flex items-center justify-center">
+                            <Building2 className="w-6 h-6 text-pink-400" />
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold text-white">{company.name}</h1>
                             <div className="flex items-center gap-3 text-sm text-zinc-500">
                                 {company.industry && <span>{company.industry}</span>}
-                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${company.contractStatus === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-zinc-700 text-zinc-400'}`}>
+                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${company.contractStatus === 'ACTIVE' ? 'bg-pink-500/10 text-pink-400' : 'bg-zinc-700 text-zinc-400'}`}>
                                     {company.contractStatus === 'ACTIVE' ? 'Aktif' : company.contractStatus}
                                 </span>
                             </div>
@@ -60,7 +60,7 @@ export default function StaffCompanyDetailPage() {
             {/* Info Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Contact */}
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5 space-y-3">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5 space-y-3">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">İletişim</h3>
                     {company.email && (
                         <div className="flex items-center gap-2 text-sm">
@@ -94,7 +94,7 @@ export default function StaffCompanyDetailPage() {
                 </div>
 
                 {/* Details */}
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5 space-y-3">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5 space-y-3">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Detaylar</h3>
                     {company.taxId && (
                         <div className="flex items-center gap-2 text-sm">
@@ -121,7 +121,7 @@ export default function StaffCompanyDetailPage() {
                 </div>
 
                 {/* Socials */}
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5 space-y-3">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5 space-y-3">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Sosyal Medya</h3>
                     <div className="flex flex-wrap gap-2">
                         {company.socialInstagram && (
@@ -164,14 +164,14 @@ export default function StaffCompanyDetailPage() {
 
             {/* Notes */}
             {company.notes && (
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">Notlar</h3>
                     <p className="text-zinc-300 text-sm whitespace-pre-wrap">{company.notes}</p>
                 </div>
             )}
 
             {/* Members */}
-            <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
                         <Users className="w-4 h-4" />
@@ -218,16 +218,16 @@ export default function StaffCompanyDetailPage() {
 
                 {/* Agency Staff */}
                 <div>
-                    <h4 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    <h4 className="text-xs font-semibold text-pink-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-pink-400" />
                         Yetkililer ({company.members?.filter(m => m.membershipRole === 'AGENCY_STAFF').length || 0})
                     </h4>
                     <div className="space-y-2">
                         {company.members?.filter(m => m.membershipRole === 'AGENCY_STAFF').map((member) => (
                             <MemberRow key={member.id} member={member} selectedMember={selectedMember}
                                 onSelect={setSelectedMember}
-                                avatarBg="bg-emerald-500/10" avatarText="text-emerald-400"
-                                badgeBg="bg-emerald-500/10" badgeText="text-emerald-400" badgeLabel="Ajans Yetkilisi" />
+                                avatarBg="bg-pink-500/10" avatarText="text-pink-400"
+                                badgeBg="bg-pink-500/10" badgeText="text-pink-400" badgeLabel="Ajans Yetkilisi" />
                         ))}
                         {(!company.members || company.members.filter(m => m.membershipRole === 'AGENCY_STAFF').length === 0) && (
                             <p className="text-zinc-600 text-sm text-center py-2">Henüz yetkili atanmamış</p>
@@ -238,12 +238,12 @@ export default function StaffCompanyDetailPage() {
 
             {/* Selected Member Detail */}
             {selectedMember && (
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
                         {selectedMember.fullName} — Detay
                     </h3>
                     <div className="flex items-center gap-4">
-                        <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-emerald-500/20 to-blue-500/20 flex items-center justify-center text-xl font-bold text-white">
+                        <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-pink-500/20 to-blue-500/20 flex items-center justify-center text-xl font-bold text-white">
                             {selectedMember.fullName?.charAt(0) || 'U'}
                         </div>
                         <div className="space-y-1">
@@ -251,7 +251,7 @@ export default function StaffCompanyDetailPage() {
                             <p className="text-zinc-500 text-sm">{selectedMember.email}</p>
                             <div className="flex items-center gap-2 text-xs">
                                 <span className="text-zinc-600">Rol:</span>
-                                <span className="text-emerald-400 font-medium">
+                                <span className="text-pink-400 font-medium">
                                     {selectedMember.membershipRole === 'OWNER' ? 'Sahip' :
                                         selectedMember.membershipRole === 'EMPLOYEE' ? 'Çalışan' : 'Ajans Yetkilisi'}
                                 </span>
@@ -272,7 +272,7 @@ function MemberRow({ member, selectedMember, onSelect, avatarBg, avatarText, bad
 }) {
     return (
         <div
-            className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${selectedMember?.id === member.id ? 'bg-white/5 ring-1 ring-emerald-500/30' : 'hover:bg-white/[0.02]'}`}
+            className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${selectedMember?.id === member.id ? 'bg-white/5 ring-1 ring-pink-500/30' : 'hover:bg-white/[0.02]'}`}
             onClick={() => onSelect(selectedMember?.id === member.id ? null : member)}>
             <div className={`h-9 w-9 rounded-full ${avatarBg} flex items-center justify-center text-sm font-bold ${avatarText}`}>
                 {member.fullName?.charAt(0) || 'U'}

@@ -54,7 +54,7 @@ export default function SurveyPage() {
         if (s <= 4) return 'text-orange-400';
         if (s <= 6) return 'text-yellow-400';
         if (s <= 8) return 'text-blue-400';
-        return 'text-emerald-400';
+        return 'text-pink-400';
     };
 
     return (
@@ -65,16 +65,16 @@ export default function SurveyPage() {
             </div>
 
             {/* Submit Form */}
-            <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-6">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-6">
                 <div className="flex items-center gap-2 mb-5">
                     <Star className="w-4 h-4 text-orange-400" />
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Bu Ayki Değerlendirme</h3>
                 </div>
 
                 {alreadySubmitted ? (
-                    <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                        <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                        <p className="text-sm text-emerald-300">Bu ay için anketinizi zaten gönderdiniz. Teşekkürler!</p>
+                    <div className="flex items-center gap-3 p-4 rounded-xl bg-pink-500/10 border border-pink-500/20">
+                        <CheckCircle2 className="w-5 h-5 text-pink-400 shrink-0" />
+                        <p className="text-sm text-pink-300">Bu ay için anketinizi zaten gönderdiniz. Teşekkürler!</p>
                     </div>
                 ) : (
                     <div className="space-y-5">
@@ -125,7 +125,7 @@ export default function SurveyPage() {
                         <AnimatePresence>
                             {successMsg && (
                                 <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                                    className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">
+                                    className="flex items-center gap-2 p-3 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-300 text-sm">
                                     <CheckCircle2 className="w-4 h-4" /> {successMsg}
                                 </motion.div>
                             )}
@@ -153,7 +153,7 @@ export default function SurveyPage() {
             </div>
 
             {/* Past Surveys */}
-            <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                 <div className="flex items-center gap-2 mb-4">
                     <BarChart3 className="w-4 h-4 text-blue-400" />
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Geçmiş Değerlendirmelerim</h3>

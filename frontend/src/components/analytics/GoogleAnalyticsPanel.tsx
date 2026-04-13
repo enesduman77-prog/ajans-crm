@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -7,13 +8,28 @@ import {
 import {
     Globe, Users, Eye, TrendingUp, MousePointerClick,
     Clock, AlertCircle, Loader2, WifiOff, ExternalLink,
-    MapPin, FileText, CheckCircle2, Link2, Unlink, Settings
+    MapPin, FileText, CheckCircle2, Link2, Unlink, Settings, ArrowUpRight, ChevronDown, Calendar
 } from 'lucide-react';
 import { gaApi, type GaOverviewResponse, type GaStatusResponse } from '../../api/googleAnalytics';
 
 interface Props {
     companyId: string;
 }
+
+interface PanelDatePreset {
+    label: string;
+    start: string;
+    end: string;
+}
+
+const PANEL_PRESETS: PanelDatePreset[] = [
+    { label: 'Son 7 Gün', start: '7daysAgo', end: 'today' },
+    { label: 'Son 14 Gün', start: '14daysAgo', end: 'today' },
+    { label: 'Son 30 Gün', start: '30daysAgo', end: 'today' },
+    { label: 'Son 90 Gün', start: '90daysAgo', end: 'today' },
+    { label: 'Son 6 Ay', start: '180daysAgo', end: 'today' },
+    { label: 'Son 1 Yıl', start: '365daysAgo', end: 'today' },
+];
 
 // â”€â”€â”€ Renk paleti â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SOURCE_COLORS = ['#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ec4899', '#06b6d4'];
@@ -63,6 +79,7 @@ function MetricCard({ label, value, icon: Icon, color, bgColor, sub }: {
 
 // â”€â”€â”€ Ana bileÅŸen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function GoogleAnalyticsPanel({ companyId }: Props) {
+    const navigate = useNavigate();
     const [status, setStatus] = useState<GaStatusResponse | null>(null);
     const [data, setData] = useState<GaOverviewResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -70,16 +87,23 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
     const [propertyInput, setPropertyInput] = useState('');
     const [savingProperty, setSavingProperty] = useState(false);
     const [showPropertyForm, setShowPropertyForm] = useState(false);
+    const [datePreset, setDatePreset] = useState(2); // default: Son 30 Gün
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [customStart, setCustomStart] = useState('');
+    const [customEnd, setCustomEnd] = useState('');
+    const [isCustom, setIsCustom] = useState(false);
 
     const load = () => {
         setLoading(true);
         setError(null);
+        const startDate = isCustom ? customStart : PANEL_PRESETS[datePreset].start;
+        const endDate = isCustom ? customEnd : PANEL_PRESETS[datePreset].end;
         gaApi.getStatus(companyId)
             .then((s: GaStatusResponse) => {
                 setStatus(s);
                 setPropertyInput(s.propertyId || '');
                 if (s.connected && s.propertyId) {
-                    return gaApi.getOverview(companyId).then(d => {
+                    return gaApi.getOverview(companyId, startDate, endDate).then(d => {
                         setData(d);
                         // Mülk ID hatalıysa formu otomatik aç
                         if (d.errorMessage) {
@@ -95,8 +119,9 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
     };
 
     useEffect(() => {
-        load();
-        // URL'de ga=connected parametresi varsa (OAuth callback sonrasÄ±)
+        load();    }, [companyId, datePreset, isCustom, customStart, customEnd]);
+
+    useEffect(() => {        // URL'de ga=connected parametresi varsa (OAuth callback sonrasÄ±)
         const params = new URLSearchParams(window.location.search);
         if (params.get('ga') === 'connected') {
             load();
@@ -126,7 +151,7 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
 
     if (loading) {
         return (
-            <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-8 flex items-center justify-center gap-3">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-8 flex items-center justify-center gap-3">
                 <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
                 <span className="text-zinc-400 text-sm">Google Analytics yükleniyor...</span>
             </div>
@@ -135,7 +160,7 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
 
     if (error) {
         return (
-            <div className="bg-[#111113] border border-red-500/20 rounded-2xl p-6 flex items-center gap-4">
+            <div className="bg-[#0C0C0E] border border-red-500/20 rounded-2xl p-6 flex items-center gap-4">
                 <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
                 <div>
                     <p className="text-sm font-medium text-white">Hata</p>
@@ -148,7 +173,7 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
     // â”€â”€â”€ BaÄŸlÄ± deÄŸil â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (!status?.connected) {
         return (
-            <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-8">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-8">
                 <div className="flex flex-col items-center text-center gap-5">
                     <div className="h-14 w-14 rounded-2xl bg-zinc-800 flex items-center justify-center">
                         <WifiOff className="w-7 h-7 text-zinc-500" />
@@ -185,10 +210,10 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
     // â”€â”€â”€ BaÄŸlÄ± ama property seÃ§ilmemiÅŸ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (status.connected && !status.propertyId) {
         return (
-            <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-8">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-8">
                 <div className="flex flex-col items-center text-center gap-4">
-                    <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
-                        <CheckCircle2 className="w-7 h-7 text-emerald-400" />
+                    <div className="h-14 w-14 rounded-2xl bg-pink-500/10 flex items-center justify-center">
+                        <CheckCircle2 className="w-7 h-7 text-pink-400" />
                     </div>
                     <div>
                         <h3 className="text-white font-semibold">Google Hesabı Bağlandı</h3>
@@ -243,13 +268,71 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
                     </div>
                     <div>
                         <h3 className="text-sm font-semibold text-white">Google Analytics</h3>
-                        <p className="text-[11px] text-zinc-500">GA4 Mülkü: {status.propertyId} — Son 30 Gün</p>
+                        <p className="text-[11px] text-zinc-500">GA4 Mülkü: {status.propertyId} — {isCustom ? `${customStart} — ${customEnd}` : PANEL_PRESETS[datePreset].label}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                        <span className="text-[11px] text-emerald-400 font-medium">Canlı</span>
+                    <button
+                        onClick={() => navigate('/client/google-analytics')}
+                        className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium px-3 py-1.5 rounded-xl transition-colors"
+                    >
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                        Detaylı İncele
+                    </button>
+                    {/* Tarih aralığı seçici */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowDatePicker(v => !v)}
+                            className="flex items-center gap-1.5 bg-[#1a1a1f] border border-white/[0.06] hover:border-white/[0.12] rounded-full px-2.5 py-1 transition-colors"
+                        >
+                            <Calendar className="w-3 h-3 text-zinc-500" />
+                            <span className="text-[11px] text-zinc-400">
+                                {isCustom ? `${customStart} — ${customEnd}` : PANEL_PRESETS[datePreset].label}
+                            </span>
+                            <ChevronDown className="w-3 h-3 text-zinc-500" />
+                        </button>
+                        {showDatePicker && (
+                            <>
+                                <div className="fixed inset-0 z-40" onClick={() => setShowDatePicker(false)} />
+                                <div className="absolute right-0 top-full mt-2 z-50 bg-[#1a1a1f] border border-white/[0.08] rounded-xl shadow-2xl p-2 min-w-[200px]">
+                                    {PANEL_PRESETS.map((p, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => { setDatePreset(i); setIsCustom(false); setShowDatePicker(false); }}
+                                            className={`w-full text-left px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                                                !isCustom && datePreset === i
+                                                    ? 'bg-blue-500/10 text-blue-400'
+                                                    : 'text-zinc-300 hover:bg-white/[0.05]'
+                                            }`}
+                                        >
+                                            {p.label}
+                                        </button>
+                                    ))}
+                                    <div className="border-t border-white/[0.06] mt-1.5 pt-1.5">
+                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider px-2 py-0.5">Özel Aralık</p>
+                                        <div className="px-2 space-y-1.5 mt-1">
+                                            <input type="date" value={customStart}
+                                                onChange={e => setCustomStart(e.target.value)}
+                                                className="w-full bg-[#0C0C0E] border border-white/[0.08] rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none focus:border-blue-500/50" />
+                                            <input type="date" value={customEnd}
+                                                onChange={e => setCustomEnd(e.target.value)}
+                                                className="w-full bg-[#0C0C0E] border border-white/[0.08] rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none focus:border-blue-500/50" />
+                                            <button
+                                                onClick={() => { if (customStart && customEnd) { setIsCustom(true); setShowDatePicker(false); } }}
+                                                disabled={!customStart || !customEnd}
+                                                className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white text-[11px] font-medium py-1 rounded-lg transition-colors"
+                                            >
+                                                Uygula
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-pink-500/10 border border-pink-500/20 rounded-full px-3 py-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-pink-400" />
+                        <span className="text-[11px] text-pink-400 font-medium">Canlı</span>
                     </div>
                     <button
                         onClick={() => setShowPropertyForm(v => !v)}
@@ -304,7 +387,7 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
 
                     {!data.errorMessage && <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                         <MetricCard label="Oturum" value={formatNum(data.sessions)} icon={TrendingUp} color="text-blue-400" bgColor="bg-blue-500/10" />
-                        <MetricCard label="Kullanıcı" value={formatNum(data.totalUsers)} icon={Users} color="text-emerald-400" bgColor="bg-emerald-500/10" />
+                        <MetricCard label="Kullanıcı" value={formatNum(data.totalUsers)} icon={Users} color="text-pink-400" bgColor="bg-pink-500/10" />
                         <MetricCard label="Yeni Kullanıcı" value={formatNum(data.newUsers)} icon={Users} color="text-cyan-400" bgColor="bg-cyan-500/10" />
                         <MetricCard label="Sayfa Görüntüleme" value={formatNum(data.pageViews)} icon={Eye} color="text-amber-400" bgColor="bg-amber-500/10" />
                         <MetricCard label="Hemen Çıkma" value={`%${data.bounceRate}`} icon={MousePointerClick} color="text-rose-400" bgColor="bg-rose-500/10" />
@@ -313,7 +396,7 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
 
                     {/* Grafik satırı */}
                     {!data.errorMessage && <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <div className="lg:col-span-2 bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+                        <div className="lg:col-span-2 bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                             <div className="flex items-center gap-2 mb-4">
                                 <TrendingUp className="w-4 h-4 text-blue-400" />
                                 <h4 className="text-sm font-semibold text-white">Günlük Oturum & Kullanıcı Trendi</h4>
@@ -340,7 +423,7 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
                             </ResponsiveContainer>
                         </div>
 
-                        <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+                        <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                             <div className="flex items-center gap-2 mb-4">
                                 <Globe className="w-4 h-4 text-amber-400" />
                                 <h4 className="text-sm font-semibold text-white">Trafik Kaynakları</h4>
@@ -368,7 +451,7 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
 
                     {/* Alt satır */}
                     {!data.errorMessage && <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+                        <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                             <div className="flex items-center gap-2 mb-4">
                                 <FileText className="w-4 h-4 text-cyan-400" />
                                 <h4 className="text-sm font-semibold text-white">En Çok Ziyaret Edilen Sayfalar</h4>
@@ -392,9 +475,9 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
                             </div>
                         </div>
 
-                        <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+                        <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                             <div className="flex items-center gap-2 mb-4">
-                                <MapPin className="w-4 h-4 text-emerald-400" />
+                                <MapPin className="w-4 h-4 text-pink-400" />
                                 <h4 className="text-sm font-semibold text-white">Ülkelere Göre Oturumlar</h4>
                             </div>
                             <div className="space-y-3">
@@ -410,7 +493,7 @@ export default function GoogleAnalyticsPanel({ companyId }: Props) {
                                                     <span className="text-[12px] text-zinc-500 ml-2">{country.value.toLocaleString('tr-TR')}</span>
                                                 </div>
                                                 <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
-                                                    <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.7, delay: i * 0.08 }} className="h-full rounded-full bg-emerald-500" />
+                                                    <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.7, delay: i * 0.08 }} className="h-full rounded-full bg-pink-500" />
                                                 </div>
                                             </div>
                                         </div>

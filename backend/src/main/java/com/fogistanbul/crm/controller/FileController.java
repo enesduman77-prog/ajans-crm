@@ -6,6 +6,7 @@ import com.fogistanbul.crm.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -72,6 +74,22 @@ public class FileController {
         UUID userId = (UUID) auth.getPrincipal();
         fileService.delete(fileId, userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/media/company/{companyId}")
+    public Page<FileAttachmentResponse> getCompanyMedia(
+            @PathVariable UUID companyId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "24") int size,
+            @RequestParam(required = false) String filter,
+            Authentication auth) {
+        UUID userId = (UUID) auth.getPrincipal();
+        return fileService.getCompanyMedia(companyId, filter, page, size, userId);
+    }
+
+    @GetMapping("/media/company-counts")
+    public Map<UUID, Long> getCompanyMediaCounts() {
+        return fileService.getCompanyMediaCounts();
     }
 
     private String sanitizeFilename(String filename) {

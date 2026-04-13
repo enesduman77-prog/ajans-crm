@@ -9,7 +9,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import {
     BarChart3, Image, ListTodo, CheckCircle2, ShoppingBag,
-    Settings, MessageSquare, LogOut, Building2, Star, Menu, X, TrendingUp, Sparkles, Search, Users
+    Settings, MessageSquare, LogOut, Building2, Star, Menu, X, TrendingUp, Sparkles, Search, Users, Camera
 } from 'lucide-react';
 
 const navItems = [
@@ -18,6 +18,7 @@ const navItems = [
     { to: '/client/media', icon: Image, label: 'Medya Kütüphanesi' },
     { to: '/client/tasks', icon: ListTodo, label: 'Yapılacaklar' },
     { to: '/client/completed', icon: CheckCircle2, label: 'Yapılanlar' },
+    { to: '/client/shoots', icon: Camera, label: 'Çekim Takvimi' },
     { to: '/client/services', icon: ShoppingBag, label: 'Ek Hizmet Al', ownerOnly: true },
     { to: '/client/messaging', icon: MessageSquare, label: 'Mesajlar' },
     { to: '/client/team', icon: Users, label: 'Ekibimiz', ownerOnly: true },
@@ -36,7 +37,7 @@ export default function ClientLayout() {
     return (
         <div className="flex min-h-dvh bg-transparent">
             {/* Mobile Top Bar */}
-            <div className="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-3 bg-[#111113] border-b border-white/[0.06] md:hidden">
+            <div className="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-3 bg-[#0C0C0E] border-b border-white/[0.06] md:hidden">
                 <button onClick={() => setSidebarOpen(true)} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-zinc-400">
                     <Menu className="w-5 h-5" />
                 </button>
@@ -55,7 +56,7 @@ export default function ClientLayout() {
 
             {/* Sidebar */}
             <aside className={`
-                fixed inset-y-0 left-0 z-50 w-[260px] bg-[#111113] border-r border-white/[0.06] flex flex-col
+                fixed inset-y-0 left-0 z-50 w-[260px] bg-[#0C0C0E] border-r border-white/[0.06] flex flex-col
                 transform transition-transform duration-200 ease-out
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
                 md:sticky md:top-0 md:h-dvh md:translate-x-0 md:z-auto

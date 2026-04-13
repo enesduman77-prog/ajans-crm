@@ -34,7 +34,7 @@ const actionLabels: Record<string, string> = {
 };
 
 const actionColors: Record<string, string> = {
-    CREATE: 'text-emerald-400 bg-emerald-500/10',
+    CREATE: 'text-pink-400 bg-pink-500/10',
     UPDATE: 'text-blue-400 bg-blue-500/10',
     DELETE: 'text-red-400 bg-red-500/10',
     LOGIN: 'text-green-400 bg-green-500/10',

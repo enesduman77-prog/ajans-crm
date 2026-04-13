@@ -207,7 +207,7 @@ export default function ClientMessagingPage() {
                 </div>
             )}
             {/* Conversations Sidebar */}
-            <div className={`w-full md:w-80 bg-[#111113] border-r border-white/[0.06] flex flex-col ${activeConv || activeGroup ? 'hidden md:flex' : 'flex'}`}>
+            <div className={`w-full md:w-80 bg-[#0C0C0E] border-r border-white/[0.06] flex flex-col ${activeConv || activeGroup ? 'hidden md:flex' : 'flex'}`}>
                 <div className="p-4 border-b border-white/[0.06] flex items-center justify-between">
                     <h2 className="text-lg font-bold text-white flex items-center gap-2">
                         <MessageSquare className="w-5 h-5 text-blue-400" />
@@ -338,7 +338,7 @@ export default function ClientMessagingPage() {
             <div className={`flex-1 flex flex-col bg-[#09090b] ${!activeConv && !activeGroup ? 'hidden md:flex' : 'flex'}`}>
                 {activeGroup ? (
                     <>
-                        <div className="h-16 border-b border-white/[0.06] flex items-center justify-between px-6 bg-[#111113]/80">
+                        <div className="h-16 border-b border-white/[0.06] flex items-center justify-between px-6 bg-[#0C0C0E]/80">
                             <div className="flex items-center gap-3">
                                 <button className="md:hidden text-zinc-400 hover:text-white mr-2" onClick={() => setActiveGroup(null)}>
                                     <ChevronLeft className="w-5 h-5" />
@@ -376,7 +376,12 @@ export default function ClientMessagingPage() {
                                                 : 'bg-[#18181b] text-zinc-100 rounded-bl-sm border border-white/[0.06]'
                                                 }`}>
                                                 {!isMine && (
-                                                    <p className="text-[11px] font-semibold text-blue-400 mb-1">{msg.senderName}</p>
+                                                    <p className={`text-[11px] font-semibold mb-1 ${msg.senderGlobalRole === 'ADMIN' || msg.senderGlobalRole === 'AGENCY_STAFF' ? 'text-orange-400' : 'text-blue-400'}`}>
+                                                        {msg.senderName}
+                                                        {(msg.senderGlobalRole === 'ADMIN' || msg.senderGlobalRole === 'AGENCY_STAFF') && (
+                                                            <span className="ml-1.5 text-[9px] bg-orange-500/20 text-orange-300 px-1.5 py-0.5 rounded-full">Ajans</span>
+                                                        )}
+                                                    </p>
                                                 )}
                                                 <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                                                 <div className={`flex items-center justify-end gap-1 mt-1 text-[10px] ${isMine ? 'text-blue-200' : 'text-zinc-500'}`}>
@@ -394,7 +399,7 @@ export default function ClientMessagingPage() {
                             <div ref={messagesEndRef} />
                         </div>
 
-                        <div className="p-4 bg-[#111113] border-t border-white/[0.06]">
+                        <div className="p-4 bg-[#0C0C0E] border-t border-white/[0.06]">
                             <form onSubmit={handleGroupSend} className="max-w-4xl mx-auto flex items-end gap-3">
                                 <div className="flex-1 relative">
                                     <textarea
@@ -437,7 +442,7 @@ export default function ClientMessagingPage() {
                 ) : (
                     <>
                         {/* Chat Header */}
-                        <div className="h-16 border-b border-white/[0.06] flex items-center justify-between px-6 bg-[#111113]/80">
+                        <div className="h-16 border-b border-white/[0.06] flex items-center justify-between px-6 bg-[#0C0C0E]/80">
                             <div className="flex items-center gap-3">
                                 <button className="md:hidden text-zinc-400 hover:text-white mr-2" onClick={() => setActiveConv(null)}>
                                     <ChevronLeft className="w-5 h-5" />
@@ -501,7 +506,7 @@ export default function ClientMessagingPage() {
                         </div>
 
                         {/* Message Input */}
-                        <div className="p-4 bg-[#111113] border-t border-white/[0.06]">
+                        <div className="p-4 bg-[#0C0C0E] border-t border-white/[0.06]">
                             <form onSubmit={handleSend} className="max-w-4xl mx-auto flex items-end gap-3">
                                 <div className="flex-1 relative">
                                     <textarea
@@ -546,7 +551,7 @@ export default function ClientMessagingPage() {
                             initial={{ scale: 0.95 }}
                             animate={{ scale: 1 }}
                             exit={{ scale: 0.95 }}
-                            className="bg-[#111113] border border-white/[0.08] rounded-2xl w-full max-w-md max-h-[80vh] flex flex-col"
+                            className="bg-[#0C0C0E] border border-white/[0.08] rounded-2xl w-full max-w-md max-h-[80vh] flex flex-col"
                             onClick={e => e.stopPropagation()}
                         >
                             <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">

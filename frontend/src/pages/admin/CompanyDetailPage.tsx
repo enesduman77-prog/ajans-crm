@@ -29,7 +29,7 @@ const PERMISSION_LABELS: Record<string, string> = {
 };
 
 const LEVEL_STYLES: Record<string, string> = {
-    FULL: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+    FULL: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
     RESTRICTED: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
     NONE: 'bg-zinc-700/30 text-zinc-500 border-zinc-600/30',
 };
@@ -115,7 +115,7 @@ export default function CompanyDetailPage() {
                             <h1 className="text-2xl font-bold text-white">{company.name}</h1>
                             <div className="flex items-center gap-3 text-sm text-zinc-500">
                                 {company.industry && <span>{company.industry}</span>}
-                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${company.contractStatus === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-zinc-700 text-zinc-400'}`}>
+                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${company.contractStatus === 'ACTIVE' ? 'bg-pink-500/10 text-pink-400' : 'bg-zinc-700 text-zinc-400'}`}>
                                     {company.contractStatus === 'ACTIVE' ? 'Aktif' : company.contractStatus}
                                 </span>
                             </div>
@@ -127,7 +127,7 @@ export default function CompanyDetailPage() {
             {/* Info Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Contact */}
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5 space-y-3">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5 space-y-3">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">İletişim</h3>
                     {company.email && (
                         <div className="flex items-center gap-2 text-sm">
@@ -158,7 +158,7 @@ export default function CompanyDetailPage() {
                 </div>
 
                 {/* Details */}
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5 space-y-3">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5 space-y-3">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Detaylar</h3>
                     {company.taxId && (
                         <div className="flex items-center gap-2 text-sm">
@@ -185,7 +185,7 @@ export default function CompanyDetailPage() {
                 </div>
 
                 {/* Socials */}
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5 space-y-3">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5 space-y-3">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Sosyal Medya</h3>
                     <div className="flex flex-wrap gap-2">
                         {company.socialInstagram && (
@@ -228,14 +228,14 @@ export default function CompanyDetailPage() {
 
             {/* Notes */}
             {company.notes && (
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">Notlar</h3>
                     <p className="text-zinc-300 text-sm whitespace-pre-wrap">{company.notes}</p>
                 </div>
             )}
 
             {/* Members */}
-            <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
                         <Users className="w-4 h-4" />
@@ -254,22 +254,22 @@ export default function CompanyDetailPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <input placeholder="Ad Soyad *" value={employeeForm.fullName}
                                 onChange={e => setEmployeeForm(p => ({ ...p, fullName: e.target.value }))}
-                                className="bg-[#111113] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
+                                className="bg-[#0C0C0E] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
                             <input placeholder="Email *" type="email" value={employeeForm.email}
                                 onChange={e => setEmployeeForm(p => ({ ...p, email: e.target.value }))}
-                                className="bg-[#111113] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
+                                className="bg-[#0C0C0E] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
                             <input placeholder="Şifre *" type="password" value={employeeForm.password}
                                 onChange={e => setEmployeeForm(p => ({ ...p, password: e.target.value }))}
-                                className="bg-[#111113] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
+                                className="bg-[#0C0C0E] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
                             <input placeholder="Telefon" value={employeeForm.phone}
                                 onChange={e => setEmployeeForm(p => ({ ...p, phone: e.target.value }))}
-                                className="bg-[#111113] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
+                                className="bg-[#0C0C0E] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
                             <input placeholder="Pozisyon" value={employeeForm.position}
                                 onChange={e => setEmployeeForm(p => ({ ...p, position: e.target.value }))}
-                                className="bg-[#111113] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
+                                className="bg-[#0C0C0E] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
                             <input placeholder="Departman" value={employeeForm.department}
                                 onChange={e => setEmployeeForm(p => ({ ...p, department: e.target.value }))}
-                                className="bg-[#111113] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
+                                className="bg-[#0C0C0E] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500/50 focus:outline-none" />
                         </div>
                         <div className="flex gap-2 justify-end">
                             <button onClick={() => setShowAddEmployee(false)}
@@ -347,8 +347,8 @@ export default function CompanyDetailPage() {
 
                 {/* Agency Staff (Yetkililer) */}
                 <div>
-                    <h4 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    <h4 className="text-xs font-semibold text-pink-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-pink-400" />
                         Yetkililer ({company.members?.filter(m => m.membershipRole === 'AGENCY_STAFF').length || 0})
                     </h4>
                     <div className="space-y-2">
@@ -356,14 +356,14 @@ export default function CompanyDetailPage() {
                             <div key={member.id}
                                 className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${selectedMember?.id === member.id ? 'bg-white/5 ring-1 ring-orange-500/30' : 'hover:bg-white/[0.02]'}`}
                                 onClick={() => setSelectedMember(selectedMember?.id === member.id ? null : member)}>
-                                <div className="h-9 w-9 rounded-full bg-emerald-500/10 flex items-center justify-center text-sm font-bold text-emerald-400">
+                                <div className="h-9 w-9 rounded-full bg-pink-500/10 flex items-center justify-center text-sm font-bold text-pink-400">
                                     {member.fullName?.charAt(0) || 'U'}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-white truncate">{member.fullName}</p>
                                     <p className="text-xs text-zinc-600 truncate">{member.email}</p>
                                 </div>
-                                <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-emerald-500/10 text-emerald-400">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-pink-500/10 text-pink-400">
                                     Ajans Yetkilisi
                                 </span>
                                 {selectedMember?.id === member.id ? <ChevronUp className="w-4 h-4 text-zinc-500" /> : <ChevronDown className="w-4 h-4 text-zinc-600" />}
@@ -378,7 +378,7 @@ export default function CompanyDetailPage() {
 
             {/* Permissions Panel */}
             {selectedMember && (
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
                             <Shield className="w-4 h-4" />

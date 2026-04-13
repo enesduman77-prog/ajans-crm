@@ -35,4 +35,25 @@ public class PrProjectPhase {
 
     @Column(name = "completed_at")
     private Instant completedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_to_id")
+    private UserProfile assignedTo;
+
+    @Column(name = "start_date")
+    private Instant startDate;
+
+    @Column(name = "end_date")
+    private Instant endDate;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
+
+    @Column(length = 20)
+    @Builder.Default
+    private String status = "PENDING";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id")
+    private Task task;
 }

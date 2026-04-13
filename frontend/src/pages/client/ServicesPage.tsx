@@ -21,8 +21,8 @@ export default function ServicesPage() {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center space-y-4">
-                    <div className="h-16 w-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto">
-                        <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+                    <div className="h-16 w-16 rounded-2xl bg-pink-500/10 flex items-center justify-center mx-auto">
+                        <CheckCircle2 className="w-8 h-8 text-pink-400" />
                     </div>
                     <h2 className="text-xl font-bold text-white">Talebiniz Alındı!</h2>
                     <p className="text-sm text-zinc-500 max-w-md mx-auto">
@@ -55,7 +55,7 @@ export default function ServicesPage() {
                             )}
                             className={`text-left p-4 rounded-xl border transition-all ${isSelected
                                 ? 'bg-blue-500/10 border-blue-500/30 ring-1 ring-blue-500/20'
-                                : 'bg-[#111113] border-white/[0.06] hover:bg-white/[0.02]'
+                                : 'bg-[#0C0C0E] border-white/[0.06] hover:bg-white/[0.02]'
                                 }`}>
                             <span className="text-2xl">{service.icon}</span>
                             <h3 className={`text-sm font-semibold mt-2 ${isSelected ? 'text-blue-300' : 'text-white'}`}>{service.name}</h3>
@@ -67,7 +67,7 @@ export default function ServicesPage() {
 
             {/* Note */}
             {selected.length > 0 && (
-                <div className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5 space-y-4">
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5 space-y-4">
                     <textarea
                         value={note}
                         onChange={e => setNote(e.target.value)}

@@ -69,7 +69,6 @@
     "task": {
         "title": "Task Title",
         "status": "Status",
-        "priority": "Priority",
         "category": "Category",
         "assignee": "Assignee",
         "dueDate": "Due Date",

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 
 interface ProgressItem {
@@ -15,13 +15,13 @@ interface ProgressListCardProps {
     items: ProgressItem[];
 }
 
-export default function ProgressListCard({ title, icon: Icon, iconColor = 'text-emerald-400', items }: ProgressListCardProps) {
+export default function ProgressListCard({ title, icon: Icon, iconColor = 'text-pink-400', items }: ProgressListCardProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="bg-[#111113] border border-white/[0.06] rounded-2xl p-6"
+            className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-6"
         >
             <div className="flex items-center gap-2 mb-5">
                 <Icon className={`w-5 h-5 ${iconColor}`} />

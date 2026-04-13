@@ -46,8 +46,7 @@ public class Task {
     private TaskCategory category = TaskCategory.OTHER;
 
     @Enumerated(EnumType.STRING)
-    @Builder.Default
-    private Priority priority = Priority.MEDIUM;
+    private Priority priority;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
@@ -67,6 +66,13 @@ public class Task {
 
     @Column(name = "completed_at")
     private Instant completedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "routine_id")
+    private RoutineTask routine;
+
+    @Column(name = "routine_period_key")
+    private String routinePeriodKey;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

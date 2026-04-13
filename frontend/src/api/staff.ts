@@ -13,7 +13,6 @@ export interface TaskResponse {
     title: string;
     description: string | null;
     category: string;
-    priority: string;
     status: string;
     startDate: string | null;
     startTime: string | null;
@@ -30,7 +29,6 @@ export interface CreateTaskRequest {
     title: string;
     description?: string;
     category?: string;
-    priority?: string;
     startDate?: string;
     startTime?: string;
     endDate?: string;
@@ -42,7 +40,6 @@ export interface UpdateTaskRequest {
     description?: string;
     status?: string;
     category?: string;
-    priority?: string;
     assignedToId?: string;
     companyId?: string;
     startDate?: string;
@@ -89,8 +86,8 @@ export interface TaskNoteResponse {
 
 export interface MeetingResponse {
     id: string;
-    companyId: string;
-    companyName: string;
+    companyId: string | null;
+    companyName: string | null;
     title: string;
     description: string | null;
     meetingDate: string;
@@ -99,7 +96,8 @@ export interface MeetingResponse {
     status: string;
     createdById: string;
     createdByName: string;
-    participants: { userId: string; fullName: string; email: string }[];
+    participants: { userId: string; fullName: string; email: string; noteSubmitted: boolean }[];
+    notes: { userId: string; fullName: string; content: string; createdAt: string }[];
     createdAt: string;
 }
 
@@ -113,16 +111,20 @@ export interface ShootResponse {
     shootTime: string | null;
     location: string | null;
     status: string;
+    photographerId: string | null;
+    photographerName: string | null;
+    notes: string | null;
     createdById: string;
     createdByName: string;
     participants: { userId: string; fullName: string; roleInShoot: string | null }[];
+    equipment: { id: string; name: string; quantity: number; notes: string | null }[];
     createdAt: string;
 }
 
 export interface PrProjectResponse {
     id: string;
-    companyId: string;
-    companyName: string;
+    companyId: string | null;
+    companyName: string | null;
     name: string;
     purpose: string | null;
     totalPhases: number;
@@ -131,9 +133,62 @@ export interface PrProjectResponse {
     status: string;
     createdById: string;
     createdByName: string;
-    phases: { id: string; phaseNumber: number; name: string; isCompleted: boolean; completedAt: string | null }[];
+    responsibleId: string | null;
+    responsibleName: string | null;
+    startDate: string | null;
+    endDate: string | null;
+    notes: string | null;
+    phases: PrPhaseInfo[];
     members: { userId: string; fullName: string }[];
     createdAt: string;
+}
+
+export interface PrPhaseInfo {
+    id: string;
+    phaseNumber: number;
+    name: string;
+    isCompleted: boolean;
+    completedAt: string | null;
+    assignedToId: string | null;
+    assignedToName: string | null;
+    startDate: string | null;
+    endDate: string | null;
+    notes: string | null;
+    status: string;
+    phaseNotes: PhaseNoteInfo[];
+}
+
+export interface PhaseNoteInfo {
+    id: string;
+    authorId: string;
+    authorName: string;
+    content: string;
+    createdAt: string;
+}
+
+export interface CreatePrProjectRequest {
+    name: string;
+    companyId?: string;
+    responsibleId?: string;
+    purpose?: string;
+    startDate?: string;
+    endDate?: string;
+    notes?: string;
+    totalPhases?: number;
+    phases?: { name: string; assignedToId?: string; startDate?: string; endDate?: string; notes?: string }[];
+    memberIds?: string[];
+}
+
+export interface UpdatePrProjectRequest {
+    name?: string;
+    purpose?: string;
+    companyId?: string;
+    responsibleId?: string;
+    startDate?: string;
+    endDate?: string;
+    notes?: string;
+    status?: string;
+    phases?: { id?: string; name?: string; assignedToId?: string; startDate?: string; endDate?: string; notes?: string }[];
 }
 
 export interface NoteResponse {
@@ -198,7 +253,7 @@ export const staffApi = {
     getMeetingsByCompany: (companyId: string, page = 0, size = 20) =>
         api.get<PageResponse<MeetingResponse>>(`/staff/meetings/company/${companyId}?page=${page}&size=${size}`).then(r => r.data),
 
-    createMeeting: (data: { companyId: string; title: string; description?: string; meetingDate: string; durationMinutes?: number; location?: string; participantIds?: string[] }) =>
+    createMeeting: (data: { companyId?: string; title: string; description?: string; meetingDate: string; durationMinutes?: number; location?: string; participantIds?: string[] }) =>
         api.post<MeetingResponse>('/staff/meetings', data).then(r => r.data),
 
     updateMeetingStatus: (id: string, status: string) =>
@@ -207,6 +262,15 @@ export const staffApi = {
     deleteMeeting: (id: string) =>
         api.delete(`/staff/meetings/${id}`).then(r => r.data),
 
+    completeMeeting: (id: string, content: string) =>
+        api.put<MeetingResponse>(`/staff/meetings/${id}/complete`, { content }).then(r => r.data),
+
+    addMeetingNote: (id: string, content: string) =>
+        api.post<MeetingResponse>(`/staff/meetings/${id}/notes`, { content }).then(r => r.data),
+
+    getMeeting: (id: string) =>
+        api.get<MeetingResponse>(`/staff/meetings/${id}`).then(r => r.data),
+
     // Shoots
     getShoots: (page = 0, size = 20) =>
         api.get<PageResponse<ShootResponse>>(`/staff/shoots?page=${page}&size=${size}`).then(r => r.data),
@@ -214,7 +278,7 @@ export const staffApi = {
     getShootsByCompany: (companyId: string, page = 0, size = 20) =>
         api.get<PageResponse<ShootResponse>>(`/staff/shoots/company/${companyId}?page=${page}&size=${size}`).then(r => r.data),
 
-    createShoot: (data: { companyId: string; title: string; description?: string; shootDate?: string; shootTime?: string; location?: string; participants?: { userId: string; roleInShoot: string }[] }) =>
+    createShoot: (data: { companyId: string; title: string; description?: string; shootDate?: string; shootTime?: string; location?: string; photographerId?: string; notes?: string; participants?: { userId: string; roleInShoot: string }[]; equipment?: { name: string; quantity?: number; notes?: string }[] }) =>
         api.post<ShootResponse>('/staff/shoots', data).then(r => r.data),
 
     updateShootStatus: (id: string, status: string) =>
@@ -227,17 +291,26 @@ export const staffApi = {
     getPrProjects: (page = 0, size = 20) =>
         api.get<PageResponse<PrProjectResponse>>(`/staff/pr-projects?page=${page}&size=${size}`).then(r => r.data),
 
+    getPrProject: (id: string) =>
+        api.get<PrProjectResponse>(`/staff/pr-projects/${id}`).then(r => r.data),
+
     getPrProjectsByCompany: (companyId: string, page = 0, size = 20) =>
         api.get<PageResponse<PrProjectResponse>>(`/staff/pr-projects/company/${companyId}?page=${page}&size=${size}`).then(r => r.data),
 
-    createPrProject: (data: { companyId: string; name: string; purpose?: string; totalPhases?: number; phaseNames?: string[]; memberIds?: string[] }) =>
+    createPrProject: (data: CreatePrProjectRequest) =>
         api.post<PrProjectResponse>('/staff/pr-projects', data).then(r => r.data),
+
+    updatePrProject: (id: string, data: UpdatePrProjectRequest) =>
+        api.put<PrProjectResponse>(`/staff/pr-projects/${id}`, data).then(r => r.data),
 
     completePrPhase: (projectId: string, phaseId: string) =>
         api.post<PrProjectResponse>(`/staff/pr-projects/${projectId}/phases/${phaseId}/complete`).then(r => r.data),
 
     deletePrProject: (id: string) =>
         api.delete(`/staff/pr-projects/${id}`).then(r => r.data),
+
+    addPrPhaseNote: (projectId: string, phaseId: string, content: string) =>
+        api.post<PrProjectResponse>(`/staff/pr-projects/${projectId}/phases/${phaseId}/notes`, { content }).then(r => r.data),
 
     // Notes
     getNotes: (page = 0, size = 20, companyId?: string) =>
@@ -251,4 +324,21 @@ export const staffApi = {
 
     deleteNote: (id: string) =>
         api.delete(`/staff/notes/${id}`).then(r => r.data),
+
+    // Analytics
+    getMyAnalytics: () =>
+        api.get<StaffAnalyticsResponse>('/staff/analytics').then(r => r.data),
 };
+
+// --- Analytics Types ---
+export interface StaffAnalyticsResponse {
+    activeTasks: number;
+    completedThisWeek: number;
+    pendingTasks: number;
+    completionRate: number;
+    totalMinutesThisMonth: number;
+    overdueTasks: number;
+    weeklyFlow: { name: string; tamamlanan: number; yeni: number }[];
+    monthlyHours: { name: string; saat: number }[];
+    companyTasks: { label: string; value: number; max: number; color: string }[];
+}

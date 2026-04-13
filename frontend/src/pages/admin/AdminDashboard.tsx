@@ -25,7 +25,7 @@ export default function AdminDashboard() {
 
     const cards = [
         { label: 'Toplam Şirket', value: stats?.totalCompanies ?? 0, icon: Building2, color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
-        { label: 'Aktif Çalışan', value: stats?.totalStaff ?? 0, icon: Users, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10' },
+        { label: 'Aktif Çalışan', value: stats?.totalStaff ?? 0, icon: Users, color: 'text-pink-400', bgColor: 'bg-pink-500/10' },
         { label: 'Toplam Görev', value: stats?.totalTasks ?? 0, icon: ListTodo, color: 'text-amber-400', bgColor: 'bg-amber-500/10' },
         { label: 'Tamamlanan', value: stats?.doneTasks ?? 0, icon: CheckCircle2, color: 'text-green-400', bgColor: 'bg-green-500/10' },
         { label: 'Devam Eden', value: stats?.inProgressTasks ?? 0, icon: Clock, color: 'text-cyan-400', bgColor: 'bg-cyan-500/10' },
@@ -48,7 +48,7 @@ export default function AdminDashboard() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.08 }}
-                        className="bg-[#111113] border border-white/[0.06] p-5 rounded-2xl hover:border-white/10 transition-colors"
+                        className="bg-[#0C0C0E] border border-white/[0.06] p-5 rounded-2xl hover:border-white/10 transition-colors"
                     >
                         <div className="flex items-center justify-between mb-3">
                             <div className={`h-9 w-9 rounded-xl ${card.bgColor} flex items-center justify-center`}>
@@ -62,7 +62,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-[#111113] border border-white/[0.06] p-5 rounded-2xl">
+            <div className="bg-[#0C0C0E] border border-white/[0.06] p-5 rounded-2xl">
                 <h2 className="text-base font-semibold text-white mb-3">Hızlı İşlemler</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <a href="/admin/companies?action=create" className="p-4 bg-white/[0.02] hover:bg-white/[0.05] rounded-xl border border-white/[0.06] text-[13px] text-zinc-400 hover:text-white transition-all flex items-center gap-3">
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
                         <span>Yeni Şirket Ekle</span>
                     </a>
                     <a href="/admin/staff?action=create" className="p-4 bg-white/[0.02] hover:bg-white/[0.05] rounded-xl border border-white/[0.06] text-[13px] text-zinc-400 hover:text-white transition-all flex items-center gap-3">
-                        <Users className="w-[18px] h-[18px] text-emerald-400" />
+                        <Users className="w-[18px] h-[18px] text-pink-400" />
                         <span>Yeni Çalışan Ekle</span>
                     </a>
                     <a href="/admin/companies" className="p-4 bg-white/[0.02] hover:bg-white/[0.05] rounded-xl border border-white/[0.06] text-[13px] text-zinc-400 hover:text-white transition-all flex items-center gap-3">

@@ -68,6 +68,7 @@ export interface GroupMessageResponse {
     senderId: string;
     senderName: string;
     senderAvatarUrl: string | null;
+    senderGlobalRole: string | null;
     content: string;
     createdAt: string;
 }

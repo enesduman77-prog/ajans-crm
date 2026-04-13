@@ -107,7 +107,7 @@ export default function FileUploader({ entityType, entityId, onUploadComplete, a
                                 </p>
                             </div>
                             {item.status === 'uploading' && <Loader2 className="w-4 h-4 text-orange-400 animate-spin" />}
-                            {item.status === 'done' && <CheckCircle className="w-4 h-4 text-emerald-400" />}
+                            {item.status === 'done' && <CheckCircle className="w-4 h-4 text-pink-400" />}
                             {(item.status === 'pending' || item.status === 'error') && (
                                 <button onClick={() => removeItem(idx)} className="text-zinc-600 hover:text-zinc-400">
                                     <X className="w-3.5 h-3.5" />

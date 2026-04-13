@@ -3,20 +3,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { staffApi } from '../../api/staff';
 import type { TaskResponse, NoteResponse, PageResponse } from '../../api/staff';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ListTodo, Clock, CheckCircle2, AlertTriangle, ArrowRight, StickyNote, Plus, Trash2, Circle, CircleCheck } from 'lucide-react';
+import { ListTodo, Clock, CheckCircle2, ArrowRight, StickyNote, Plus, Trash2, Circle, CircleCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-const priorityColor: Record<string, string> = {
-    LOW: 'text-zinc-500',
-    MEDIUM: 'text-blue-400',
-    HIGH: 'text-amber-400',
-    URGENT: 'text-red-400',
-};
+import TaskDetailPanel from '../../components/TaskDetailPanel';
 
 const statusBadge: Record<string, { bg: string; text: string; label: string }> = {
     TODO: { bg: 'bg-zinc-800', text: 'text-zinc-400', label: 'Bekliyor' },
     IN_PROGRESS: { bg: 'bg-blue-900/30', text: 'text-blue-400', label: 'Devam Ediyor' },
-    DONE: { bg: 'bg-emerald-900/30', text: 'text-emerald-400', label: 'Tamamlandı' },
+    DONE: { bg: 'bg-pink-900/30', text: 'text-pink-400', label: 'Tamamlandı' },
     OVERDUE: { bg: 'bg-red-900/30', text: 'text-red-400', label: 'Gecikmiş' },
 };
 
@@ -25,6 +19,15 @@ export default function StaffDashboard() {
     const [tasks, setTasks] = useState<TaskResponse[]>([]);
     const [loading, setLoading] = useState(true);
     const [newNote, setNewNote] = useState('');
+    const [selectedTask, setSelectedTask] = useState<TaskResponse | null>(null);
+
+    const handleStatusChange = async (taskId: string, status: string) => {
+        try {
+            const updated = await staffApi.updateTask(taskId, { status });
+            setTasks(prev => prev.map(t => t.id === taskId ? updated : t));
+            if (selectedTask?.id === taskId) setSelectedTask(updated);
+        } catch { }
+    };
 
     useEffect(() => {
         staffApi.getMyTasks(0, 10)
@@ -59,13 +62,11 @@ export default function StaffDashboard() {
     const notes = notesData?.content || [];
 
     const todayTasks = tasks.filter(t => t.status !== 'DONE');
-    const urgentTasks = tasks.filter(t => t.priority === 'URGENT' || t.priority === 'HIGH');
     const doneTasks = tasks.filter(t => t.status === 'DONE');
 
     const stats = [
         { icon: ListTodo, label: 'Aktif Görevler', value: todayTasks.length, color: 'from-blue-500 to-cyan-500' },
-        { icon: AlertTriangle, label: 'Acil / Yüksek', value: urgentTasks.length, color: 'from-amber-500 to-orange-500' },
-        { icon: CheckCircle2, label: 'Tamamlanan', value: doneTasks.length, color: 'from-emerald-500 to-teal-500' },
+        { icon: CheckCircle2, label: 'Tamamlanan', value: doneTasks.length, color: 'from-pink-500 to-pink-500' },
         { icon: Clock, label: 'Toplam', value: tasks.length, color: 'from-violet-500 to-purple-500' },
     ];
 
@@ -87,7 +88,7 @@ export default function StaffDashboard() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
-                        className="bg-[#111113] border border-white/[0.06] rounded-2xl p-5"
+                        className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5"
                     >
                         <div className="flex items-center justify-between">
                             <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
@@ -104,7 +105,7 @@ export default function StaffDashboard() {
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-lg font-bold text-white">Aktif Görevler</h2>
-                    <Link to="/staff/tasks" className="text-emerald-400 hover:text-emerald-300 text-sm flex items-center gap-1 transition-colors">
+                    <Link to="/staff/tasks" className="text-pink-400 hover:text-pink-300 text-sm flex items-center gap-1 transition-colors">
                         Tümünü Gör <ArrowRight className="w-3 h-3" />
                     </Link>
                 </div>
@@ -112,8 +113,8 @@ export default function StaffDashboard() {
                 {loading ? (
                     <div className="text-center py-12 text-zinc-600">Yükleniyor...</div>
                 ) : todayTasks.length === 0 ? (
-                    <div className="text-center py-12 bg-[#111113]/80 border border-white/[0.06] rounded-2xl">
-                        <CheckCircle2 className="w-10 h-10 text-emerald-500/50 mx-auto mb-3" />
+                    <div className="text-center py-12 bg-[#0C0C0E]/80 border border-white/[0.06] rounded-2xl">
+                        <CheckCircle2 className="w-10 h-10 text-pink-500/50 mx-auto mb-3" />
                         <p className="text-zinc-500 text-sm">Aktif görev bulunmuyor.</p>
                     </div>
                 ) : (
@@ -126,20 +127,14 @@ export default function StaffDashboard() {
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: i * 0.05 }}
-                                    className="bg-[#111113] border border-white/[0.06] rounded-xl p-4 flex items-center gap-4 hover:border-emerald-500/20 transition-colors"
+                                    onClick={() => setSelectedTask(task)}
+                                    className="bg-[#0C0C0E] border border-white/[0.06] rounded-xl p-4 flex items-center gap-4 hover:border-pink-500/20 transition-colors cursor-pointer"
                                 >
-                                    <div className={`w-1 h-10 rounded-full bg-gradient-to-b ${task.priority === 'URGENT' ? 'from-red-500 to-red-700' :
-                                        task.priority === 'HIGH' ? 'from-amber-500 to-amber-700' :
-                                            task.priority === 'MEDIUM' ? 'from-blue-500 to-blue-700' :
-                                                'from-zinc-600 to-zinc-800'
-                                        }`} />
+                                    <div className={`w-1 h-10 rounded-full bg-gradient-to-b from-pink-500 to-pink-700`} />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-white font-medium text-sm truncate">{task.title}</p>
                                         <div className="flex items-center gap-3 mt-1">
                                             <span className="text-zinc-600 text-xs">{task.companyName}</span>
-                                            <span className={`text-xs font-medium ${priorityColor[task.priority]}`}>
-                                                {task.priority}
-                                            </span>
                                         </div>
                                     </div>
                                     <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${badge.bg} ${badge.text}`}>
@@ -163,7 +158,7 @@ export default function StaffDashboard() {
                         onChange={e => setNewNote(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter' && newNote.trim()) createNoteMutation.mutate(newNote.trim()); }}
                         placeholder="Yeni not ekle..."
-                        className="flex-1 bg-[#111113] border border-white/[0.06] rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500/30"
+                        className="flex-1 bg-[#0C0C0E] border border-white/[0.06] rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500/30"
                     />
                     <button
                         onClick={() => { if (newNote.trim()) createNoteMutation.mutate(newNote.trim()); }}
@@ -174,7 +169,7 @@ export default function StaffDashboard() {
                     </button>
                 </div>
                 {notes.length === 0 ? (
-                    <div className="text-center py-8 bg-[#111113]/80 border border-white/[0.06] rounded-2xl">
+                    <div className="text-center py-8 bg-[#0C0C0E]/80 border border-white/[0.06] rounded-2xl">
                         <StickyNote className="w-8 h-8 text-zinc-700 mx-auto mb-2" />
                         <p className="text-zinc-600 text-sm">Henüz not eklenmemiş</p>
                     </div>
@@ -188,10 +183,10 @@ export default function StaffDashboard() {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="flex items-center gap-3 bg-[#111113] border border-white/[0.06] rounded-xl px-4 py-3 group"
+                                    className="flex items-center gap-3 bg-[#0C0C0E] border border-white/[0.06] rounded-xl px-4 py-3 group"
                                 >
                                     <button onClick={() => toggleNoteMutation.mutate(note.id)} className="shrink-0">
-                                        {note.isOpen ? <Circle className="w-4 h-4 text-zinc-600" /> : <CircleCheck className="w-4 h-4 text-emerald-500" />}
+                                        {note.isOpen ? <Circle className="w-4 h-4 text-zinc-600" /> : <CircleCheck className="w-4 h-4 text-pink-500" />}
                                     </button>
                                     <span className={`flex-1 text-sm ${note.isOpen ? 'text-white' : 'text-zinc-600 line-through'}`}>{note.content}</span>
                                     {note.companyName && <span className="text-[10px] text-zinc-600 bg-white/5 px-2 py-0.5 rounded">{note.companyName}</span>}
@@ -204,6 +199,12 @@ export default function StaffDashboard() {
                     </div>
                 )}
             </div>
+
+            <TaskDetailPanel
+                task={selectedTask}
+                onClose={() => setSelectedTask(null)}
+                onStatusChange={handleStatusChange}
+            />
         </div>
     );
 }
