@@ -445,39 +445,6 @@ export default function InstagramPanel({ companyId }: Props) {
                         </div>
                     )}
 
-                    {/* Son Paylaşımlar */}
-                    {data.recentMedia.length > 0 && (
-                        <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
-                            <div className="flex items-center gap-2 mb-4">
-                                <ImageIcon className="w-4 h-4 text-pink-400" />
-                                <h4 className="text-sm font-semibold text-white">Son Paylaşımlar</h4>
-                            </div>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                                {data.recentMedia.map(m => (
-                                    <a key={m.id} href={m.permalink} target="_blank" rel="noopener noreferrer"
-                                       className="group relative bg-[#16161a] border border-white/[0.06] rounded-xl overflow-hidden hover:border-pink-500/30 transition-colors">
-                                        {m.mediaUrl ? (
-                                            <img src={m.mediaUrl} alt="" className="w-full aspect-square object-cover" />
-                                        ) : (
-                                            <div className="w-full aspect-square bg-zinc-800 flex items-center justify-center">
-                                                <ImageIcon className="w-8 h-8 text-zinc-600" />
-                                            </div>
-                                        )}
-                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                                            <div className="flex items-center gap-1 text-white text-xs">
-                                                <Heart className="w-3.5 h-3.5" />
-                                                {fmtNum(m.likeCount)}
-                                            </div>
-                                            <div className="flex items-center gap-1 text-white text-xs">
-                                                <MessageCircle className="w-3.5 h-3.5" />
-                                                {fmtNum(m.commentsCount)}
-                                            </div>
-                                        </div>
-                                    </a>
-                                ))}
-                            </div>
-                        </div>
-                    )}
                     {/* Detaylı İncele */}
                     <div className="flex justify-end mt-2">
                         <button

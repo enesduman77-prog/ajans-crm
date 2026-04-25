@@ -46,6 +46,7 @@ import ClientAnalyticsPage from './pages/client/ClientAnalyticsPage';
 import GoogleAnalyticsDetailPage from './pages/client/GoogleAnalyticsDetailPage';
 import SearchConsoleDetailPage from './pages/client/SearchConsoleDetailPage';
 import InstagramDetailPage from './pages/client/InstagramDetailPage';
+import PageSpeedDetailPage from './pages/client/PageSpeedDetailPage';
 import ClientTeamPage from './pages/client/ClientTeamPage';
 import ClientShootsPage from './pages/client/ClientShootsPage';
 
@@ -55,6 +56,8 @@ import OnboardingPage from './pages/client/OnboardingPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import RoutineManagementPage from './pages/admin/RoutineManagementPage';
 import StaffSettingsPage from './pages/staff/StaffSettingsPage';
+import ContentPlansPage from './pages/staff/ContentPlansPage';
+import StaffRequestsPage from './pages/staff/StaffRequestsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -105,6 +108,7 @@ export default function App() {
               <Route path="messaging" element={<MessagingPage />} />
               <Route path="activity-log" element={<ActivityLogPage />} />
               <Route path="routines" element={<RoutineManagementPage />} />
+              <Route path="requests" element={<StaffRequestsPage />} />
               <Route path="settings" element={<AdminSettingsPage />} />
             </Route>
 
@@ -129,6 +133,8 @@ export default function App() {
               <Route path="calendar" element={<StaffCalendarPage />} />
               <Route path="pr" element={<PRProjectsPage />} />
               <Route path="shoots" element={<ShootsPage />} />
+              <Route path="content-plans" element={<ContentPlansPage />} />
+              <Route path="requests" element={<StaffRequestsPage />} />
               <Route path="meetings" element={<MeetingsPage />} />
               <Route path="media" element={<StaffMediaLibraryPage />} />
               <Route path="completed" element={<CompletedTasksPage />} />
@@ -149,6 +155,7 @@ export default function App() {
               <Route path="google-analytics" element={<GoogleAnalyticsDetailPage />} />
               <Route path="search-console" element={<SearchConsoleDetailPage />} />
               <Route path="instagram" element={<InstagramDetailPage />} />
+              <Route path="web-design" element={<PageSpeedDetailPage />} />
               <Route path="media" element={<MediaLibraryPage />} />
               <Route path="tasks" element={<ClientTasksPage />} />
               <Route path="completed" element={<ClientCompletedPage />} />

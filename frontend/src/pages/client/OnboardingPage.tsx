@@ -15,7 +15,7 @@ const steps = [
         title: 'Şirket Bilgileri',
         description: 'Şirketiniz hakkında temel bilgileri gözden geçirin.',
         icon: Building2,
-        color: 'text-blue-400',
+        color: 'text-[#F5BEC8]',
     },
     {
         id: 'team',
@@ -129,8 +129,8 @@ export default function OnboardingPage() {
                                 Şirket bilgileriniz kayıt sırasında ekibimiz tarafından oluşturulmuştur.
                                 Herhangi bir değişiklik için lütfen hesap yöneticinizle iletişime geçin.
                             </p>
-                            <div className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-xl">
-                                <p className="text-[12px] text-blue-400">
+                            <div className="p-3 bg-[#C8697A]/5 border border-[#C8697A]/20 rounded-xl">
+                                <p className="text-[12px] text-[#F5BEC8]">
                                     💡 Şirket bilgilerinizi sol menüdeki "Ayarlar" sayfasından görüntüleyebilirsiniz.
                                 </p>
                             </div>

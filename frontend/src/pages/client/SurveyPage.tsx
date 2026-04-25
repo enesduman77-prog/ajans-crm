@@ -53,7 +53,7 @@ export default function SurveyPage() {
         if (s <= 2) return 'text-red-400';
         if (s <= 4) return 'text-orange-400';
         if (s <= 6) return 'text-yellow-400';
-        if (s <= 8) return 'text-blue-400';
+        if (s <= 8) return 'text-[#F5BEC8]';
         return 'text-pink-400';
     };
 
@@ -155,7 +155,7 @@ export default function SurveyPage() {
             {/* Past Surveys */}
             <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                 <div className="flex items-center gap-2 mb-4">
-                    <BarChart3 className="w-4 h-4 text-blue-400" />
+                    <BarChart3 className="w-4 h-4 text-[#F5BEC8]" />
                     <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Geçmiş Değerlendirmelerim</h3>
                 </div>
 

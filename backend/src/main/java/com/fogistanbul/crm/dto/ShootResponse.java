@@ -27,6 +27,7 @@ public class ShootResponse {
     private String createdByName;
     private List<ParticipantInfo> participants;
     private List<EquipmentInfo> equipment;
+    private int linkedContentCount;
     private Instant createdAt;
 
     @Data

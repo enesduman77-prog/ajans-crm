@@ -13,6 +13,7 @@ import com.fogistanbul.crm.repository.CompanyMembershipRepository;
 import com.fogistanbul.crm.repository.CompanyRepository;
 import com.fogistanbul.crm.repository.ShootEquipmentRepository;
 import com.fogistanbul.crm.repository.ShootParticipantRepository;
+import com.fogistanbul.crm.repository.ContentPlanRepository;
 import com.fogistanbul.crm.repository.ShootRepository;
 import com.fogistanbul.crm.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class ShootService {
     private final CompanyRepository companyRepository;
     private final UserProfileRepository userProfileRepository;
     private final CompanyMembershipRepository membershipRepository;
+    private final ContentPlanRepository contentPlanRepository;
 
     @Transactional
     public ShootResponse createShoot(CreateShootRequest req, UUID createdById) {
@@ -125,8 +127,12 @@ public class ShootService {
     public ShootResponse updateStatus(UUID shootId, String status, UUID userId, String role) {
         Shoot shoot = shootRepository.findById(shootId)
                 .orElseThrow(() -> new RuntimeException("Cekim bulunamadi"));
-        ensureCompanyAccess(getUserOrThrow(userId), shoot.getCompany().getId());
-        if (!"ROLE_ADMIN".equals(role) && !shoot.getCreatedBy().getId().equals(userId)) {
+        UserProfile user = getUserOrThrow(userId);
+        ensureCompanyAccess(user, shoot.getCompany().getId());
+        // Admin, agency staff, or the creator can update status
+        if (user.getGlobalRole() != GlobalRole.ADMIN
+                && user.getGlobalRole() != GlobalRole.AGENCY_STAFF
+                && !shoot.getCreatedBy().getId().equals(userId)) {
             throw new RuntimeException("Bu cekimi guncelleme yetkiniz yok");
         }
         shoot.setStatus(ShootStatus.valueOf(status));
@@ -138,8 +144,10 @@ public class ShootService {
     public void deleteShoot(UUID shootId, UUID userId, String role) {
         Shoot shoot = shootRepository.findById(shootId)
                 .orElseThrow(() -> new RuntimeException("Cekim bulunamadi"));
-        ensureCompanyAccess(getUserOrThrow(userId), shoot.getCompany().getId());
-        if (!"ROLE_ADMIN".equals(role) && !shoot.getCreatedBy().getId().equals(userId)) {
+        UserProfile user = getUserOrThrow(userId);
+        ensureCompanyAccess(user, shoot.getCompany().getId());
+        // Only admin or creator can delete
+        if (user.getGlobalRole() != GlobalRole.ADMIN && !shoot.getCreatedBy().getId().equals(userId)) {
             throw new RuntimeException("Bu cekimi silme yetkiniz yok");
         }
         shootRepository.delete(shoot);
@@ -194,7 +202,54 @@ public class ShootService {
                         .quantity(e.getQuantity())
                         .notes(e.getNotes())
                         .build()).toList())
+                .linkedContentCount((int) contentPlanRepository.countByShootId(shoot.getId()))
                 .createdAt(shoot.getCreatedAt())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public Shoot getShootEntity(UUID shootId) {
+        return shootRepository.findById(shootId)
+                .orElseThrow(() -> new RuntimeException("Çekim bulunamadı: " + shootId));
+    }
+
+    @Transactional
+    public Shoot createShootForContentPlan(CreateShootRequest req, UUID createdById) {
+        Company company = companyRepository.findById(req.getCompanyId())
+                .orElseThrow(() -> new RuntimeException("Sirket bulunamadi"));
+        UserProfile creator = getUserOrThrow(createdById);
+
+        Shoot shoot = Shoot.builder()
+                .company(company)
+                .title(req.getTitle())
+                .description(req.getDescription())
+                .shootDate(req.getShootDate())
+                .shootTime(req.getShootTime())
+                .location(req.getLocation())
+                .notes(req.getNotes())
+                .createdBy(creator)
+                .build();
+
+        if (req.getPhotographerId() != null) {
+            UserProfile photographer = userProfileRepository.findById(req.getPhotographerId()).orElse(null);
+            shoot.setPhotographer(photographer);
+        }
+
+        shoot = shootRepository.save(shoot);
+
+        if (req.getEquipment() != null) {
+            for (CreateShootRequest.EquipmentRequest eq : req.getEquipment()) {
+                if (eq.getName() != null && !eq.getName().isBlank()) {
+                    equipmentRepository.save(ShootEquipment.builder()
+                            .shoot(shoot)
+                            .name(eq.getName())
+                            .quantity(eq.getQuantity() != null ? eq.getQuantity() : 1)
+                            .notes(eq.getNotes())
+                            .build());
+                }
+            }
+        }
+
+        return shoot;
     }
 }

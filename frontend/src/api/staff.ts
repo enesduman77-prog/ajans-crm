@@ -118,6 +118,7 @@ export interface ShootResponse {
     createdByName: string;
     participants: { userId: string; fullName: string; roleInShoot: string | null }[];
     equipment: { id: string; name: string; quantity: number; notes: string | null }[];
+    linkedContentCount: number;
     createdAt: string;
 }
 
@@ -278,6 +279,9 @@ export const staffApi = {
     getShootsByCompany: (companyId: string, page = 0, size = 20) =>
         api.get<PageResponse<ShootResponse>>(`/staff/shoots/company/${companyId}?page=${page}&size=${size}`).then(r => r.data),
 
+    getShootById: (id: string) =>
+        api.get<ShootResponse>(`/staff/shoots/${id}`).then(r => r.data),
+
     createShoot: (data: { companyId: string; title: string; description?: string; shootDate?: string; shootTime?: string; location?: string; photographerId?: string; notes?: string; participants?: { userId: string; roleInShoot: string }[]; equipment?: { name: string; quantity?: number; notes?: string }[] }) =>
         api.post<ShootResponse>('/staff/shoots', data).then(r => r.data),
 
@@ -328,7 +332,41 @@ export const staffApi = {
     // Analytics
     getMyAnalytics: () =>
         api.get<StaffAnalyticsResponse>('/staff/analytics').then(r => r.data),
+    // Approval Requests
+    getApprovalRequests: () =>
+        api.get<ApprovalRequestResponse[]>('/staff/approval-requests').then(r => r.data),
+
+    getPendingApprovals: () =>
+        api.get<ApprovalRequestResponse[]>('/staff/approval-requests/pending').then(r => r.data),
+
+    getPendingCount: () =>
+        api.get<{ count: number }>('/staff/approval-requests/count').then(r => r.data),
+
+    approveRequest: (id: string, data?: Record<string, unknown>) =>
+        api.post<ApprovalRequestResponse>(`/staff/approval-requests/${id}/approve`, data ?? {}).then(r => r.data),
+
+    rejectRequest: (id: string, note?: string) =>
+        api.post<ApprovalRequestResponse>(`/staff/approval-requests/${id}/reject`, { note }).then(r => r.data),
 };
+
+// --- Approval Request Types ---
+export interface ApprovalRequestResponse {
+    id: string;
+    type: string;
+    referenceId: string | null;
+    companyName: string;
+    companyId: string;
+    requestedByName: string;
+    requestedById: string;
+    status: string;
+    title: string;
+    description: string | null;
+    metadata: string | null;
+    reviewedByName: string | null;
+    reviewNote: string | null;
+    createdAt: string;
+    reviewedAt: string | null;
+}
 
 // --- Analytics Types ---
 export interface StaffAnalyticsResponse {

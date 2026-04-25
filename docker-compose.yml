@@ -41,6 +41,7 @@ services:
       - INSTAGRAM_APP_ID=${INSTAGRAM_APP_ID:-}
       - INSTAGRAM_APP_SECRET=${INSTAGRAM_APP_SECRET:-}
       - INSTAGRAM_REDIRECT_URI=${INSTAGRAM_REDIRECT_URI:-http://localhost:8080/api/oauth/instagram/callback}
+      - PAGESPEED_API_KEY=${PAGESPEED_API_KEY:-}
     volumes:
       - ./backend:/app
       - /app/target

@@ -1,74 +1,16 @@
 import {
-    Users, Eye, MousePointerClick, TrendingUp, Globe,
-    Instagram, Search, BarChart3, Activity, Share2,
-    ArrowUpRight
+    Globe, Instagram, Search, BarChart3, Activity,
+    Camera, MapPin, Clock, Package,
+    Users as UsersGroup, Loader2, LayoutTemplate
 } from 'lucide-react';
-import { StatCard, AreaChartCard, BarChartCard, DonutChartCard, LineChartCard, MiniTrend, HeatmapCard, GoogleAnalyticsPanel, SearchConsolePanel, InstagramPanel } from '../../components/analytics';
+import { useQuery } from '@tanstack/react-query';
+import { GoogleAnalyticsPanel, SearchConsolePanel, InstagramPanel, ContentPlanPanel, WebDesignPanel } from '../../components/analytics';
+import { clientApi, type ShootResponse } from '../../api/clientPanel';
+import type { PageResponse } from '../../api/staff';
 import { useAuth } from '../../store/AuthContext';
-
-// Mock data - Faz 6'da gerçek API entegrasyonlarıyla değiştirilecek
-
-const websiteTraffic = [
-    { name: 'Oca', ziyaretçi: 8420, sayfaGörüntüleme: 24800 },
-    { name: 'Şub', ziyaretçi: 9150, sayfaGörüntüleme: 27300 },
-    { name: 'Mar', ziyaretçi: 10800, sayfaGörüntüleme: 32100 },
-    { name: 'Nis', ziyaretçi: 11200, sayfaGörüntüleme: 33400 },
-    { name: 'May', ziyaretçi: 12458, sayfaGörüntüleme: 37200 },
-    { name: 'Haz', ziyaretçi: 13900, sayfaGörüntüleme: 41500 },
-    { name: 'Tem', ziyaretçi: 14200, sayfaGörüntüleme: 42800 },
-    { name: 'Ağu', ziyaretçi: 12800, sayfaGörüntüleme: 38400 },
-    { name: 'Eyl', ziyaretçi: 15600, sayfaGörüntüleme: 46800 },
-    { name: 'Eki', ziyaretçi: 16200, sayfaGörüntüleme: 48600 },
-    { name: 'Kas', ziyaretçi: 17800, sayfaGörüntüleme: 53400 },
-    { name: 'Ara', ziyaretçi: 15400, sayfaGörüntüleme: 46200 },
-];
-
-const trafficSources = [
-    { name: 'Organik Arama', value: 42, color: '#10b981' },
-    { name: 'Sosyal Medya', value: 28, color: '#3b82f6' },
-    { name: 'Direkt', value: 18, color: '#f97316' },
-    { name: 'Referans', value: 8, color: '#8b5cf6' },
-    { name: 'E-posta', value: 4, color: '#ec4899' },
-];
-
-
-
-const topPages = [
-    { name: 'Ana Sayfa', views: 12400 },
-    { name: 'Hizmetler', views: 8200 },
-    { name: 'Hakkımızda', views: 5600 },
-    { name: 'Blog', views: 4800 },
-    { name: 'İletişim', views: 3200 },
-    { name: 'Portföy', views: 2800 },
-];
-
-const heatmapData = (() => {
-    const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
-    const hours = ['09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21'];
-    const data: Array<{ day: string; hour: string; value: number }> = [];
-    days.forEach(day => {
-        hours.forEach(hour => {
-            const isWeekend = day === 'Cmt' || day === 'Paz';
-            const peakHour = parseInt(hour) >= 11 && parseInt(hour) <= 15;
-            const base = isWeekend ? 20 : 50;
-            const peak = peakHour ? 40 : 0;
-            data.push({ day, hour, value: Math.floor(Math.random() * 30) + base + peak });
-        });
-    });
-    return data;
-})();
 
 export default function ClientAnalyticsPage() {
     const { user } = useAuth();
-
-    const mainStats = [
-        { label: 'Toplam Ziyaretçi', value: '158K', change: '+12.5%', icon: Users, color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
-        { label: 'Sayfa Görüntüleme', value: '472K', change: '+8.3%', icon: Eye, color: 'text-pink-400', bgColor: 'bg-pink-500/10' },
-        { label: 'Tıklama Oranı', value: '%3.8', change: '+0.4%', icon: MousePointerClick, color: 'text-amber-400', bgColor: 'bg-amber-500/10' },
-        { label: 'Dönüşüm', value: '2,842', change: '+15.2%', icon: TrendingUp, color: 'text-pink-400', bgColor: 'bg-pink-500/10' },
-    ];
-
-
 
     return (
         <div className="space-y-8">
@@ -85,61 +27,14 @@ export default function ClientAnalyticsPage() {
                 </div>
             </div>
 
-            {/* ═══ WEBSITE ANALYTICS ═══ */}
+            {/* ═══ WEB TASARIM ═══ */}
             <section>
                 <div className="flex items-center gap-2 mb-4">
-                    <Globe className="w-4 h-4 text-blue-400" />
-                    <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Web Sitesi</h2>
+                    <LayoutTemplate className="w-4 h-4 text-[#F5BEC8]" />
+                    <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Web Tasarım</h2>
                 </div>
-
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                    {mainStats.map((stat, i) => (
-                        <StatCard key={stat.label} {...stat} delay={i} />
-                    ))}
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    <div className="lg:col-span-2">
-                        <AreaChartCard
-                            title="Aylık Trafik"
-                            icon={TrendingUp}
-                            data={websiteTraffic}
-                            dataKey="ziyaretçi"
-                            secondaryDataKey="sayfaGörüntüleme"
-                            color="#3b82f6"
-                            secondaryColor="#10b981"
-                            gradientId="webTraffic"
-                        />
-                    </div>
-                    <DonutChartCard
-                        title="Trafik Kaynakları"
-                        icon={Share2}
-                        iconColor="text-blue-400"
-                        data={trafficSources}
-                        centerLabel="Kaynak"
-                        centerValue="5"
-                    />
-                </div>
+                <WebDesignPanel />
             </section>
-
-            {/* ═══ TOP PAGES + HEATMAP ═══ */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <BarChartCard
-                    title="En Çok Ziyaret Edilen Sayfalar"
-                    icon={BarChart3}
-                    iconColor="text-blue-400"
-                    data={topPages}
-                    dataKey="views"
-                    color="#3b82f6"
-                    barColors={['#3b82f6', '#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe']}
-                />
-                <HeatmapCard
-                    title="Ziyaretçi Yoğunluk Haritası"
-                    icon={Activity}
-                    data={heatmapData}
-                    color="#3b82f6"
-                />
-            </div>
 
             {/* ═══ INSTAGRAM ═══ */}
             {user?.companyId && (
@@ -151,6 +46,20 @@ export default function ClientAnalyticsPage() {
                     <InstagramPanel companyId={user.companyId} />
                 </section>
             )}
+
+            {/* ═══ İÇERİK PLANI ═══ */}
+            {user?.companyId && (
+                <section>
+                    <div className="flex items-center gap-2 mb-4">
+                        <BarChart3 className="w-4 h-4 text-violet-400" />
+                        <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">İçerik Planı</h2>
+                    </div>
+                    <ContentPlanPanel companyId={user.companyId} readOnly />
+                </section>
+            )}
+
+            {/* ═══ ÇEKİM GÜNLERİ ═══ */}
+            <ShootingTimelineSection />
 
             {/* ═══ SEARCH CONSOLE ═══ */}
             {user?.companyId && (
@@ -167,26 +76,141 @@ export default function ClientAnalyticsPage() {
             {user?.companyId && (
                 <section>
                     <div className="flex items-center gap-2 mb-4">
-                        <Globe className="w-4 h-4 text-blue-400" />
+                        <Globe className="w-4 h-4 text-[#F5BEC8]" />
                         <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Google Analytics</h2>
                     </div>
                     <GoogleAnalyticsPanel companyId={user.companyId} />
                 </section>
             )}
 
-            {/* Info Banner */}
-            <div className="bg-orange-500/5 border border-orange-500/10 rounded-2xl p-5 flex items-start gap-4">
-                <div className="h-10 w-10 rounded-xl bg-orange-500/10 flex items-center justify-center flex-shrink-0">
-                    <ArrowUpRight className="w-5 h-5 text-orange-400" />
+        </div>
+    );
+}
+
+// ============================================================================
+// Shooting Timeline Section
+// ============================================================================
+
+const SHOOT_STATUS: Record<string, { label: string; color: string; bg: string; border: string }> = {
+    PLANNED:   { label: 'Onaylandı',  color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    COMPLETED: { label: 'Tamamlandı', color: 'text-pink-400',    bg: 'bg-pink-500/10',    border: 'border-pink-500/20' },
+    CANCELLED: { label: 'İptal',      color: 'text-zinc-400',    bg: 'bg-zinc-500/10',    border: 'border-zinc-500/20' },
+};
+
+function ShootingTimelineSection() {
+    const { data, isLoading } = useQuery<PageResponse<ShootResponse>>({
+        queryKey: ['client-shoots-analytics'],
+        queryFn: () => clientApi.getMyShoots(0, 20),
+    });
+
+    const shoots = data?.content ?? [];
+
+    if (isLoading) {
+        return (
+            <section>
+                <div className="flex items-center gap-2 mb-4">
+                    <Camera className="w-4 h-4 text-[#F5BEC8]" />
+                    <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Çekim Günleri</h2>
                 </div>
-                <div>
-                    <h3 className="text-sm font-semibold text-orange-300">Canlı Veri Entegrasyonu</h3>
-                    <p className="text-xs text-zinc-500 mt-1">
-                        API entegrasyonları tamamlandığında bu grafiklerde gerçek zamanlı verilerinizi takip edebileceksiniz —
-                        Google Analytics, Search Console, Instagram ve Google Ads.
-                    </p>
+                <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-6 flex items-center justify-center py-12">
+                    <Loader2 className="w-5 h-5 text-pink-400 animate-spin" />
+                </div>
+            </section>
+        );
+    }
+
+    if (shoots.length === 0) return null;
+
+    return (
+        <section>
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                    <Camera className="w-4 h-4 text-[#F5BEC8]" />
+                    <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">Çekim Günleri</h2>
+                </div>
+                <span className="text-[11px] text-zinc-500">{shoots.length} çekim</span>
+            </div>
+
+            <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-6">
+                <div className="relative">
+                    {/* Vertical timeline line */}
+                    <div className="absolute left-[52px] top-0 bottom-0 w-px bg-gradient-to-b from-[#C8697A]/30 via-white/[0.06] to-transparent" />
+
+                    <div className="space-y-5">
+                        {shoots.map((shoot) => {
+                            const date = new Date(shoot.shootDate);
+                            const day = date.getDate();
+                            const monthShort = date.toLocaleDateString('tr-TR', { month: 'short' }).toUpperCase().replace('.', '');
+                            const st = SHOOT_STATUS[shoot.status] ?? SHOOT_STATUS.PLANNED;
+
+                            return (
+                                <div key={shoot.id} className="flex gap-4 group">
+                                    {/* Date pill */}
+                                    <div className="shrink-0 w-[72px] text-center">
+                                        <div className="inline-flex flex-col items-center bg-[#111114] border border-white/[0.08] rounded-xl px-3 py-2 group-hover:border-[#C8697A]/30 transition-colors relative z-10">
+                                            <span className="text-[10px] font-bold text-[#C8697A] uppercase tracking-widest">{monthShort}</span>
+                                            <span className="text-xl font-bold text-white leading-none mt-0.5">{day}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Card */}
+                                    <div className="flex-1 bg-[#111114] border border-white/[0.06] rounded-xl p-4 group-hover:border-[#C8697A]/20 group-hover:bg-white/[0.02] transition-all">
+                                        {/* Title + status */}
+                                        <div className="flex items-start justify-between gap-3 mb-2">
+                                            <h5 className="text-sm font-semibold text-white leading-snug">{shoot.title}</h5>
+                                            <span className={`shrink-0 text-[10px] font-semibold px-2.5 py-1 rounded-full ${st.bg} ${st.color} border ${st.border}`}>
+                                                {st.label}
+                                            </span>
+                                        </div>
+
+                                        {/* Description */}
+                                        {shoot.description && (
+                                            <p className="text-[12px] text-zinc-400 leading-relaxed mb-3 line-clamp-2">
+                                                {shoot.description}
+                                            </p>
+                                        )}
+
+                                        {/* Meta grid */}
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                            {shoot.shootTime && (
+                                                <div className="flex items-center gap-2">
+                                                    <Clock className="w-3.5 h-3.5 text-zinc-500" />
+                                                    <span className="text-[11px] text-zinc-400">{shoot.shootTime.slice(0, 5)}</span>
+                                                </div>
+                                            )}
+                                            {shoot.location && (
+                                                <div className="flex items-center gap-2">
+                                                    <MapPin className="w-3.5 h-3.5 text-zinc-500" />
+                                                    <span className="text-[11px] text-zinc-400">{shoot.location}</span>
+                                                </div>
+                                            )}
+                                            {shoot.participants.length > 0 && (
+                                                <div className="flex items-center gap-2">
+                                                    <UsersGroup className="w-3.5 h-3.5 text-zinc-500" />
+                                                    <span className="text-[11px] text-zinc-400">
+                                                        Ekip: {shoot.participants.length} Kişi
+                                                        {shoot.participants.length <= 3 && (
+                                                            <> ({shoot.participants.map(p => p.roleInShoot || p.fullName.split(' ')[0]).join(', ')})</>
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {shoot.equipment.length > 0 && (
+                                                <div className="flex items-center gap-2">
+                                                    <Package className="w-3.5 h-3.5 text-zinc-500" />
+                                                    <span className="text-[11px] text-zinc-400">
+                                                        Ekipman: {shoot.equipment.map(e => e.name).join(', ')}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
     );
 }

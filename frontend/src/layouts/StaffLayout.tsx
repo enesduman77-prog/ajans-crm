@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../store/AuthContext';
 import { useUnreadCount } from '../hooks/useUnreadCount';
 import NotificationBell from '../components/NotificationBell';
@@ -10,8 +10,10 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import {
     LayoutDashboard, ListTodo, Building2, Calendar,
     LogOut, Briefcase, Camera, Rocket, MessageSquare, Menu, X, BarChart3,
-    User, Clock, FileText, Search, Settings, Image, Users
+    User, Clock, FileText, Search, Settings, Image, Users, PenLine, Inbox
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { staffApi } from '../api/staff';
 import FloatingTaskFab from '../components/FloatingTaskFab';
 
 const navItems = [
@@ -26,6 +28,8 @@ const navItems = [
     { to: '/staff/calendar', icon: Calendar, label: 'Takvim' },
     { to: '/staff/pr', icon: Rocket, label: 'Projeler' },
     { to: '/staff/shoots', icon: Camera, label: 'Çekimler' },
+    { to: '/staff/content-plans', icon: PenLine, label: 'İçerik Planları' },
+    { to: '/staff/requests', icon: Inbox, label: 'İstekler' },
     { to: '/staff/meetings', icon: Users, label: 'Toplantılar' },
     { to: '/staff/media', icon: Image, label: 'Medya Kütüphanesi' },
     { to: '/staff/settings', icon: Settings, label: 'Ayarlar' },
@@ -35,6 +39,8 @@ export default function StaffLayout() {
     const { user, logout } = useAuth();
     const msgCount = useUnreadCount();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { data: pendingData } = useQuery({ queryKey: ['pending-approval-count'], queryFn: () => staffApi.getPendingCount(), refetchInterval: 30000 });
+    const pendingCount = pendingData?.count ?? 0;
 
     return (
         <div className="flex min-h-dvh bg-transparent">
@@ -102,6 +108,11 @@ export default function StaffLayout() {
                             {label === 'Mesajlar' && msgCount > 0 && (
                                 <span className="min-w-[18px] h-[18px] flex items-center justify-center bg-pink-500 text-white text-[9px] font-bold rounded-full px-1">
                                     {msgCount > 99 ? '99+' : msgCount}
+                                </span>
+                            )}
+                            {label === 'İstekler' && pendingCount > 0 && (
+                                <span className="min-w-[18px] h-[18px] flex items-center justify-center bg-amber-500 text-white text-[9px] font-bold rounded-full px-1">
+                                    {pendingCount > 99 ? '99+' : pendingCount}
                                 </span>
                             )}
                         </NavLink>

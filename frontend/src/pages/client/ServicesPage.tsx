@@ -29,7 +29,7 @@ export default function ServicesPage() {
                         Ek hizmet talebiniz ajans ekibine iletildi. En kısa sürede sizinle iletişime geçilecektir.
                     </p>
                     <button onClick={() => { setSubmitted(false); setSelected([]); setNote(''); }}
-                        className="px-4 py-2 rounded-lg bg-blue-500/10 text-blue-400 text-sm font-medium hover:bg-blue-500/20 transition-colors">
+                        className="px-4 py-2 rounded-lg bg-[#C8697A]/10 text-[#F5BEC8] text-sm font-medium hover:bg-[#C8697A]/20 transition-colors">
                         Yeni Talep
                     </button>
                 </div>
@@ -54,11 +54,11 @@ export default function ServicesPage() {
                                 isSelected ? prev.filter(s => s !== service.id) : [...prev, service.id]
                             )}
                             className={`text-left p-4 rounded-xl border transition-all ${isSelected
-                                ? 'bg-blue-500/10 border-blue-500/30 ring-1 ring-blue-500/20'
+                                ? 'bg-[#C8697A]/10 border-[#C8697A]/40 ring-1 ring-[#C8697A]/30'
                                 : 'bg-[#0C0C0E] border-white/[0.06] hover:bg-white/[0.02]'
                                 }`}>
                             <span className="text-2xl">{service.icon}</span>
-                            <h3 className={`text-sm font-semibold mt-2 ${isSelected ? 'text-blue-300' : 'text-white'}`}>{service.name}</h3>
+                            <h3 className={`text-sm font-semibold mt-2 ${isSelected ? 'text-[#F5BEC8]' : 'text-white'}`}>{service.name}</h3>
                             <p className="text-xs text-zinc-500 mt-1">{service.desc}</p>
                         </button>
                     );
@@ -73,12 +73,12 @@ export default function ServicesPage() {
                         onChange={e => setNote(e.target.value)}
                         placeholder="Ek notlarınız veya detaylar..."
                         rows={3}
-                        className="w-full bg-[#18181b]/60 border border-white/[0.06] rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 resize-none focus:outline-none focus:border-blue-500/30"
+                        className="w-full bg-[#18181b]/60 border border-white/[0.06] rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 resize-none focus:outline-none focus:border-[#C8697A]/40"
                     />
                     <div className="flex items-center justify-between">
                         <p className="text-sm text-zinc-500">{selected.length} hizmet seçildi</p>
                         <button onClick={() => setSubmitted(true)}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C8697A] text-white text-sm font-semibold hover:bg-[#C8697A] transition-colors shadow-lg shadow-[#C8697A]/25">
                             <Send className="w-4 h-4" />
                             Talep Gönder
                         </button>

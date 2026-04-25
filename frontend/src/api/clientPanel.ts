@@ -1,5 +1,6 @@
 import api from './client';
 import type { TaskResponse, PageResponse, TaskReviewResponse } from './staff';
+import type { ContentPlanResponse } from './contentPlan';
 import type { ConversationResponse, MessageResponse, SendMessageRequest, ContactResponse, GroupConversationResponse, GroupMessageResponse } from './messaging';
 
 // Client panel API — uses /api/client/* endpoints accessible to COMPANY_USER role
@@ -79,6 +80,13 @@ export const clientApi = {
 
     getShootById: (id: string) =>
         api.get<ShootResponse>(`/client/shoots/${id}`).then(r => r.data),
+
+    getContentByShoot: (shootId: string) =>
+        api.get<ContentPlanResponse[]>(`/client/content-plans/shoot/${shootId}`).then(r => r.data),
+
+    // Approval Requests
+    createApprovalRequest: (data: { type: string; referenceId?: string; companyId: string; title: string; description?: string; metadata?: string }) =>
+        api.post('/client/approval-requests', data).then(r => r.data),
 };
 
 export interface TeamMemberResponse {
@@ -139,5 +147,6 @@ export interface ShootResponse {
     createdByName: string;
     participants: ShootParticipantInfo[];
     equipment: ShootEquipmentInfo[];
+    linkedContentCount: number;
     createdAt: string;
 }

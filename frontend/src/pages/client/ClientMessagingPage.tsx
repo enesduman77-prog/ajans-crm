@@ -210,12 +210,12 @@ export default function ClientMessagingPage() {
             <div className={`w-full md:w-80 bg-[#0C0C0E] border-r border-white/[0.06] flex flex-col ${activeConv || activeGroup ? 'hidden md:flex' : 'flex'}`}>
                 <div className="p-4 border-b border-white/[0.06] flex items-center justify-between">
                     <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                        <MessageSquare className="w-5 h-5 text-blue-400" />
+                        <MessageSquare className="w-5 h-5 text-[#F5BEC8]" />
                         Mesajlar
                     </h2>
                     <button
                         onClick={openNewConversation}
-                        className="h-8 w-8 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 flex items-center justify-center transition-colors"
+                        className="h-8 w-8 rounded-lg bg-[#C8697A]/10 hover:bg-[#C8697A]/20 text-[#F5BEC8] flex items-center justify-center transition-colors"
                     >
                         <Plus className="w-4 h-4" />
                     </button>
@@ -225,13 +225,13 @@ export default function ClientMessagingPage() {
                 <div className="flex border-b border-white/[0.06]">
                     <button
                         onClick={() => setTab('dm')}
-                        className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-colors ${tab === 'dm' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-zinc-500 hover:text-zinc-300'}`}
+                        className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-colors ${tab === 'dm' ? 'text-[#F5BEC8] border-b-2 border-[#C8697A]' : 'text-zinc-500 hover:text-zinc-300'}`}
                     >
                         Direkt Mesajlar
                     </button>
                     <button
                         onClick={() => setTab('group')}
-                        className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-colors relative ${tab === 'group' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-zinc-500 hover:text-zinc-300'}`}
+                        className={`flex-1 py-2.5 text-xs font-semibold tracking-wide transition-colors relative ${tab === 'group' ? 'text-[#F5BEC8] border-b-2 border-[#C8697A]' : 'text-zinc-500 hover:text-zinc-300'}`}
                     >
                         Gruplar
                         {groups.reduce((sum, g) => sum + g.unreadCount, 0) > 0 && (
@@ -303,8 +303,8 @@ export default function ClientMessagingPage() {
                                     className={`w-full p-4 text-left border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors ${activeGroup?.id === group.id ? 'bg-white/[0.04]' : ''}`}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                                            <Users className="w-5 h-5 text-blue-400" />
+                                        <div className="h-10 w-10 rounded-full bg-[#C8697A]/10 flex items-center justify-center">
+                                            <Users className="w-5 h-5 text-[#F5BEC8]" />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between">
@@ -343,8 +343,8 @@ export default function ClientMessagingPage() {
                                 <button className="md:hidden text-zinc-400 hover:text-white mr-2" onClick={() => setActiveGroup(null)}>
                                     <ChevronLeft className="w-5 h-5" />
                                 </button>
-                                <div className="h-8 w-8 rounded-full bg-blue-500/10 flex items-center justify-center border border-white/[0.06]">
-                                    <Users className="w-4 h-4 text-blue-400" />
+                                <div className="h-8 w-8 rounded-full bg-[#C8697A]/10 flex items-center justify-center border border-white/[0.06]">
+                                    <Users className="w-4 h-4 text-[#F5BEC8]" />
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-white">{activeGroup.name}</h3>
@@ -372,11 +372,11 @@ export default function ClientMessagingPage() {
                                             className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
                                         >
                                             <div className={`max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-3 ${isMine
-                                                ? 'bg-blue-600 text-white rounded-br-sm'
+                                                ? 'bg-[#C8697A] text-white rounded-br-sm'
                                                 : 'bg-[#18181b] text-zinc-100 rounded-bl-sm border border-white/[0.06]'
                                                 }`}>
                                                 {!isMine && (
-                                                    <p className={`text-[11px] font-semibold mb-1 ${msg.senderGlobalRole === 'ADMIN' || msg.senderGlobalRole === 'AGENCY_STAFF' ? 'text-orange-400' : 'text-blue-400'}`}>
+                                                    <p className={`text-[11px] font-semibold mb-1 ${msg.senderGlobalRole === 'ADMIN' || msg.senderGlobalRole === 'AGENCY_STAFF' ? 'text-orange-400' : 'text-[#F5BEC8]'}`}>
                                                         {msg.senderName}
                                                         {(msg.senderGlobalRole === 'ADMIN' || msg.senderGlobalRole === 'AGENCY_STAFF') && (
                                                             <span className="ml-1.5 text-[9px] bg-orange-500/20 text-orange-300 px-1.5 py-0.5 rounded-full">Ajans</span>
@@ -384,7 +384,7 @@ export default function ClientMessagingPage() {
                                                     </p>
                                                 )}
                                                 <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                                                <div className={`flex items-center justify-end gap-1 mt-1 text-[10px] ${isMine ? 'text-blue-200' : 'text-zinc-500'}`}>
+                                                <div className={`flex items-center justify-end gap-1 mt-1 text-[10px] ${isMine ? 'text-pink-100' : 'text-zinc-500'}`}>
                                                     <span>
                                                         {new Date(msg.createdAt).toLocaleTimeString('tr-TR', {
                                                             hour: '2-digit', minute: '2-digit'
@@ -412,7 +412,7 @@ export default function ClientMessagingPage() {
                                             }
                                         }}
                                         placeholder="Gruba mesaj yazın..."
-                                        className="w-full bg-[#09090b] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 resize-none transition-colors"
+                                        className="w-full bg-[#09090b] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#C8697A]/50 resize-none transition-colors"
                                         rows={1}
                                         style={{ minHeight: '44px', maxHeight: '120px' }}
                                     />
@@ -420,7 +420,7 @@ export default function ClientMessagingPage() {
                                 <button
                                     type="submit"
                                     disabled={!newMessage.trim()}
-                                    className="h-11 w-11 shrink-0 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center disabled:opacity-50 transition-all font-bold group"
+                                    className="h-11 w-11 shrink-0 rounded-xl bg-[#C8697A] hover:bg-[#B5556A] text-white flex items-center justify-center disabled:opacity-50 transition-all font-bold group"
                                 >
                                     <Send className="w-5 h-5 group-hover:scale-110 transition-transform" />
                                 </button>
@@ -456,7 +456,7 @@ export default function ClientMessagingPage() {
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-bold text-white">{activeConv.otherUserName}</h3>
-                                    <p className="text-[10px] text-blue-400 font-medium tracking-wide">
+                                    <p className="text-[10px] text-[#F5BEC8] font-medium tracking-wide">
                                         {activeConv.otherUserCompanyName
                                             ? `${activeConv.otherUserCompanyName} · ${activeConv.otherUserMembershipRole === 'OWNER' ? 'Şirket Sahibi' : activeConv.otherUserMembershipRole === 'EMPLOYEE' ? 'Şirket Çalışanı' : 'Ajans Çalışanı'}${activeConv.otherUserPositionTitle ? ' · ' + activeConv.otherUserPositionTitle : ''}`
                                             : activeConv.otherUserRole === 'ADMIN' ? 'Yönetici' : activeConv.otherUserRole === 'AGENCY_STAFF' ? 'Ajans Çalışanı' : 'Kullanıcı'}
@@ -483,18 +483,18 @@ export default function ClientMessagingPage() {
                                             className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
                                         >
                                             <div className={`max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-3 ${isMine
-                                                ? 'bg-blue-600 text-white rounded-br-sm'
+                                                ? 'bg-[#C8697A] text-white rounded-br-sm'
                                                 : 'bg-[#18181b] text-zinc-100 rounded-bl-sm border border-white/[0.06]'
                                                 }`}>
                                                 <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                                                <div className={`flex items-center justify-end gap-1 mt-1 text-[10px] ${isMine ? 'text-blue-200' : 'text-zinc-500'}`}>
+                                                <div className={`flex items-center justify-end gap-1 mt-1 text-[10px] ${isMine ? 'text-pink-100' : 'text-zinc-500'}`}>
                                                     <span>
                                                         {new Date(msg.createdAt).toLocaleTimeString('tr-TR', {
                                                             hour: '2-digit', minute: '2-digit'
                                                         })}
                                                     </span>
                                                     {isMine && (
-                                                        msg.isRead ? <CheckCheck className="w-3 h-3 text-blue-200" /> : <Check className="w-3 h-3 text-blue-200/50" />
+                                                        msg.isRead ? <CheckCheck className="w-3 h-3 text-pink-100" /> : <Check className="w-3 h-3 text-pink-100/50" />
                                                     )}
                                                 </div>
                                             </div>
@@ -519,7 +519,7 @@ export default function ClientMessagingPage() {
                                             }
                                         }}
                                         placeholder="Mesajınızı yazın..."
-                                        className="w-full bg-[#09090b] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 resize-none transition-colors"
+                                        className="w-full bg-[#09090b] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#C8697A]/50 resize-none transition-colors"
                                         rows={1}
                                         style={{ minHeight: '44px', maxHeight: '120px' }}
                                     />
@@ -527,7 +527,7 @@ export default function ClientMessagingPage() {
                                 <button
                                     type="submit"
                                     disabled={!newMessage.trim()}
-                                    className="h-11 w-11 shrink-0 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center disabled:opacity-50 transition-all font-bold group"
+                                    className="h-11 w-11 shrink-0 rounded-xl bg-[#C8697A] hover:bg-[#B5556A] text-white flex items-center justify-center disabled:opacity-50 transition-all font-bold group"
                                 >
                                     <Send className="w-5 h-5 group-hover:scale-110 transition-transform" />
                                 </button>

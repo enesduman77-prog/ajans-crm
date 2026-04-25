@@ -1,6 +1,7 @@
 package com.fogistanbul.crm.service;
 
 import com.fogistanbul.crm.dto.AddEmployeeRequest;
+import com.fogistanbul.crm.dto.CompanyInfrastructureRequest;
 import com.fogistanbul.crm.dto.CompanyResponse;
 import com.fogistanbul.crm.dto.CreateCompanyRequest;
 import com.fogistanbul.crm.dto.UpdateCompanyRequest;
@@ -158,9 +159,29 @@ public class CompanyService {
         company.setSocialYoutube(req.getSocialYoutube());
         company.setSocialTiktok(req.getSocialTiktok());
         company.setNotes(req.getNotes());
+        company.setHostingProvider(req.getHostingProvider());
+        company.setDomainExpiry(req.getDomainExpiry());
+        company.setSslExpiry(req.getSslExpiry());
+        company.setCmsType(req.getCmsType());
+        company.setCmsVersion(req.getCmsVersion());
+        company.setThemeName(req.getThemeName());
         company = companyRepository.save(company);
 
         return toResponse(company);
+    }
+
+    @Transactional
+    public CompanyResponse updateInfrastructure(UUID id, CompanyInfrastructureRequest req) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sirket bulunamadi"));
+        company.setHostingProvider(req.getHostingProvider());
+        company.setDomainExpiry(req.getDomainExpiry());
+        company.setSslExpiry(req.getSslExpiry());
+        company.setCmsType(req.getCmsType());
+        company.setCmsVersion(req.getCmsVersion());
+        company.setThemeName(req.getThemeName());
+        company = companyRepository.save(company);
+        return toDetailedResponse(company);
     }
 
     @Transactional
@@ -362,6 +383,12 @@ public class CompanyService {
                 .socialLinkedin(company.getSocialLinkedin())
                 .socialYoutube(company.getSocialYoutube())
                 .socialTiktok(company.getSocialTiktok())
+                .hostingProvider(company.getHostingProvider())
+                .domainExpiry(company.getDomainExpiry())
+                .sslExpiry(company.getSslExpiry())
+                .cmsType(company.getCmsType())
+                .cmsVersion(company.getCmsVersion())
+                .themeName(company.getThemeName())
                 .createdAt(company.getCreatedAt())
                 .memberCount(memberInfos.size())
                 .employeeCount((int) memberships.stream().filter(m -> m.getMembershipRole().name().equals("OWNER") || m.getMembershipRole().name().equals("EMPLOYEE")).count())

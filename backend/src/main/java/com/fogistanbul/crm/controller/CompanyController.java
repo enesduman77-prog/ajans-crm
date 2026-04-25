@@ -1,6 +1,7 @@
 package com.fogistanbul.crm.controller;
 
 import com.fogistanbul.crm.dto.AddEmployeeRequest;
+import com.fogistanbul.crm.dto.CompanyInfrastructureRequest;
 import com.fogistanbul.crm.dto.CompanyResponse;
 import com.fogistanbul.crm.dto.CreateCompanyRequest;
 import com.fogistanbul.crm.dto.UpdateCompanyRequest;
@@ -46,6 +47,12 @@ public class CompanyController {
     public ResponseEntity<CompanyResponse> update(@PathVariable UUID id,
             @Valid @RequestBody UpdateCompanyRequest request) {
         return ResponseEntity.ok(companyService.update(id, request));
+    }
+
+    @PutMapping("/{id}/infrastructure")
+    public ResponseEntity<CompanyResponse> updateInfrastructure(@PathVariable UUID id,
+            @Valid @RequestBody CompanyInfrastructureRequest request) {
+        return ResponseEntity.ok(companyService.updateInfrastructure(id, request));
     }
 
     @PostMapping("/{companyId}/employees")

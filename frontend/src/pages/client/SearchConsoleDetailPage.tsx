@@ -313,8 +313,8 @@ export default function SearchConsoleDetailPage() {
                         label="Toplam Tıklama"
                         value={formatNum(data.totalClicks)}
                         icon={MousePointerClick}
-                        color="text-blue-400"
-                        bgColor="bg-blue-500/10"
+                        color="text-[#F5BEC8]"
+                        bgColor="bg-[#C8697A]/10"
                     />
                     <BigMetricCard
                         label="Toplam Gösterim"
@@ -346,12 +346,12 @@ export default function SearchConsoleDetailPage() {
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                         className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">
                         <div className="flex items-center gap-2 mb-3">
-                            <TrendingUp className="w-4 h-4 text-blue-400" />
+                            <TrendingUp className="w-4 h-4 text-[#F5BEC8]" />
                             <span className="text-xs text-zinc-500">Tıklama Oranı (CTR)</span>
                         </div>
                         <p className="text-2xl font-bold text-white">%{data.avgCtr}</p>
                         <div className="mt-3 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                            <div className="h-full bg-gradient-to-r from-blue-500 to-pink-500 rounded-full transition-all"
+                            <div className="h-full bg-gradient-to-r from-[#D1181C] to-[#C8697A] rounded-full transition-all"
                                 style={{ width: `${Math.min(data.avgCtr, 100)}%` }} />
                         </div>
                     </motion.div>
@@ -432,7 +432,7 @@ export default function SearchConsoleDetailPage() {
 
             {/* EN ÇOK ARANAN SORGULAR */}
             <section>
-                <SectionHeader icon={Search} title="En Çok Aranan Sorgular" color="bg-blue-500/20" />
+                <SectionHeader icon={Search} title="En Çok Aranan Sorgular" color="bg-[#C8697A]/20" />
                 <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-6">
                     <div className="overflow-x-auto">
                         <table className="w-full">
@@ -451,7 +451,7 @@ export default function SearchConsoleDetailPage() {
                                     <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
                                         <td className="py-3 pr-4 text-xs text-zinc-500">{i + 1}</td>
                                         <td className="py-3 pr-4 text-sm text-zinc-200 max-w-[300px] truncate" title={q.query}>{q.query}</td>
-                                        <td className="py-3 pr-4 text-sm text-blue-400 text-right font-medium">{q.clicks.toLocaleString('tr-TR')}</td>
+                                        <td className="py-3 pr-4 text-sm text-[#F5BEC8] text-right font-medium">{q.clicks.toLocaleString('tr-TR')}</td>
                                         <td className="py-3 pr-4 text-sm text-zinc-400 text-right">{q.impressions.toLocaleString('tr-TR')}</td>
                                         <td className="py-3 pr-4 text-sm text-amber-400 text-right">%{(q.ctr * 100).toFixed(1)}</td>
                                         <td className="py-3 text-sm text-purple-400 text-right">{q.position}</td>
@@ -483,7 +483,7 @@ export default function SearchConsoleDetailPage() {
                                             {p.page}
                                         </span>
                                         <div className="flex items-center gap-4 text-xs">
-                                            <span className="text-blue-400 font-medium">{p.clicks.toLocaleString('tr-TR')} tıklama</span>
+                                            <span className="text-[#F5BEC8] font-medium">{p.clicks.toLocaleString('tr-TR')} tıklama</span>
                                             <span className="text-zinc-500">{p.impressions.toLocaleString('tr-TR')} gösterim</span>
                                             <span className="text-amber-400">TO: %{(p.ctr * 100).toFixed(1)}</span>
                                             <span className="text-purple-400">Sıra: {p.position}</span>
@@ -508,7 +508,7 @@ export default function SearchConsoleDetailPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Cihaz Dağılımı */}
                 <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-6">
-                    <SectionHeader icon={Monitor} title="Cihaz Dağılımı" color="bg-blue-500/20" />
+                    <SectionHeader icon={Monitor} title="Cihaz Dağılımı" color="bg-[#C8697A]/20" />
                     {devicePieData.length > 0 ? (
                         <>
                             <div className="h-64">

@@ -36,6 +36,12 @@ export interface CompanyResponse {
     socialLinkedin?: string;
     socialYoutube?: string;
     socialTiktok?: string;
+    hostingProvider?: string | null;
+    domainExpiry?: string | null;
+    sslExpiry?: string | null;
+    cmsType?: string | null;
+    cmsVersion?: string | null;
+    themeName?: string | null;
 }
 
 export interface MembershipInfo {
@@ -102,6 +108,21 @@ export interface UpdateCompanyRequest {
     socialLinkedin?: string;
     socialYoutube?: string;
     socialTiktok?: string;
+    hostingProvider?: string | null;
+    domainExpiry?: string | null;
+    sslExpiry?: string | null;
+    cmsType?: string | null;
+    cmsVersion?: string | null;
+    themeName?: string | null;
+}
+
+export interface CompanyInfrastructureRequest {
+    hostingProvider?: string | null;
+    domainExpiry?: string | null;
+    sslExpiry?: string | null;
+    cmsType?: string | null;
+    cmsVersion?: string | null;
+    themeName?: string | null;
 }
 
 export interface CreateStaffRequest {
@@ -167,6 +188,8 @@ export const adminApi = {
     getCompany: (id: string) => api.get<CompanyResponse>(`/admin/companies/${id}`).then(r => r.data),
     createCompany: (data: CreateCompanyRequest) => api.post<CompanyResponse>('/admin/companies', data).then(r => r.data),
     updateCompany: (id: string, data: UpdateCompanyRequest) => api.put<CompanyResponse>(`/admin/companies/${id}`, data).then(r => r.data),
+    updateCompanyInfrastructure: (id: string, data: CompanyInfrastructureRequest) =>
+        api.put<CompanyResponse>(`/admin/companies/${id}/infrastructure`, data).then(r => r.data),
     deleteCompany: (id: string) => api.delete(`/admin/companies/${id}`).then(r => r.data),
 
     // Company employees

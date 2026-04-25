@@ -7,8 +7,10 @@ import GlobalSearch from '../components/GlobalSearch';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import {
-    LayoutDashboard, Building2, Users, LogOut, Shield, MessageSquare, Zap, Menu, X, BarChart3, Activity, Search, Settings, UserCog, RefreshCw
+    LayoutDashboard, Building2, Users, LogOut, Shield, MessageSquare, Zap, Menu, X, BarChart3, Activity, Search, Settings, UserCog, RefreshCw, Inbox
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { staffApi } from '../api/staff';
 
 const navItems = [
     { to: '/admin', icon: LayoutDashboard, label: 'Kontrol Paneli', end: true },
@@ -19,6 +21,7 @@ const navItems = [
     { to: '/admin/messaging', icon: MessageSquare, label: 'Mesajlar' },
     { to: '/admin/routines', icon: RefreshCw, label: 'Rutin Görevler' },
     { to: '/admin/activity-log', icon: Activity, label: 'Aktivite Günlüğü' },
+    { to: '/admin/requests', icon: Inbox, label: 'İstekler' },
     { to: '/admin/settings', icon: Settings, label: 'Ayarlar' },
 ];
 
@@ -26,6 +29,8 @@ export default function AdminLayout() {
     const { user, logout } = useAuth();
     const msgCount = useUnreadCount();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { data: pendingData } = useQuery({ queryKey: ['pending-approval-count'], queryFn: () => staffApi.getPendingCount(), refetchInterval: 30000 });
+    const pendingCount = pendingData?.count ?? 0;
 
     return (
         <div className="flex min-h-dvh bg-transparent">
@@ -93,6 +98,11 @@ export default function AdminLayout() {
                             {item.label === 'Mesajlar' && msgCount > 0 && (
                                 <span className="min-w-[18px] h-[18px] flex items-center justify-center bg-orange-500 text-white text-[9px] font-bold rounded-full px-1">
                                     {msgCount > 99 ? '99+' : msgCount}
+                                </span>
+                            )}
+                            {item.label === 'İstekler' && pendingCount > 0 && (
+                                <span className="min-w-[18px] h-[18px] flex items-center justify-center bg-amber-500 text-white text-[9px] font-bold rounded-full px-1">
+                                    {pendingCount > 99 ? '99+' : pendingCount}
                                 </span>
                             )}
                         </NavLink>

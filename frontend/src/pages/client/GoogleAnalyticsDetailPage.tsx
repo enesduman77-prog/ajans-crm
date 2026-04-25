@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -117,7 +117,7 @@ export default function GoogleAnalyticsDetailPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [refreshing, setRefreshing] = useState(false);
-    const [activePreset, setActivePreset] = useState(2); // default: Son 30 Gün
+    const [activePreset, setActivePreset] = useState(2);
     const [showDateMenu, setShowDateMenu] = useState(false);
     const [customStart, setCustomStart] = useState('');
     const [customEnd, setCustomEnd] = useState('');
@@ -179,10 +179,7 @@ export default function GoogleAnalyticsDetailPage() {
     const totalPages = (data?.topPages ?? []).reduce((a, b) => a + b.value, 0);
     const maxPageViews = Math.max(...(data?.topPages ?? []).map(p => p.value), 1);
 
-    // Engagement rate (inverse of bounce)
     const engagementRate = data ? (100 - data.bounceRate).toFixed(1) : '0';
-
-    // Session per user
     const sessionsPerUser = data && data.totalUsers > 0
         ? (data.sessions / data.totalUsers).toFixed(2) : '0';
 
@@ -190,7 +187,7 @@ export default function GoogleAnalyticsDetailPage() {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+                    <Loader2 className="w-8 h-8 text-[#F5BEC8] animate-spin" />
                     <p className="text-zinc-400 text-sm">Google Analytics verileri yükleniyor...</p>
                 </div>
             </div>
@@ -213,7 +210,7 @@ export default function GoogleAnalyticsDetailPage() {
                         </p>
                     </div>
                     <button onClick={() => navigate('/client/analytics')}
-                        className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors">
+                        className="bg-[#C8697A] hover:bg-[#B5556A] text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors">
                         Analitik Sayfasına Git
                     </button>
                 </div>
@@ -228,11 +225,11 @@ export default function GoogleAnalyticsDetailPage() {
                 <div className="flex items-center gap-4">
                     <button onClick={() => navigate('/client/analytics')}
                         className="h-10 w-10 rounded-xl bg-[#0C0C0E] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white hover:border-white/[0.12] transition-all">
-                        <ArrowLeft className="w-4.5 h-4.5" />
+                        <ArrowLeft className="w-4 h-4" />
                     </button>
                     <div>
                         <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
-                            <Globe className="w-6 h-6 text-blue-400" />
+                            <Globe className="w-6 h-6 text-[#F5BEC8]" />
                             Google Analytics Raporu
                         </h1>
                         <p className="text-zinc-500 text-[13px] mt-1">
@@ -268,7 +265,7 @@ export default function GoogleAnalyticsDetailPage() {
                                             onClick={() => { setActivePreset(i); setIsCustomRange(false); setShowDateMenu(false); }}
                                             className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors ${
                                                 !isCustomRange && activePreset === i
-                                                    ? 'bg-blue-500/10 text-blue-400'
+                                                    ? 'bg-[#C8697A]/10 text-[#F5BEC8]'
                                                     : 'text-zinc-300 hover:bg-white/[0.05]'
                                             }`}
                                         >
@@ -282,13 +279,13 @@ export default function GoogleAnalyticsDetailPage() {
                                                 <label className="text-[10px] text-zinc-500">Başlangıç</label>
                                                 <input type="date" value={customStart}
                                                     onChange={e => setCustomStart(e.target.value)}
-                                                    className="w-full bg-[#0C0C0E] border border-white/[0.08] rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500/50" />
+                                                    className="w-full bg-[#0C0C0E] border border-white/[0.08] rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#C8697A]/50" />
                                             </div>
                                             <div>
                                                 <label className="text-[10px] text-zinc-500">Bitiş</label>
                                                 <input type="date" value={customEnd}
                                                     onChange={e => setCustomEnd(e.target.value)}
-                                                    className="w-full bg-[#0C0C0E] border border-white/[0.08] rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500/50" />
+                                                    className="w-full bg-[#0C0C0E] border border-white/[0.08] rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#C8697A]/50" />
                                             </div>
                                             <button
                                                 onClick={() => {
@@ -298,7 +295,7 @@ export default function GoogleAnalyticsDetailPage() {
                                                     }
                                                 }}
                                                 disabled={!customStart || !customEnd}
-                                                className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white text-xs font-medium py-1.5 rounded-lg transition-colors"
+                                                className="w-full bg-[#C8697A] hover:bg-[#B5556A] disabled:opacity-40 text-white text-xs font-medium py-1.5 rounded-lg transition-colors"
                                             >
                                                 Uygula
                                             </button>
@@ -319,9 +316,9 @@ export default function GoogleAnalyticsDetailPage() {
                 </div>
             </div>
 
-            {/* ═══ ANA METRİKLER ═══ */}
+            {/* === ANA METRİKLER === */}
             <section>
-                <SectionHeader icon={Zap} title="Genel Bakış" color="bg-blue-500/20">
+                <SectionHeader icon={Zap} title="Genel Bakış" color="bg-[#C8697A]/20">
                     <span className="text-[11px] text-zinc-500">{currentRange.desc} özet veriler</span>
                 </SectionHeader>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -329,8 +326,8 @@ export default function GoogleAnalyticsDetailPage() {
                         label="Toplam Oturum"
                         value={formatNum(data.sessions)}
                         icon={TrendingUp}
-                        color="text-blue-400"
-                        bgColor="bg-blue-500/10"
+                        color="text-[#F5BEC8]"
+                        bgColor="bg-[#C8697A]/10"
                     />
                     <BigMetricCard
                         label="Toplam Kullanıcı"
@@ -358,7 +355,7 @@ export default function GoogleAnalyticsDetailPage() {
                 </div>
             </section>
 
-            {/* ═══ PERFORMANS METRİKLERİ ═══ */}
+            {/* === PERFORMANS METRİKLERİ === */}
             <section>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -411,9 +408,9 @@ export default function GoogleAnalyticsDetailPage() {
                 </div>
             </section>
 
-            {/* ═══ GÜNLÜK TREND ═══ */}
+            {/* === GÜNLÜK TREND === */}
             <section>
-                <SectionHeader icon={TrendingUp} title="Günlük Oturum & Kullanıcı Trendi" color="bg-blue-500/20" />
+                <SectionHeader icon={TrendingUp} title="Günlük Oturum & Kullanıcı Trendi" color="bg-[#C8697A]/20" />
                 <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-6">
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
@@ -448,11 +445,11 @@ export default function GoogleAnalyticsDetailPage() {
                 </div>
             </section>
 
-            {/* ═══ TRAFİK KAYNAKLARI + ÜLKELER ═══ */}
+            {/* === TRAFİK KAYNAKLARI + ÜLKELER === */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Trafik Kaynakları - Pie */}
                 <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-6">
-                    <SectionHeader icon={Globe} title="Trafik Kaynakları" color="bg-blue-500/20" />
+                    <SectionHeader icon={Globe} title="Trafik Kaynakları" color="bg-[#C8697A]/20" />
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
@@ -469,7 +466,6 @@ export default function GoogleAnalyticsDetailPage() {
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
-                    {/* Detaylı liste */}
                     <div className="mt-4 space-y-2">
                         {sourcePieData.map((s) => (
                             <div key={s.name} className="flex items-center justify-between">
@@ -531,7 +527,7 @@ export default function GoogleAnalyticsDetailPage() {
                 </div>
             </div>
 
-            {/* ═══ EN ÇOK ZİYARET EDİLEN SAYFALAR ═══ */}
+            {/* === EN ÇOK ZİYARET EDİLEN SAYFALAR === */}
             <section>
                 <SectionHeader icon={FileText} title="En Çok Ziyaret Edilen Sayfalar" color="bg-amber-500/20">
                     <span className="text-[11px] text-zinc-500">
@@ -541,7 +537,6 @@ export default function GoogleAnalyticsDetailPage() {
                 <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-6">
                     {(data.topPages ?? []).length > 0 ? (
                         <div className="space-y-3">
-                            {/* Header */}
                             <div className="flex items-center justify-between px-1 text-[11px] text-zinc-500 uppercase tracking-wider">
                                 <span>Sayfa Yolu</span>
                                 <span>Görüntüleme</span>
@@ -556,9 +551,8 @@ export default function GoogleAnalyticsDetailPage() {
                                         transition={{ delay: i * 0.05 }}
                                         className="relative"
                                     >
-                                        {/* Progress arka plan */}
                                         <div className="absolute inset-0 rounded-xl overflow-hidden">
-                                            <div className="h-full bg-blue-500/[0.06] rounded-xl transition-all duration-500"
+                                            <div className="h-full bg-[#C8697A]/[0.10] rounded-xl transition-all duration-500"
                                                 style={{ width: `${pct}%` }} />
                                         </div>
                                         <div className="relative flex items-center justify-between px-4 py-3">
@@ -591,7 +585,7 @@ export default function GoogleAnalyticsDetailPage() {
                 </div>
             </section>
 
-            {/* ═══ ÖZET RAPOR ═══ */}
+            {/* === ÖZET RAPOR === */}
             <section>
                 <SectionHeader icon={BarChart3} title="Performans Özeti" color="bg-pink-500/20" />
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -605,7 +599,7 @@ export default function GoogleAnalyticsDetailPage() {
                                     <span className="text-white font-semibold">{formatNum(data.totalUsers - data.newUsers)}</span>
                                 </div>
                                 <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                                    <div className="h-full bg-blue-500 rounded-full"
+                                    <div className="h-full bg-[#C8697A] rounded-full"
                                         style={{ width: `${data.totalUsers > 0 ? ((data.totalUsers - data.newUsers) / data.totalUsers) * 100 : 0}%` }} />
                                 </div>
                             </div>

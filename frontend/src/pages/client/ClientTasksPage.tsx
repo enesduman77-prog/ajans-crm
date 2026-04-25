@@ -27,7 +27,7 @@ export default function ClientTasksPage() {
 
             {isLoading ? (
                 <div className="flex items-center justify-center h-40">
-                    <div className="animate-spin h-8 w-8 border-2 border-blue-400 border-t-transparent rounded-full" />
+                    <div className="animate-spin h-8 w-8 border-2 border-[#C8697A] border-t-transparent rounded-full" />
                 </div>
             ) : tasks.length === 0 ? (
                 <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-12 text-center">

@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -75,6 +76,24 @@ public class Company {
 
     @Column(columnDefinition = "TEXT")
     private String notes;
+
+    @Column(name = "hosting_provider")
+    private String hostingProvider;
+
+    @Column(name = "domain_expiry")
+    private LocalDate domainExpiry;
+
+    @Column(name = "ssl_expiry")
+    private LocalDate sslExpiry;
+
+    @Column(name = "cms_type")
+    private String cmsType;
+
+    @Column(name = "cms_version")
+    private String cmsVersion;
+
+    @Column(name = "theme_name")
+    private String themeName;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "contract_status")

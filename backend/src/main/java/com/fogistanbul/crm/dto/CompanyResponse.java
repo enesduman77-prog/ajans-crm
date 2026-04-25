@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -29,6 +30,13 @@ public class CompanyResponse {
     private String socialLinkedin;
     private String socialYoutube;
     private String socialTiktok;
+
+    private String hostingProvider;
+    private LocalDate domainExpiry;
+    private LocalDate sslExpiry;
+    private String cmsType;
+    private String cmsVersion;
+    private String themeName;
 
     private Instant createdAt;
     private int memberCount;

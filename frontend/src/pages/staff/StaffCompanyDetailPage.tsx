@@ -9,6 +9,9 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import type { MembershipInfo } from '../../api/admin';
+import { ContentPlanPanel } from '../../components/analytics';
+import { FileText, Wrench } from 'lucide-react';
+import MaintenanceLogPanel from '../../components/staff/MaintenanceLogPanel';
 
 export default function StaffCompanyDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -169,6 +172,24 @@ export default function StaffCompanyDetailPage() {
                     <p className="text-zinc-300 text-sm whitespace-pre-wrap">{company.notes}</p>
                 </div>
             )}
+
+            {/* İçerik Planı */}
+            <section>
+                <div className="flex items-center gap-2 mb-4">
+                    <FileText className="w-4 h-4 text-violet-400" />
+                    <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">İçerik Planı</h3>
+                </div>
+                <ContentPlanPanel companyId={id!} />
+            </section>
+
+            {/* Bakım Günlüğü */}
+            <section>
+                <div className="flex items-center gap-2 mb-4">
+                    <Wrench className="w-4 h-4 text-[#F5BEC8]" />
+                    <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Web Tasarım — Bakım Günlüğü</h3>
+                </div>
+                <MaintenanceLogPanel companyId={id!} />
+            </section>
 
             {/* Members */}
             <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">

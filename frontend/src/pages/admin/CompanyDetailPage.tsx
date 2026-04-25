@@ -7,6 +7,7 @@ import {
     Trash2, ChevronDown, ChevronUp, Briefcase, ExternalLink, UserPlus,
     Instagram, Facebook, Twitter, Linkedin, Youtube
 } from 'lucide-react';
+import WebDesignAdminSection from '../../components/admin/WebDesignAdminSection';
 
 const PERMISSION_LABELS: Record<string, string> = {
     'messages.general.write': 'Genel Kanalda Mesaj Yazma',
@@ -233,6 +234,9 @@ export default function CompanyDetailPage() {
                     <p className="text-zinc-300 text-sm whitespace-pre-wrap">{company.notes}</p>
                 </div>
             )}
+
+            {/* Web Design (infrastructure + maintenance log) */}
+            <WebDesignAdminSection company={company} />
 
             {/* Members */}
             <div className="bg-[#0C0C0E] border border-white/[0.06] rounded-2xl p-5">

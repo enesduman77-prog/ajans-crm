@@ -31,7 +31,7 @@ export default function ClientTeamPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-60">
-                <div className="h-8 w-8 border-2 border-zinc-800 border-t-blue-500 rounded-full animate-spin" />
+                <div className="h-8 w-8 border-2 border-zinc-800 border-t-[#C8697A] rounded-full animate-spin" />
             </div>
         );
     }
@@ -75,14 +75,14 @@ export default function ClientTeamPage() {
             {/* Employees Section */}
             <section className="space-y-4">
                 <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                        <Users className="w-4 h-4 text-blue-400" />
+                    <div className="h-8 w-8 rounded-lg bg-[#C8697A]/10 flex items-center justify-center">
+                        <Users className="w-4 h-4 text-[#F5BEC8]" />
                     </div>
                     <div>
                         <h2 className="text-lg font-bold text-white">Şirket Çalışanları</h2>
                         <p className="text-xs text-zinc-500">Şirketinizdeki diğer kullanıcılar</p>
                     </div>
-                    <span className="ml-auto text-xs bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-lg font-medium">
+                    <span className="ml-auto text-xs bg-[#C8697A]/10 text-[#F5BEC8] px-2.5 py-1 rounded-lg font-medium">
                         {employees.length} kişi
                     </span>
                 </div>
@@ -111,8 +111,8 @@ function MemberCard({ member, index, accent }: { member: TeamMemberResponse; ind
             avatar: 'bg-pink-500/10 text-pink-400',
         },
         blue: {
-            badge: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-            avatar: 'bg-blue-500/10 text-blue-400',
+            badge: 'bg-[#C8697A]/10 text-[#F5BEC8] border-[#C8697A]/25',
+            avatar: 'bg-[#C8697A]/10 text-[#F5BEC8]',
         },
     }[accent];
 
