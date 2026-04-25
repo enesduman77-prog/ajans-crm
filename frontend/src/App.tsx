@@ -37,7 +37,6 @@ import ClientLayout from './layouts/ClientLayout';
 import ClientDashboard from './pages/client/ClientDashboard';
 import MediaLibraryPage from './pages/client/MediaLibraryPage';
 import ClientTasksPage from './pages/client/ClientTasksPage';
-import ClientCompletedPage from './pages/client/ClientCompletedPage';
 import ServicesPage from './pages/client/ServicesPage';
 import ClientSettingsPage from './pages/client/ClientSettingsPage';
 import ClientMessagingPage from './pages/client/ClientMessagingPage';
@@ -158,7 +157,7 @@ export default function App() {
               <Route path="web-design" element={<PageSpeedDetailPage />} />
               <Route path="media" element={<MediaLibraryPage />} />
               <Route path="tasks" element={<ClientTasksPage />} />
-              <Route path="completed" element={<ClientCompletedPage />} />
+              <Route path="completed" element={<Navigate to="/client/tasks" replace />} />
               <Route path="services" element={<ProtectedRoute membershipRoles={['OWNER']}><ServicesPage /></ProtectedRoute>} />
               <Route path="messaging" element={<ClientMessagingPage />} />
               <Route path="team" element={<ProtectedRoute membershipRoles={['OWNER']}><ClientTeamPage /></ProtectedRoute>} />

@@ -9,7 +9,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import FogLogo from '../components/brand/FogLogo';
 import {
-    BarChart3, Image, ListTodo, CheckCircle2, ShoppingBag,
+    BarChart3, Image, ListTodo, ShoppingBag,
     Settings, MessageSquare, LogOut, Star, Menu, X, TrendingUp, Sparkles, Search, Users, Camera
 } from 'lucide-react';
 
@@ -17,8 +17,7 @@ const navItems = [
     { to: '/client', icon: BarChart3, label: 'Raporlar', end: true },
     { to: '/client/analytics', icon: TrendingUp, label: 'Analitik' },
     { to: '/client/media', icon: Image, label: 'Medya Kütüphanesi' },
-    { to: '/client/tasks', icon: ListTodo, label: 'Yapılacaklar' },
-    { to: '/client/completed', icon: CheckCircle2, label: 'Yapılanlar' },
+    { to: '/client/tasks', icon: ListTodo, label: 'Görevler' },
     { to: '/client/shoots', icon: Camera, label: 'Çekim Takvimi' },
     { to: '/client/services', icon: ShoppingBag, label: 'Ek Hizmet Al', ownerOnly: true },
     { to: '/client/messaging', icon: MessageSquare, label: 'Mesajlar' },

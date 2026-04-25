@@ -6,6 +6,7 @@ import com.fogistanbul.crm.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +64,10 @@ public class FileController {
                     .contentType(MediaType.parseMediaType(
                             attachment.getContentType() != null ? attachment.getContentType() : "application/octet-stream"))
                     .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + sanitizeFilename(attachment.getOriginalName()) + "\"")
+                            ContentDisposition.attachment()
+                                    .filename(sanitizeFilename(attachment.getOriginalName()), StandardCharsets.UTF_8)
+                                    .build()
+                                    .toString())
                     .body(resource);
         } catch (MalformedURLException e) {
             throw new RuntimeException("Dosya okunamadi", e);

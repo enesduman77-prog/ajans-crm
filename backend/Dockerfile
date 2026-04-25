@@ -10,4 +10,4 @@ COPY . .
 EXPOSE 8080
 
 # Remove stale compiled migration file before run (target is a mounted volume)
-CMD ["sh", "-c", "rm -f /app/target/classes/db/migration/V4__survey_enhancements.sql && mvn spring-boot:run"]
+CMD ["sh", "-c", "rm -f /app/target/classes/db/migration/V4__survey_enhancements.sql && mvn spring-boot:run -Dspring-boot.run.jvmArguments='-Dspring.devtools.restart.enabled=false -Dspring.devtools.add-properties=false'"]

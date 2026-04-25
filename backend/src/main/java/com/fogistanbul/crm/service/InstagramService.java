@@ -88,7 +88,7 @@ public class InstagramService {
 
 
 
-        int days = parseDays(rangeStart);
+        InsightRange range = resolveRange(rangeStart, rangeEnd);
 
 
 
@@ -114,9 +114,9 @@ public class InstagramService {
 
             // 2. Insights: follower_count (günlük), impressions, reach, profile_views, website_clicks
 
-            long since = Instant.now().minusSeconds((long) days * 86400).getEpochSecond();
+            long since = range.since();
 
-            long until = Instant.now().getEpochSecond();
+            long until = range.until();
 
 
 
@@ -128,29 +128,33 @@ public class InstagramService {
 
 
 
-            // impressions, reach, profile_views
+            // Instagram Graph API v21 no longer accepts "impressions" here; "views" is the replacement.
 
-            List<Map<String, Object>> impressionValues = fetchInsight(igUserId, accessToken,
+            List<Map<String, Object>> viewValues = fetchTotalInsight(igUserId, accessToken,
 
-                    "impressions", "day", since, until);
+                    "views", since, until);
+
+            Map<String, Long> dailyViewsByDate = fetchDailyTotalInsightByDate(igUserId, accessToken,
+
+                    "views", followerValues);
 
             List<Map<String, Object>> reachValues = fetchInsight(igUserId, accessToken,
 
                     "reach", "day", since, until);
 
-            List<Map<String, Object>> profileViewValues = fetchInsight(igUserId, accessToken,
+            List<Map<String, Object>> profileViewValues = fetchTotalInsight(igUserId, accessToken,
 
-                    "profile_views", "day", since, until);
+                    "profile_views", since, until);
 
-            List<Map<String, Object>> websiteClickValues = fetchInsight(igUserId, accessToken,
+            List<Map<String, Object>> websiteClickValues = fetchTotalInsight(igUserId, accessToken,
 
-                    "website_clicks", "day", since, until);
+                    "website_clicks", since, until);
 
 
 
             // Toplamlar
 
-            long totalImpressions = sumInsightValues(impressionValues);
+            long totalImpressions = sumInsightValues(viewValues);
 
             long totalReach = sumInsightValues(reachValues);
 
@@ -162,11 +166,21 @@ public class InstagramService {
 
             // Takipçi kazanım/kayıp
 
-            long followersGained = 0;
+            FollowStats followStats = fetchFollowStats(igUserId, accessToken, since, until);
 
-            long followersLost = 0;
+            if (!followStats.available()) {
 
-            if (followerValues.size() >= 2) {
+                InsightRange currentMonth = currentMonthRange();
+
+                followStats = fetchFollowStats(igUserId, accessToken, currentMonth.since(), currentMonth.until());
+
+            }
+
+            long followersGained = followStats.gained();
+
+            long followersLost = followStats.lost();
+
+            if (!followStats.available() && followerValues.size() >= 2) {
 
                 long first = toLong(followerValues.get(0).get("value"));
 
@@ -194,7 +208,7 @@ public class InstagramService {
 
                 long followers = toLong(followerValues.get(i).get("value"));
 
-                long dayImpressions = i < impressionValues.size() ? toLong(impressionValues.get(i).get("value")) : 0;
+                long dayImpressions = dailyViewsByDate.getOrDefault(date, 0L);
 
                 long dayReach = i < reachValues.size() ? toLong(reachValues.get(i).get("value")) : 0;
 
@@ -340,103 +354,7 @@ public class InstagramService {
 
                 String mediaId = (String) reel.getOrDefault("id", "");
 
-                long plays = 0, reach = 0, saved = 0, shares = 0;
-
-
-
-                // Fetch per-reel insights (try new metric names first, fallback to legacy)
-
-                try {
-
-                    String insightUrl = GRAPH_URL + "/" + mediaId + "/insights"
-
-                            + "?metric=ig_reels_aggregated_all_plays_count,reach,saved,shares"
-
-                            + "&access_token=" + accessToken;
-
-                    Map<String, Object> insightResult = fetchJson(insightUrl);
-
-                    List<Map<String, Object>> insightData = (List<Map<String, Object>>) insightResult.get("data");
-
-                    if (insightData != null) {
-
-                        for (Map<String, Object> insight : insightData) {
-
-                            String name = (String) insight.get("name");
-
-                            long val = toLong(insight.get("values") instanceof List<?> vals && !vals.isEmpty()
-
-                                    ? ((Map<String, Object>) vals.get(0)).get("value")
-
-                                    : insight.get("values"));
-
-                            switch (name != null ? name : "") {
-
-                                case "ig_reels_aggregated_all_plays_count", "plays" -> plays = val;
-
-                                case "reach" -> reach = val;
-
-                                case "saved" -> saved = val;
-
-                                case "shares" -> shares = val;
-
-                            }
-
-                        }
-
-                    }
-
-                } catch (Exception ex1) {
-
-                    // Fallback: try legacy metric names
-
-                    try {
-
-                        String legacyUrl = GRAPH_URL + "/" + mediaId + "/insights"
-
-                                + "?metric=reach,saved,shares"
-
-                                + "&access_token=" + accessToken;
-
-                        Map<String, Object> legacyResult = fetchJson(legacyUrl);
-
-                        List<Map<String, Object>> legacyData = (List<Map<String, Object>>) legacyResult.get("data");
-
-                        if (legacyData != null) {
-
-                            for (Map<String, Object> insight : legacyData) {
-
-                                String name = (String) insight.get("name");
-
-                                long val = toLong(insight.get("values") instanceof List<?> vals && !vals.isEmpty()
-
-                                        ? ((Map<String, Object>) vals.get(0)).get("value")
-
-                                        : insight.get("values"));
-
-                                switch (name != null ? name : "") {
-
-                                    case "plays" -> plays = val;
-
-                                    case "reach" -> reach = val;
-
-                                    case "saved" -> saved = val;
-
-                                    case "shares" -> shares = val;
-
-                                }
-
-                            }
-
-                        }
-
-                    } catch (Exception ex2) {
-
-                        log.warn("Reel insight alınamadı, mediaId={}: {}", mediaId, ex2.getMessage());
-
-                    }
-
-                }
+                ReelInsightStats insightStats = fetchReelInsights(mediaId, accessToken);
 
 
 
@@ -456,7 +374,7 @@ public class InstagramService {
 
                         toLong(reel.get("comments_count")),
 
-                        plays, reach, saved, shares
+                        insightStats.views(), insightStats.reach(), insightStats.saved(), insightStats.shares()
 
                 ));
 
@@ -521,6 +439,344 @@ public class InstagramService {
             return List.of();
 
         }
+
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+
+    private List<Map<String, Object>> fetchTotalInsight(String igUserId, String accessToken,
+
+                                                        String metric,
+
+                                                        long since, long until) {
+
+        try {
+
+            String url = GRAPH_URL + "/" + igUserId + "/insights"
+
+                    + "?metric=" + metric
+
+                    + "&metric_type=total_value"
+
+                    + "&period=day"
+
+                    + "&since=" + since
+
+                    + "&until=" + until
+
+                    + "&access_token=" + accessToken;
+
+
+
+            Map<String, Object> result = fetchJson(url);
+
+            List<Map<String, Object>> data = (List<Map<String, Object>>) result.get("data");
+
+            if (data == null || data.isEmpty()) return List.of();
+
+
+
+            Object totalValue = data.get(0).get("total_value");
+
+            if (totalValue instanceof Map<?, ?> totalMap) {
+
+                Object value = totalMap.get("value");
+
+                return List.of(Map.of("value", value != null ? value : 0));
+
+            }
+
+
+
+            Object values = data.get(0).get("values");
+
+            if (values instanceof List<?> list) {
+
+                return (List<Map<String, Object>>) list;
+
+            }
+
+
+
+            return List.of();
+
+        } catch (Exception e) {
+
+            log.warn("Instagram total insight alÄ±namadÄ±, metric={}: {}", metric, e.getMessage());
+
+            return List.of();
+
+        }
+
+    }
+
+
+
+    private FollowStats fetchFollowStats(String igUserId, String accessToken, long since, long until) {
+
+        String baseUrl = GRAPH_URL + "/" + igUserId + "/insights"
+
+                + "?metric=follows_and_unfollows"
+
+                + "&metric_type=total_value"
+
+                + "&period=day"
+
+                + "&since=" + since
+
+                + "&until=" + until
+
+                + "&access_token=" + accessToken;
+
+
+
+        List<String> urls = List.of(
+
+                baseUrl + "&breakdown=follow_type",
+
+                baseUrl + "&breakdowns=follow_type"
+
+        );
+
+
+
+        String lastError = null;
+
+        for (String url : urls) {
+
+            try {
+
+                FollowStats stats = parseFollowStats(fetchJson(url));
+
+                if (stats.available()) {
+
+                    return stats;
+
+                }
+
+            } catch (Exception e) {
+
+                lastError = e.getMessage();
+
+            }
+
+        }
+
+
+
+        if (lastError != null) {
+
+            log.warn("Instagram takipci kazanimi/kaybi alinamadi: {}", lastError);
+
+        }
+
+        return FollowStats.unavailable();
+
+    }
+
+
+
+    private Map<String, Long> fetchDailyTotalInsightByDate(String igUserId, String accessToken,
+
+                                                           String metric,
+
+                                                           List<Map<String, Object>> trendRows) {
+
+        Map<String, Long> dailyValues = new LinkedHashMap<>();
+
+        ZoneId zone = ZoneId.of("Europe/Istanbul");
+
+
+
+        for (Map<String, Object> row : trendRows) {
+
+            String date = extractInsightDate(row);
+
+            if (date.isBlank() || dailyValues.containsKey(date)) {
+
+                continue;
+
+            }
+
+
+
+            try {
+
+                LocalDate day = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
+
+                long daySince = day.atStartOfDay(zone).toEpochSecond();
+
+                long dayUntil = day.plusDays(1).atStartOfDay(zone).toEpochSecond();
+
+                long value = sumInsightValues(fetchTotalInsight(igUserId, accessToken, metric, daySince, dayUntil));
+
+                dailyValues.put(date, value);
+
+            } catch (Exception e) {
+
+                log.debug("Instagram gunluk total insight alinamadi, metric={}, date={}: {}",
+
+                        metric, date, e.getMessage());
+
+                dailyValues.put(date, 0L);
+
+            }
+
+        }
+
+
+
+        return dailyValues;
+
+    }
+
+
+
+    private String extractInsightDate(Map<String, Object> row) {
+
+        Object endTime = row.get("end_time");
+
+        if (endTime == null) {
+
+            return "";
+
+        }
+
+
+
+        String value = endTime.toString();
+
+        return value.length() >= 10 ? value.substring(0, 10) : value;
+
+    }
+
+
+
+    private FollowStats parseFollowStats(Map<String, Object> result) {
+
+        long[] counts = new long[2];
+
+        boolean[] found = new boolean[1];
+
+        collectFollowStats(result, "", counts, found);
+
+        return new FollowStats(counts[0], counts[1], found[0]);
+
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+
+    private void collectFollowStats(Object node, String label, long[] counts, boolean[] found) {
+
+        if (node instanceof Map<?, ?> rawMap) {
+
+            Map<String, Object> map = (Map<String, Object>) rawMap;
+
+            Object value = map.get("value");
+
+            Object followType = map.get("follow_type");
+
+            if (followType != null && value != null) {
+
+                addFollowStat(followType.toString(), value, counts, found);
+
+            }
+
+
+
+            Object dimensionValues = map.get("dimension_values");
+
+            if (dimensionValues instanceof List<?> dims && value != null) {
+
+                String dimensionLabel = String.join(" ", dims.stream().map(String::valueOf).toList());
+
+                addFollowStat(dimensionLabel, value, counts, found);
+
+            }
+
+
+
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+
+                collectFollowStats(entry.getValue(), entry.getKey(), counts, found);
+
+            }
+
+        } else if (node instanceof List<?> list) {
+
+            for (Object item : list) {
+
+                collectFollowStats(item, label, counts, found);
+
+            }
+
+        } else if (node instanceof Number || node instanceof String) {
+
+            addFollowStat(label, node, counts, found);
+
+        }
+
+    }
+
+
+
+    private void addFollowStat(String label, Object value, long[] counts, boolean[] found) {
+
+        if (label == null || value == null) return;
+
+        String normalized = label.toLowerCase(Locale.ROOT)
+
+                .replace("-", "_")
+
+                .replace(" ", "_");
+
+        if (normalized.contains("follows_and_unfollows")) return;
+
+
+
+        boolean lost = normalized.contains("unfollow")
+
+                || normalized.contains("nonfollower")
+
+                || normalized.contains("non_follower")
+
+                || normalized.contains("lost");
+
+        boolean gained = normalized.equals("follow")
+
+                || normalized.equals("follows")
+
+                || normalized.equals("follower")
+
+                || normalized.equals("followers")
+
+                || normalized.contains("new_follow")
+
+                || (normalized.contains("follower") && !lost);
+
+
+
+        if (!gained && !lost) return;
+
+
+
+        long numeric = toLong(value);
+
+        if (lost) {
+
+            counts[1] += numeric;
+
+        } else {
+
+            counts[0] += numeric;
+
+        }
+
+        found[0] = true;
 
     }
 
@@ -604,6 +860,232 @@ public class InstagramService {
 
 
 
+    private ReelInsightStats fetchReelInsights(String mediaId, String accessToken) {
+
+        if (mediaId == null || mediaId.isBlank()) {
+
+            return new ReelInsightStats(0, 0, 0, 0);
+
+        }
+
+
+
+        long views = firstAvailableReelMetric(mediaId, accessToken,
+
+                List.of("plays", "views", "ig_reels_aggregated_all_plays_count", "video_views"));
+
+        long reach = fetchMediaInsightValue(mediaId, accessToken, "reach").orElse(0);
+
+        long saved = fetchMediaInsightValue(mediaId, accessToken, "saved").orElse(0);
+
+        long shares = fetchMediaInsightValue(mediaId, accessToken, "shares").orElse(0);
+
+
+
+        return new ReelInsightStats(views, reach, saved, shares);
+
+    }
+
+
+
+    private long firstAvailableReelMetric(String mediaId, String accessToken, List<String> metrics) {
+
+        for (String metric : metrics) {
+
+            OptionalLong value = fetchMediaInsightValue(mediaId, accessToken, metric);
+
+            if (value.isPresent()) {
+
+                return value.getAsLong();
+
+            }
+
+        }
+
+
+
+        return 0;
+
+    }
+
+
+
+    private OptionalLong fetchMediaInsightValue(String mediaId, String accessToken, String metric) {
+
+        List<String> urls = List.of(
+
+                GRAPH_URL + "/" + mediaId + "/insights"
+
+                        + "?metric=" + metric
+
+                        + "&access_token=" + accessToken,
+
+                GRAPH_URL + "/" + mediaId + "/insights"
+
+                        + "?metric=" + metric
+
+                        + "&metric_type=total_value"
+
+                        + "&period=day"
+
+                        + "&access_token=" + accessToken,
+
+                GRAPH_URL + "/" + mediaId + "/insights"
+
+                        + "?metric=" + metric
+
+                        + "&period=day"
+
+                        + "&access_token=" + accessToken
+
+        );
+
+
+
+        for (String url : urls) {
+
+            try {
+
+                OptionalLong value = parseSingleInsightValue(fetchJson(url), metric);
+
+                if (value.isPresent()) {
+
+                    return value;
+
+                }
+
+            } catch (Exception e) {
+
+                log.debug("Reel insight adayi gecersiz, mediaId={}, metric={}: {}",
+
+                        mediaId, metric, e.getMessage());
+
+            }
+
+        }
+
+
+
+        return OptionalLong.empty();
+
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+
+    private OptionalLong parseSingleInsightValue(Map<String, Object> result, String metric) {
+
+        Object dataObj = result.get("data");
+
+        if (!(dataObj instanceof List<?> data)) {
+
+            return OptionalLong.empty();
+
+        }
+
+
+
+        for (Object item : data) {
+
+            if (!(item instanceof Map<?, ?> rawMap)) {
+
+                continue;
+
+            }
+
+
+
+            Map<String, Object> insight = (Map<String, Object>) rawMap;
+
+            Object name = insight.get("name");
+
+            if (name != null && !metric.equalsIgnoreCase(name.toString())) {
+
+                continue;
+
+            }
+
+
+
+            return OptionalLong.of(extractInsightValue(insight));
+
+        }
+
+
+
+        return OptionalLong.empty();
+
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+
+    private long extractInsightValue(Object insight) {
+
+        if (insight instanceof Map<?, ?> rawMap) {
+
+            Map<String, Object> map = (Map<String, Object>) rawMap;
+
+            Object totalValue = map.get("total_value");
+
+            if (totalValue != null) {
+
+                return extractInsightValue(totalValue);
+
+            }
+
+
+
+            Object values = map.get("values");
+
+            if (values != null) {
+
+                return extractInsightValue(values);
+
+            }
+
+
+
+            Object value = map.get("value");
+
+            if (value != null) {
+
+                return extractInsightValue(value);
+
+            }
+
+
+
+            return 0;
+
+        }
+
+
+
+        if (insight instanceof List<?> list) {
+
+            if (list.isEmpty()) {
+
+                return 0;
+
+            }
+
+
+
+            return extractInsightValue(list.get(list.size() - 1));
+
+        }
+
+
+
+        return toLong(insight);
+
+    }
+
+
+
     private long sumInsightValues(List<Map<String, Object>> values) {
 
         return values.stream().mapToLong(v -> toLong(v.get("value"))).sum();
@@ -624,6 +1106,86 @@ public class InstagramService {
 
 
 
+    private InsightRange resolveRange(String rangeStart, String rangeEnd) {
+
+        ZoneId zone = ZoneId.of("Europe/Istanbul");
+
+        Instant now = Instant.now();
+
+        long until = parseEndInstant(rangeEnd, zone).orElse(now).getEpochSecond();
+
+        long since = parseStartInstant(rangeStart, zone)
+
+                .orElseGet(() -> now.minusSeconds((long) parseDays(rangeStart) * 86400))
+
+                .getEpochSecond();
+
+
+
+        if (since >= until) {
+
+            since = now.minusSeconds(30L * 86400).getEpochSecond();
+
+            until = now.getEpochSecond();
+
+        }
+
+
+
+        return new InsightRange(since, until);
+
+    }
+
+
+
+    private InsightRange currentMonthRange() {
+
+        ZoneId zone = ZoneId.of("Europe/Istanbul");
+
+        LocalDate firstDay = LocalDate.now(zone).withDayOfMonth(1);
+
+        return new InsightRange(firstDay.atStartOfDay(zone).toEpochSecond(), Instant.now().getEpochSecond());
+
+    }
+
+
+
+    private Optional<Instant> parseStartInstant(String value, ZoneId zone) {
+
+        if (value == null || value.isBlank() || value.endsWith("daysAgo")) return Optional.empty();
+
+        try {
+
+            return Optional.of(LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay(zone).toInstant());
+
+        } catch (Exception ignored) {
+
+            return Optional.empty();
+
+        }
+
+    }
+
+
+
+    private Optional<Instant> parseEndInstant(String value, ZoneId zone) {
+
+        if (value == null || value.isBlank() || "today".equalsIgnoreCase(value)) return Optional.empty();
+
+        try {
+
+            return Optional.of(LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE).plusDays(1).atStartOfDay(zone).toInstant());
+
+        } catch (Exception ignored) {
+
+            return Optional.empty();
+
+        }
+
+    }
+
+
+
     private int parseDays(String rangeStart) {
 
         if (rangeStart == null) return 30;
@@ -637,6 +1199,26 @@ public class InstagramService {
         } catch (Exception e) {
 
             return 30;
+
+        }
+
+    }
+
+
+
+    private record InsightRange(long since, long until) {}
+
+
+
+    private record ReelInsightStats(long views, long reach, long saved, long shares) {}
+
+
+
+    private record FollowStats(long gained, long lost, boolean available) {
+
+        private static FollowStats unavailable() {
+
+            return new FollowStats(0, 0, false);
 
         }
 

@@ -97,6 +97,12 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
+    public Page<TaskResponse> getTasksByCompanyAndStatus(UUID companyId, TaskStatus status, Pageable pageable, UUID userId) {
+        ensureCompanyAccess(getUserOrThrow(userId), companyId);
+        return taskRepository.findByCompanyIdAndStatus(companyId, status, pageable).map(this::toResponse);
+    }
+
+    @Transactional(readOnly = true)
     public Page<TaskResponse> getTasksByAssignee(UUID userId, Pageable pageable) {
         return taskRepository.findByAssignedToId(userId, pageable).map(this::toResponse);
     }

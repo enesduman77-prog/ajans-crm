@@ -26,6 +26,8 @@ services:
       - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ajans_crm
+      - SPRING_DEVTOOLS_RESTART_ENABLED=false
+      - SPRING_DEVTOOLS_ADD_PROPERTIES=false
       - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
       - DB_USERNAME=${DB_USERNAME:?DB_USERNAME is required}
       - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD is required}
